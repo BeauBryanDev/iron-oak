@@ -4,7 +4,7 @@ import com.ironoak.domain.AdminUser;
 import com.ironoak.dto.request.AdminLoginRequest;
 import com.ironoak.dto.response.AdminLoginResponse;
 import com.ironoak.repository.AdminUserRepository;
-import com.ironoak.security.JWTService;
+import com.ironoak.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,11 +16,11 @@ public class AdminAuthService {
 
     private final AuthenticationManager authenticationManager;
     private final AdminUserRepository adminUsers;
-    private final JWTService jwtService;
+    private final JwtService jwtService;
 
     public AdminAuthService(AuthenticationManager authenticationManager,
                             AdminUserRepository adminUsers,
-                            JWTService jwtService) {
+                            JwtService jwtService) {
         this.authenticationManager = authenticationManager;
         this.adminUsers = adminUsers;
         this.jwtService = jwtService;

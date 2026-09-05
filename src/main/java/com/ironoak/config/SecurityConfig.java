@@ -1,6 +1,6 @@
 package com.ironoak.config;
 
-import com.ironoak.security.AdminUserDetailService;
+import com.ironoak.security.AdminUserDetailsService;
 import com.ironoak.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -89,7 +89,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AdminUserDetailService userDetailsService,
+    public AuthenticationManager authenticationManager(AdminUserDetailsService userDetailsService,
                                                        PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);

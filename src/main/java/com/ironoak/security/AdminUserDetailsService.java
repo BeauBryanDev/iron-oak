@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 /** Loads staff accounts from admin_user. Customers are never authenticated. */
 @Service
-public class AdminUserDetailService implements UserDetailsService {
+public class AdminUserDetailsService implements UserDetailsService {
 
     private final AdminUserRepository adminUsers;
 
-    public AdminUserDetailService(AdminUserRepository adminUsers) {
+    public AdminUserDetailsService(AdminUserRepository adminUsers) {
         this.adminUsers = adminUsers;
     }
 

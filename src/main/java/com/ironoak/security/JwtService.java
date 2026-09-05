@@ -16,12 +16,12 @@ import java.util.Optional;
 
 /** Issues and verifies the HS256 tokens used for admin dashboard access. */
 @Service
-public class JWTService {
+public class JwtService {
 
     private final JwtProperties properties;
     private SecretKey signingKey;
 
-    public JWTService(JwtProperties properties) {
+    public JwtService(JwtProperties properties) {
         this.properties = properties;
     }
 
