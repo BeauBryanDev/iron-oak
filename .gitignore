@@ -40,3 +40,4 @@ target/
 # OS
 .DS_Store
 notes.txt
+*.onnx
