@@ -1,10 +1,9 @@
 package com.ironoak.config;
 
-import com.ironoak.security.AdminUserDetailsService;
-import com.ironoak.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +16,8 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import com.ironoak.security.AdminUserDetailsService;
+import com.ironoak.security.JwtAuthenticationFilter;
 
 /**
  * Two zones, one filter chain:
@@ -54,9 +54,7 @@ public class SecurityConfig {
 
                         // Spring Boot forwards unhandled errors to /error on a separate
                         // ERROR dispatch. Without this, a 404 or a thrown exception on a
-                        // public route is re-evaluated by anyRequest() and surfaces to the
-                        // caller as a misleading 401. MockMvc does not perform that
-                        // dispatch, so this gap only shows up against a real container.
+                        // public route is re-evaluated by anyRequest() .
                         .requestMatchers("/error").permitAll()
 
                         // Staff login - must be reachable to obtain a token at all.
@@ -93,6 +91,7 @@ public class SecurityConfig {
                                                        PasswordEncoder passwordEncoder) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
+        
         return provider::authenticate;
     }
 }

@@ -1,19 +1,20 @@
 package com.ironoak.config;
 
-import ai.onnxruntime.OrtEnvironment;
-import ai.onnxruntime.OrtException;
-import ai.onnxruntime.OrtSession;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ResourceLoader;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ai.onnxruntime.OrtEnvironment;
+import ai.onnxruntime.OrtException;
+import ai.onnxruntime.OrtSession;
 
 @Configuration
 public class OnnxRuntimeConfig {
@@ -47,11 +48,14 @@ public class OnnxRuntimeConfig {
      */
     @Bean
     public List<String> toolClassLabels(ResourceLoader resourceLoader, 
+        
         ObjectMapper objectMapper) throws IOException {
 
         try (InputStream in = resourceLoader.getResource("classpath:models/idx_to_class.json").
         getInputStream()) {
+
             Map<String, String> byIndex = objectMapper.readValue(in, Map.class);
+
             return byIndex.entrySet().stream()
                     .sorted(Comparator.comparingInt(e -> Integer.parseInt(e.getKey())))
                     .map(Map.Entry::getValue)
