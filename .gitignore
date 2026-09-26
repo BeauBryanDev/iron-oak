@@ -41,3 +41,4 @@ target/
 .DS_Store
 notes.txt
 *.onnx
+node_modules
