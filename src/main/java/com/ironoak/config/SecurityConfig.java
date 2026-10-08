@@ -68,7 +68,7 @@ public class SecurityConfig {
 
                         // Piper: chat, image classification, and guest checkout.
                         .requestMatchers("/api/chat/**", "/api/vision/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/orders", "/api/complaints").permitAll()
 
                         // Everything under /api/admin and the dashboard is staff-only,
                         // as is any catalog mutation.

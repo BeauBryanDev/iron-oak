@@ -51,11 +51,11 @@ public class OrderService {
     private final OrderMapper mapper;
 
     public OrderService(CustomerOrderRepository orders,
-                        CustomerRepository customers,
-                        ProductRepository products,
-                        ServiceOfferingRepository serviceOfferings,
-                        MillingMachineRepository machines,
-                        OrderMapper mapper) {
+            CustomerRepository customers,
+            ProductRepository products,
+            ServiceOfferingRepository serviceOfferings,
+            MillingMachineRepository machines,
+            OrderMapper mapper) {
         this.orders = orders;
         this.customers = customers;
         this.products = products;
@@ -65,8 +65,10 @@ public class OrderService {
     }
 
     /**
-     * Prices every line from the catalog (the client never sends prices), takes product
-     * stock atomically, and saves the order as CONFIRMED. Any failure rolls the whole
+     * Prices every line from the catalog (the client never sends prices), takes
+     * product
+     * stock atomically, and saves the order as CONFIRMED. Any failure rolls the
+     * whole
      * order back, including stock already taken for earlier lines.
      */
     public OrderResponse create(CreateOrderRequest request, OrderChannel channel) {
@@ -149,7 +151,8 @@ public class OrderService {
         };
     }
 
-    private OrderItem buildServiceItem(ServiceOffering service, CreateOrderRequest.Item line) {
+    private OrderItem buildServiceItem(ServiceOffering service,
+            CreateOrderRequest.Item line) {
         return switch (service.getPricingType()) {
             case FIXED -> OrderItem.ofService(service, line.quantity(), null, service.getFixedPrice());
             case HOURLY -> {
@@ -162,7 +165,8 @@ public class OrderService {
                 BigDecimal unitPrice = service.getHourlyRate().multiply(hours).setScale(2, RoundingMode.HALF_UP);
                 yield OrderItem.ofService(service, line.quantity(), hours, unitPrice);
             }
-            case QUOTE -> throw new InvalidOrderException(service.getName() + " is quote-only and cannot be ordered directly");
+            case QUOTE ->
+                throw new InvalidOrderException(service.getName() + " is quote-only and cannot be ordered directly");
         };
     }
 
