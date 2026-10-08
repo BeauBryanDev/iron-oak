@@ -11,7 +11,8 @@ public class MillingMachine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "model_code", nullable = false, unique = true, length = 30)
+    @Column(name = "model_code", nullable = false, 
+    unique = true, length = 30)
     private String modelCode;
 
     @Column(nullable = false, length = 200)
@@ -20,7 +21,8 @@ public class MillingMachine {
     @Column(columnDefinition = "text")
     private String description;
 
-    @Column(name = "power_kw", nullable = false, precision = 5, scale = 1)
+    @Column(name = "power_kw", nullable = false, 
+    precision = 5, scale = 1)
     private BigDecimal powerKw;
 
     @Column(name = "spindle_min_rpm", nullable = false)

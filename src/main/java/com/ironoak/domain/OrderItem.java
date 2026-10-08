@@ -26,7 +26,8 @@ public class OrderItem {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "item_type", nullable = false, columnDefinition = "order_item_type")
+    @Column(name = "item_type", nullable = false, 
+    columnDefinition = "order_item_type")
     private OrderItemType itemType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -47,7 +48,8 @@ public class OrderItem {
     @Column(name = "estimated_hours", precision = 4, scale = 1)
     private BigDecimal estimatedHours;
 
-    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
+    @Column(name = "unit_price", nullable = false, 
+    precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
     @Column(nullable = false, precision = 10, scale = 2)

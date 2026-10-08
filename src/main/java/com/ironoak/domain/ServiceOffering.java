@@ -31,7 +31,8 @@ public class ServiceOffering {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "pricing_type", nullable = false, columnDefinition = "pricing_type")
+    @Column(name = "pricing_type", nullable = false, 
+    columnDefinition = "pricing_type")
     private PricingType pricingType;
 
     @Column(name = "fixed_price", precision = 10, scale = 2)

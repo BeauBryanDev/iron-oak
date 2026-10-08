@@ -26,22 +26,26 @@ public class CustomerOrder {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "status", nullable = false, columnDefinition = "order_status")
+    @Column(name = "status", nullable = false, 
+    columnDefinition = "order_status")
     private OrderStatus status;
 
     // lets the dashboard show what Piper closed on its own
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "channel", nullable = false, columnDefinition = "order_channel")
+    @Column(name = "channel", nullable = false, 
+    columnDefinition = "order_channel")
     private OrderChannel channel;
 
-    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "total_amount", nullable = false, 
+    precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,
+     orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
     protected CustomerOrder() {

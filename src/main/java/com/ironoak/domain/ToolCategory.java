@@ -14,10 +14,12 @@ public class ToolCategory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "model_label", nullable = false, unique = true, length = 100)
+    @Column(name = "model_label", nullable = false,
+     unique = true, length = 100)
     private String modelLabel;
 
-    @Column(name = "display_name", nullable = false, length = 150)
+    @Column(name = "display_name", 
+    nullable = false, length = 150)
     private String displayName;
 
     @JdbcTypeCode(SqlTypes.ARRAY)
