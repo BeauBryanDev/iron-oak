@@ -102,7 +102,7 @@ CREATE INDEX idx_service_offering_category ON service_offering(service_offering_
 CREATE TABLE customer (
     id          BIGSERIAL PRIMARY KEY,
     name        VARCHAR(200) NOT NULL,
-    email       VARCHAR(200),
+    email       VARCHAR(200),  -- must be unique at V2 schema 
     phone       VARCHAR(50),
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );

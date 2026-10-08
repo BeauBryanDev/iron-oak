@@ -2,17 +2,17 @@ package com.ironoak.dto.response;
 
 import java.math.BigDecimal;
 
-public record ProductResponse(
+public record MillingMachineResponse(
         Long id,
-        String sku,
+        String modelCode,
         String name,
-        String brand,
-        String category,
-        String visionName,
         String description,
+        BigDecimal powerKw,
+        int spindleMinRpm,
+        int spindleMaxRpm,
+        int tableLengthMm,
+        int tableWidthMm,
         BigDecimal price,
-        int stockQuantity,
-        boolean inStock,
         int warrantyMonths,
         String imageUrl) {
 }

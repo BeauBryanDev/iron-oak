@@ -58,12 +58,64 @@ public class OrderItem {
     protected OrderItem() {
     }
 
+    private OrderItem(OrderItemType itemType, int quantity, BigDecimal estimatedHours, BigDecimal unitPrice) {
+        this.itemType = itemType;
+        this.quantity = quantity;
+        this.estimatedHours = estimatedHours;
+        this.unitPrice = unitPrice;
+        this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
+
+    public static OrderItem ofProduct(Product product, int quantity) {
+        OrderItem item = new OrderItem(OrderItemType.PRODUCT, quantity, null, product.getPrice());
+        item.product = product;
+        return item;
+    }
+
+    public static OrderItem ofMachine(MillingMachine machine, int quantity) {
+        OrderItem item = new OrderItem(OrderItemType.MACHINE, quantity, null, machine.getPrice());
+        item.millingMachine = machine;
+        return item;
+    }
+
+    /** unitPrice is the price of one unit of the service: the fixed price, or hourly rate x hours. */
+    public static OrderItem ofService(ServiceOffering service, int quantity,
+                                      BigDecimal estimatedHours, BigDecimal unitPrice) {
+        OrderItem item = new OrderItem(OrderItemType.SERVICE, quantity, estimatedHours, unitPrice);
+        item.serviceOffering = service;
+        return item;
+    }
+
+    void attachTo(CustomerOrder order) {
+        this.order = order;
+    }
+
     public Long getId() {
         return id;
     }
 
     public OrderItemType getItemType() {
         return itemType;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public ServiceOffering getServiceOffering() {
+        return serviceOffering;
+    }
+
+    public MillingMachine getMillingMachine() {
+        return millingMachine;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public BigDecimal getEstimatedHours() {
+        return estimatedHours;
     }
 
     public Integer getQuantity() {

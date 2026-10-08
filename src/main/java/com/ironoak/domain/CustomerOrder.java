@@ -51,8 +51,35 @@ public class CustomerOrder {
     protected CustomerOrder() {
     }
 
+    public CustomerOrder(Customer customer, OrderChannel channel) {
+        this.customer = customer;
+        this.channel = channel;
+        this.status = OrderStatus.CONFIRMED;
+        this.totalAmount = BigDecimal.ZERO;
+        this.createdAt = OffsetDateTime.now();
+    }
+
+    /** Adds a line and keeps the running total in step. */
+    public void addItem(OrderItem item) {
+        item.attachTo(this);
+        items.add(item);
+        totalAmount = totalAmount.add(item.getSubtotal());
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public OrderStatus getStatus() {
