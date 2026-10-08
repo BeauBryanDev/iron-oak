@@ -35,16 +35,16 @@ spring:
       embedding:
         options:
           model: ${EMBEDDING_MODEL}
-          # text-embedding-3-large is 3072 natively; shortened to 1024 to match
-          # document_chunk.embedding VECTOR(1024) in V1__init_schema.sql.
           dimensions: 1024
-
-    # No Spring AI VectorStore bean: DocumentChunk is a plain JPA entity and
-    # DocumentChunkRepository hand-writes the pgvector <=> cosine query.
 
   security:
     filter:
       order: 10
+
+  data:
+    web:
+      pageable:
+        max-page-size: 100
 
 server:
   port: ${SERVER_PORT:8080}
@@ -62,13 +62,6 @@ app:
     model-path: ${VISION_MODEL_PATH:classpath:models/hardware_store_mobilenetv3.onnx}
     confidence-threshold: ${VISION_CONFIDENCE_THRESHOLD:0.55}
     input-size: 224
-
-  rag:
-    top-k: ${RAG_TOP_K:5}
-    # Cosine similarity floor, applied after the top-k so the HNSW index still applies.
-    min-similarity: ${RAG_MIN_SIMILARITY:0.35}
-    max-context-chars: 6000
-    dimensions: 1024  # must equal vector(n) in V1__init_schema.sql
 
 logging:
   level:
