@@ -4,5 +4,5 @@ package com.ironoak.domain.enums;
 public enum OrderItemType {
     PRODUCT,
     SERVICE,
-    MATERIAL
+    MACHINE
 }

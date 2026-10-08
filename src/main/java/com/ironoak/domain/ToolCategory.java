@@ -1,14 +1,11 @@
 package com.ironoak.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-/**
- * The 87 classes the vision model predicts. model_label must match the values in
- * ml/idx_to_class.json exactly, or a classification cannot be resolved to a catalog row.
- *
- * The synonyms TEXT[] column is deliberately not mapped yet - it needs an explicit
- * array type mapping, and nothing in the boot check depends on it.
- */
+import java.util.List;
+
 @Entity
 @Table(name = "tool_category")
 public class ToolCategory {
@@ -22,6 +19,10 @@ public class ToolCategory {
 
     @Column(name = "display_name", nullable = false, length = 150)
     private String displayName;
+
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    @Column(columnDefinition = "text[]")
+    private List<String> synonyms;
 
     @Column(columnDefinition = "text")
     private String description;
@@ -39,5 +40,13 @@ public class ToolCategory {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public List<String> getSynonyms() {
+        return synonyms;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

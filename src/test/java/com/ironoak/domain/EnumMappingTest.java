@@ -1,5 +1,6 @@
 package com.ironoak.domain;
 
+import com.ironoak.domain.enums.ComplaintStatus;
 import com.ironoak.domain.enums.MessageRole;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderItemType;
@@ -30,7 +31,7 @@ class EnumMappingTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
-            DockerImageName.parse("pgvector/pgvector:pg16").asCompatibleSubstituteFor("postgres"));
+            DockerImageName.parse("postgres:16"));
 
     @DynamicPropertySource
     static void datasource(DynamicPropertyRegistry registry) {
@@ -50,17 +51,19 @@ class EnumMappingTest {
                 """).getSingleResult()).longValue();
 
         Long categoryId = ((Number) em.createNativeQuery(
-                "INSERT INTO service_category (name) VALUES ('Plumbing') RETURNING id")
+                "INSERT INTO service_offering_category (name) VALUES ('Plumbing') RETURNING id")
                 .getSingleResult()).longValue();
 
         Long serviceId = ((Number) em.createNativeQuery("""
-                INSERT INTO service (service_category_id, name, pricing_type, hourly_rate,
-                                     estimated_min_hours, estimated_max_hours, is_active)
-                VALUES (?, 'Leak repair', 'HOURLY', 45.00, 1.0, 3.0, true) RETURNING id
+                INSERT INTO service_offering (service_offering_category_id, code, name, pricing_type,
+                                              hourly_rate, estimated_min_hours, estimated_max_hours,
+                                              price_unit, is_active)
+                VALUES (?, 'LEAK_REPAIR', 'Leak repair', 'HOURLY', 45.00, 1.0, 3.0, 'hour', true)
+                RETURNING id
                 """).setParameter(1, categoryId).getSingleResult()).longValue();
 
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, service_id, quantity, unit_price, subtotal)
+                INSERT INTO order_item (order_id, item_type, service_offering_id, quantity, unit_price, subtotal)
                 VALUES (?, 'SERVICE', ?, 2, 45.00, 90.00)
                 """).setParameter(1, orderId).setParameter(2, serviceId).executeUpdate();
 
@@ -72,15 +75,21 @@ class EnumMappingTest {
                 VALUES (?, 'TOOL', 'stock lookup returned 4 units', 'StockLookupTool')
                 """).setParameter(1, sessionId).executeUpdate();
 
+        Long complaintId = ((Number) em.createNativeQuery("""
+                INSERT INTO complaint (customer_name, complaint_datetime, product, description)
+                VALUES ('Jane Doe', now(), 'Jigsaw', 'Blade snapped on first use') RETURNING id
+                """).getSingleResult()).longValue();
+
         em.flush();
         em.clear();
 
         // read path
+        assertThat(em.find(Complaint.class, complaintId).getStatus()).isEqualTo(ComplaintStatus.PENDING);
         CustomerOrder order = em.find(CustomerOrder.class, orderId);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
         assertThat(order.getChannel()).isEqualTo(OrderChannel.AGENT_CHAT);
 
-        Service service = em.find(Service.class, serviceId);
+        ServiceOffering service = em.find(ServiceOffering.class, serviceId);
         assertThat(service.getPricingType()).isEqualTo(PricingType.HOURLY);
 
         OrderItem item = em.createQuery(

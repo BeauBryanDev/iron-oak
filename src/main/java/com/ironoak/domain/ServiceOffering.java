@@ -7,21 +7,21 @@ import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
-/**
- * Labor catalog. The chk_pricing constraint in V1__init_schema.sql enforces that
- * FIXED rows carry fixedPrice and HOURLY rows carry hourlyRate plus the hour range.
- */
+// Named ServiceOffering, not Service, to avoid clashing with Spring's @Service stereotype.
 @Entity
-@Table(name = "service")
-public class Service {
+@Table(name = "service_offering")
+public class ServiceOffering {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "service_category_id", nullable = false)
-    private ServiceCategory serviceCategory;
+    @JoinColumn(name = "service_offering_category_id", nullable = false)
+    private ServiceOfferingCategory category;
+
+    @Column(nullable = false, unique = true, length = 50)
+    private String code;
 
     @Column(nullable = false, length = 200)
     private String name;
@@ -29,8 +29,6 @@ public class Service {
     @Column(columnDefinition = "text")
     private String description;
 
-    // NAMED_ENUM binds to the native PostgreSQL enum type rather than a varchar.
-    // columnDefinition names that type explicitly so ddl-auto: validate matches it.
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "pricing_type", nullable = false, columnDefinition = "pricing_type")
@@ -48,18 +46,33 @@ public class Service {
     @Column(name = "estimated_max_hours", precision = 4, scale = 1)
     private BigDecimal estimatedMaxHours;
 
+    @Column(name = "price_unit", length = 30)
+    private String priceUnit;
+
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
-    protected Service() {
+    protected ServiceOffering() {
     }
 
     public Long getId() {
         return id;
     }
 
+    public ServiceOfferingCategory getCategory() {
+        return category;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public PricingType getPricingType() {
@@ -72,5 +85,21 @@ public class Service {
 
     public BigDecimal getHourlyRate() {
         return hourlyRate;
+    }
+
+    public BigDecimal getEstimatedMinHours() {
+        return estimatedMinHours;
+    }
+
+    public BigDecimal getEstimatedMaxHours() {
+        return estimatedMaxHours;
+    }
+
+    public String getPriceUnit() {
+        return priceUnit;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
     }
 }

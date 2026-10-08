@@ -29,7 +29,7 @@ class VisionPipelineTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
-            DockerImageName.parse("pgvector/pgvector:pg16").asCompatibleSubstituteFor("postgres"));
+            DockerImageName.parse("postgres:16"));
 
     @DynamicPropertySource
     static void datasource(DynamicPropertyRegistry registry) {
