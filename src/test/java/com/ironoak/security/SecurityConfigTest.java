@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -62,26 +63,27 @@ class SecurityConfigTest {
                 passwordEncoder.encode("correct-horse"), "Store Owner"));
     }
 
-    // The controllers are still stubs, so a permitted route reaches the dispatcher and
-    // 404s. 404 means "security let it through" - which is exactly what is under test.
-    private static final int PASSED_SECURITY = 404;
+    // These tests only ask whether security let the request through, not whether the
+    // controller was happy with it: any status except 401/403 means it got past the filter.
+    private static final ResultMatcher PASSED_SECURITY = result ->
+            assertThat(result.getResponse().getStatus()).isNotIn(401, 403);
 
     @Test
     void storefrontBrowsingIsPublic() throws Exception {
         mockMvc.perform(get("/api/products"))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
         mockMvc.perform(get("/api/services/plumbing"))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
         mockMvc.perform(get("/api/materials"))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
     }
 
     @Test
     void piperAndGuestCheckoutArePublic() throws Exception {
         mockMvc.perform(post("/api/chat/messages").contentType("application/json").content("{}"))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
         mockMvc.perform(post("/api/orders").contentType("application/json").content("{}"))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
     }
 
     @Test
@@ -97,7 +99,7 @@ class SecurityConfigTest {
         String token = jwtService.issueToken("owner");
 
         mockMvc.perform(get("/api/dashboard/kpis").header("Authorization", "Bearer " + token))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
     }
 
     @Test
@@ -133,7 +135,7 @@ class SecurityConfigTest {
         assertThat(jwtService.extractUsername(token)).contains("owner");
 
         mockMvc.perform(get("/api/dashboard/kpis").header("Authorization", "Bearer " + token))
-                .andExpect(status().is(PASSED_SECURITY));
+                .andExpect(PASSED_SECURITY);
 
         assertThat(adminUsers.findByUsername("owner").orElseThrow().getLastLoginAt()).isNotNull();
     }
