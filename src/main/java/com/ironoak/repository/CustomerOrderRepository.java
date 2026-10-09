@@ -19,6 +19,9 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Lo
     @EntityGraph(attributePaths = "items")
     Optional<CustomerOrder> findWithItemsById(Long id);
 
+    @EntityGraph(attributePaths = "items")
+    Optional<CustomerOrder> findByIdempotencyKey(String idempotencyKey);
+
     Page<CustomerOrder> findByStatus(OrderStatus status, Pageable pageable);
 
     Page<CustomerOrder> findByCustomerId(Long customerId, Pageable pageable);
