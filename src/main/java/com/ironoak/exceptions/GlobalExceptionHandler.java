@@ -23,6 +23,11 @@ public class GlobalExceptionHandler {
         return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ProblemDetail duplicate(DuplicateResourceException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidOrderException.class)
     public ProblemDetail invalidOrder(InvalidOrderException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
