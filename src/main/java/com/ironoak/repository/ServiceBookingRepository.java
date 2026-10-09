@@ -37,4 +37,6 @@ public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, 
     Page<ServiceBooking> findAll(Specification<ServiceBooking> spec, Pageable pageable);
 
     long countByStatus(BookingStatus status);
+
+    boolean existsByCustomerId(Long customerId);
 }

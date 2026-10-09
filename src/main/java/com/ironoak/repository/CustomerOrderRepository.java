@@ -33,4 +33,6 @@ public interface CustomerOrderRepository extends JpaRepository<CustomerOrder, Lo
 
     @Query("select coalesce(sum(o.totalAmount), 0) from CustomerOrder o where o.status = :status")
     BigDecimal sumTotalByStatus(@Param("status") OrderStatus status);
+
+    boolean existsByCustomerId(Long customerId);
 }

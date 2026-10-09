@@ -26,4 +26,6 @@ public interface WarrantyClaimRepository extends JpaRepository<WarrantyClaim, Lo
     Page<WarrantyClaim> findByStatus(ClaimStatus status, Pageable pageable);
 
     long countByStatus(ClaimStatus status);
+
+    boolean existsByCustomerId(Long customerId);
 }

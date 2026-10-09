@@ -19,4 +19,6 @@ public interface SupportTicketRepository extends JpaRepository<SupportTicket, Lo
     List<SupportTicket> findByChatSessionId(Long chatSessionId);
 
     long countByStatus(TicketStatus status);
+
+    boolean existsByCustomerId(Long customerId);
 }
