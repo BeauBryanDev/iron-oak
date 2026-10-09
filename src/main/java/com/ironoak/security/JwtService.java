@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 /** Issues and verifies the HS256 tokens used for admin dashboard access. */
 @Service
@@ -35,12 +36,21 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
+    /** A verified access token: who it names and when it was issued. */
+    public record AccessToken(String username, Instant issuedAt) {
+    }
+
+    private static final String TOKEN_USE = "token_use";
+    private static final String ACCESS = "access";
+
     public String issueToken(String username) {
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(properties.getExpirationMinutes() * 60);
         return Jwts.builder()
                 .subject(username)
                 .issuer("iron-oak")
+                .id(UUID.randomUUID().toString())
+                .claim(TOKEN_USE, ACCESS)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(expiry))
                 .signWith(signingKey)
@@ -48,22 +58,31 @@ public class JwtService {
     }
 
     /**
-     * Returns the subject if the token is well-formed, correctly signed and unexpired,
-     * otherwise empty. Never throws - an invalid token is an authentication outcome,
-     * not an exceptional condition.
+     * Returns the token's subject and issue time if it is well-formed, correctly signed with
+     * HS256, unexpired and marked as an access token; otherwise empty. Never throws - an
+     * invalid token is an authentication outcome, not an exceptional condition.
      */
-    public Optional<String> extractUsername(String token) {
+    public Optional<AccessToken> parse(String token) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(signingKey)
                     .requireIssuer("iron-oak")
+                    .require(TOKEN_USE, ACCESS)
+                    .clockSkewSeconds(30)
                     .build()
                     .parseSignedClaims(token)
                     .getPayload();
-            return Optional.ofNullable(claims.getSubject());
+            if (claims.getSubject() == null || claims.getIssuedAt() == null) {
+                return Optional.empty();
+            }
+            return Optional.of(new AccessToken(claims.getSubject(), claims.getIssuedAt().toInstant()));
         } catch (JwtException | IllegalArgumentException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<String> extractUsername(String token) {
+        return parse(token).map(AccessToken::username);
     }
 
     public long getExpirationMinutes() {
