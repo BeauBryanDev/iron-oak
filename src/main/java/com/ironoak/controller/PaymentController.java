@@ -1,5 +1,10 @@
 package com.ironoak.controller;
 
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedModel;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
+import com.ironoak.dto.request.PaymentFilter;
 import com.ironoak.dto.request.CreatePaymentRequest;
 import com.ironoak.dto.request.UpdatePaymentStatusRequest;
 import com.ironoak.dto.response.PaymentResponse;
@@ -33,6 +38,13 @@ public class PaymentController {
     @ResponseStatus(HttpStatus.CREATED)
     public PaymentResponse create(@Valid @RequestBody CreatePaymentRequest request) {
         return payments.create(request);
+    }
+
+    @GetMapping("/api/admin/payments")
+    public PagedModel<PaymentResponse> list(
+            PaymentFilter filter,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return new PagedModel<>(payments.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/payments/{id}")

@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.domain.enums.PricingType;
 import com.ironoak.dto.request.ServiceOfferingRequest;
 import com.ironoak.dto.request.UpdateActiveRequest;
 import com.ironoak.dto.request.UpdateToolCategoryRequest;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,8 +46,12 @@ public class AdminServiceOfferingController {
     }
 
     @GetMapping("/services")
-    public List<AdminServiceOfferingResponse> list() {
-        return services.list();
+    public List<AdminServiceOfferingResponse> list(
+            @RequestParam(name = "q", required = false) String search,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) PricingType pricingType,
+            @RequestParam(required = false) Boolean active) {
+        return services.list(search, categoryId, pricingType, active);
     }
 
     @GetMapping("/services/{id}")

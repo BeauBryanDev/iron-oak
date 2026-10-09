@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.WarrantyClaimFilter;
 import com.ironoak.domain.enums.ClaimStatus;
 import com.ironoak.dto.request.CreateWarrantyClaimRequest;
 import com.ironoak.dto.request.UpdateWarrantyClaimStatusRequest;
@@ -50,9 +51,9 @@ public class WarrantyClaimController {
 
     @GetMapping("/api/admin/warranty-claims")
     public PagedModel<WarrantyClaimResponse> list(
-            @RequestParam(required = false) ClaimStatus status,
+            WarrantyClaimFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return new PagedModel<>(claims.list(status, pageable));
+        return new PagedModel<>(claims.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/warranty-claims/{id}")

@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.ComplaintFilter;
 import com.ironoak.domain.enums.ComplaintStatus;
 import com.ironoak.dto.request.ComplaintRequest;
 import com.ironoak.dto.request.UpdateComplaintStatusRequest;
@@ -41,9 +42,9 @@ public class ComplaintController {
 
     @GetMapping("/api/admin/complaints")
     public PagedModel<ComplaintResponse> list(
-            @RequestParam(required = false) ComplaintStatus status,
+            ComplaintFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return new PagedModel<>(complaints.list(status, pageable));
+        return new PagedModel<>(complaints.list(filter, pageable));
     }
 
     @PatchMapping("/api/admin/complaints/{id}/status")

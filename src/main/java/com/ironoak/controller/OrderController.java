@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.OrderFilter;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
 import com.ironoak.dto.request.CreateOrderRequest;
@@ -56,10 +57,10 @@ public class OrderController {
 
     @GetMapping("/api/admin/orders")
     public PagedModel<OrderResponse> list(
-            @RequestParam(required = false) OrderStatus status,
+            OrderFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
             Pageable pageable) {
-        return new PagedModel<>(orders.list(status, pageable));
+        return new PagedModel<>(orders.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/orders/{id}")

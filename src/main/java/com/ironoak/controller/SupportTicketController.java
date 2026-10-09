@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.SupportTicketFilter;
 import com.ironoak.domain.enums.TicketStatus;
 import com.ironoak.dto.request.CreateSupportTicketRequest;
 import com.ironoak.dto.request.UpdateSupportTicketStatusRequest;
@@ -38,9 +39,9 @@ public class SupportTicketController {
 
     @GetMapping("/api/admin/support-tickets")
     public PagedModel<SupportTicketResponse> list(
-            @RequestParam(required = false) TicketStatus status,
+            SupportTicketFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return new PagedModel<>(tickets.list(status, pageable));
+        return new PagedModel<>(tickets.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/support-tickets/{id}")

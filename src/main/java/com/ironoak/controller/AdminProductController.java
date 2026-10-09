@@ -37,9 +37,11 @@ public class AdminProductController {
     public PagedModel<AdminProductResponse> list(
             @RequestParam(name = "q", required = false) String search,
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) Long toolCategoryId,
             @RequestParam(required = false) Boolean active,
+            @RequestParam(required = false) Integer maxStock,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        return new PagedModel<>(products.list(search, category, active, pageable));
+        return new PagedModel<>(products.list(search, category, toolCategoryId, active, maxStock, pageable));
     }
 
     @GetMapping("/{id}")

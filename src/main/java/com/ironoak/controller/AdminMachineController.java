@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,8 +31,10 @@ public class AdminMachineController {
     }
 
     @GetMapping
-    public List<AdminMillingMachineResponse> list() {
-        return machines.list();
+    public List<AdminMillingMachineResponse> list(
+            @RequestParam(name = "q", required = false) String search,
+            @RequestParam(required = false) Boolean active) {
+        return machines.list(search, active);
     }
 
     @GetMapping("/{id}")

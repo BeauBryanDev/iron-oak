@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.BookingFilter;
 import com.ironoak.domain.enums.BookingStatus;
 import com.ironoak.dto.request.CancelBookingRequest;
 import com.ironoak.dto.request.CreateBookingRequest;
@@ -66,9 +67,9 @@ public class BookingController {
 
     @GetMapping("/api/admin/bookings")
     public PagedModel<BookingResponse> queue(
-            @RequestParam(required = false) List<BookingStatus> status,
-            @PageableDefault(size = 20) Pageable pageable) {
-        return new PagedModel<>(bookings.queue(status, pageable));
+            BookingFilter filter,
+            @PageableDefault(size = 20, sort = "scheduledAt") Pageable pageable) {
+        return new PagedModel<>(bookings.queue(filter, pageable));
     }
 
     @GetMapping("/api/admin/bookings/{id}")
