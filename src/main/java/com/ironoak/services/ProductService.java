@@ -18,13 +18,18 @@ public class ProductService {
     private final ProductRepository products;
     private final ProductMapper mapper;
 
-    public ProductService(ProductRepository products, ProductMapper mapper) {
+    public ProductService(ProductRepository products,
+            ProductMapper mapper) {
         this.products = products;
         this.mapper = mapper;
     }
 
-    /** Active products, optionally narrowed by storefront category or a name search. */
-    public Page<ProductResponse> list(String category, String search, Pageable pageable) {
+    /**
+     * Active products, optionally narrowed by storefront category or a name search.
+     */
+    public Page<ProductResponse> list(String category,
+            String search,
+            Pageable pageable) {
         if (search != null && !search.isBlank()) {
             return products.findByNameContainingIgnoreCaseAndIsActiveTrue(search.trim(), pageable)
                     .map(mapper::toResponse);
@@ -53,7 +58,9 @@ public class ProductService {
         return products.findActiveCategories();
     }
 
-    /** Products matching a vision prediction label (a tool_category.model_label). */
+    /**
+     * Products matching a vision prediction label (a tool_category.model_label).
+     */
     public List<ProductResponse> findByVisionLabel(String modelLabel) {
         return mapper.toResponses(products.findByVisionNameAndIsActiveTrue(modelLabel));
     }

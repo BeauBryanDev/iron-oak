@@ -16,7 +16,6 @@ import com.ironoak.exceptions.OutOfStockException;
 import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.mapper.OrderMapper;
 import com.ironoak.repository.CustomerOrderRepository;
-import com.ironoak.repository.CustomerRepository;
 import com.ironoak.repository.MillingMachineRepository;
 import com.ironoak.repository.ProductRepository;
 import com.ironoak.repository.ServiceOfferingRepository;
@@ -44,14 +43,14 @@ public class OrderService {
             OrderStatus.CANCELLED, Set.of());
 
     private final CustomerOrderRepository orders;
-    private final CustomerRepository customers;
+    private final CustomerService customers;
     private final ProductRepository products;
     private final ServiceOfferingRepository serviceOfferings;
     private final MillingMachineRepository machines;
     private final OrderMapper mapper;
 
     public OrderService(CustomerOrderRepository orders,
-            CustomerRepository customers,
+            CustomerService customers,
             ProductRepository products,
             ServiceOfferingRepository serviceOfferings,
             MillingMachineRepository machines,
@@ -72,6 +71,22 @@ public class OrderService {
      * order back, including stock already taken for earlier lines.
      */
     public OrderResponse create(CreateOrderRequest request, OrderChannel channel) {
+        return create(request, channel, null);
+    }
+
+    /**
+     * Same as above, but safe to retry: a repeated idempotencyKey returns the order the
+     * first call created instead of taking stock a second time.
+     */
+    public OrderResponse create(CreateOrderRequest request, OrderChannel channel, String idempotencyKey) {
+        String key = idempotencyKey == null || idempotencyKey.isBlank() ? null : idempotencyKey.trim();
+        if (key != null) {
+            var existing = orders.findByIdempotencyKey(key);
+            if (existing.isPresent()) {
+                return mapper.toResponse(existing.get());
+            }
+        }
+
         List<OrderItem> items = new ArrayList<>();
         for (CreateOrderRequest.Item line : request.items()) {
             items.add(buildItem(line));
@@ -86,6 +101,7 @@ public class OrderService {
         }
 
         CustomerOrder order = new CustomerOrder(findOrCreateCustomer(request), channel);
+        order.setIdempotencyKey(key);
         items.forEach(order::addItem);
         return mapper.toResponse(orders.save(order));
     }
@@ -93,6 +109,15 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponse get(Long id) {
         return orders.findWithItemsById(id)
+                .map(mapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+    }
+
+    /** For the customer: the order is only visible with the email it was placed under. */
+    @Transactional(readOnly = true)
+    public OrderResponse getForCustomer(Long id, String customerEmail) {
+        return orders.findWithItemsById(id)
+                .filter(o -> CustomerService.hasEmail(o.getCustomer(), customerEmail))
                 .map(mapper::toResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
     }
@@ -174,13 +199,6 @@ public class OrderService {
         if (request.customerName() == null || request.customerName().isBlank()) {
             return null;
         }
-        if (request.customerEmail() != null && !request.customerEmail().isBlank()) {
-            var existing = customers.findFirstByEmailIgnoreCase(request.customerEmail());
-            if (existing.isPresent()) {
-                return existing.get();
-            }
-        }
-        return customers.save(new Customer(request.customerName().trim(),
-                request.customerEmail(), request.customerPhone()));
+        return customers.findOrCreate(request.customerName(), request.customerEmail(), request.customerPhone());
     }
 }
