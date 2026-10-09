@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/** Reads lazy associations (items, customer, referenced product/service/machine); call inside a transaction. */
+/**
+ * Reads lazy associations (items, customer, referenced
+ * product/service/machine); call inside a transaction.
+ */
 @Component
 public class OrderMapper {
 
