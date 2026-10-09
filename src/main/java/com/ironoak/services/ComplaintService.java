@@ -1,5 +1,7 @@
 package com.ironoak.services;
 
+import org.springframework.data.jpa.domain.Specification;
+import com.ironoak.dto.request.ComplaintFilter;
 import com.ironoak.domain.Complaint;
 import com.ironoak.domain.enums.ComplaintStatus;
 import com.ironoak.dto.request.ComplaintRequest;
@@ -31,11 +33,15 @@ public class ComplaintService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ComplaintResponse> list(ComplaintStatus status, Pageable pageable) {
-        Page<Complaint> page = status == null
-                ? complaints.findAll(pageable)
-                : complaints.findByStatus(status, pageable);
-        return page.map(mapper::toResponse);
+    public Page<ComplaintResponse> list(ComplaintFilter filter, Pageable pageable) {
+        Specification<Complaint> spec = Specification.allOf(
+                FilterSpecs.in("status", filter.status()),
+                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                !FilterSpecs.hasText(filter.q()) ? null
+                        : (root, query, cb) -> FilterSpecs.anyContains(cb, filter.q(),
+                                root.<String>get("customerName"), root.<String>get("product"),
+                                root.<String>get("description")));
+        return complaints.findAll(spec, pageable).map(mapper::toResponse);
     }
 
     public ComplaintResponse updateStatus(Long id, ComplaintStatus status) {

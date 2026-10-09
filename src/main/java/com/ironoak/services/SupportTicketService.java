@@ -1,5 +1,7 @@
 package com.ironoak.services;
 
+import org.springframework.data.jpa.domain.Specification;
+import com.ironoak.dto.request.SupportTicketFilter;
 import com.ironoak.domain.ChatSession;
 import com.ironoak.domain.Customer;
 import com.ironoak.domain.SupportTicket;
@@ -73,10 +75,16 @@ public class SupportTicketService {
         }
 
         @Transactional(readOnly = true)
-        public Page<SupportTicketResponse> list(TicketStatus status, Pageable pageable) {
-                Page<SupportTicket> page = status == null ? tickets.findAll(pageable)
-                                : tickets.findByStatus(status, pageable);
-                return page.map(mapper::toResponse);
+        public Page<SupportTicketResponse> list(SupportTicketFilter filter, Pageable pageable) {
+                Specification<SupportTicket> spec = Specification.allOf(
+                                FilterSpecs.in("status", filter.status()),
+                                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                                !FilterSpecs.hasText(filter.q()) ? null
+                                                : (root, query, cb) -> FilterSpecs.anyContains(cb, filter.q(),
+                                                                root.<String>get("customerEmail"),
+                                                                root.<String>get("reason"),
+                                                                root.<String>get("summary")));
+                return tickets.findAll(spec, pageable).map(mapper::toResponse);
         }
 
         public SupportTicketResponse updateStatus(Long id, TicketStatus newStatus) {

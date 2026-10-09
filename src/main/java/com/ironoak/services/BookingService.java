@@ -1,5 +1,9 @@
 package com.ironoak.services;
 
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Join;
+import org.springframework.data.jpa.domain.Specification;
+import com.ironoak.dto.request.BookingFilter;
 import com.ironoak.domain.Customer;
 import com.ironoak.domain.ServiceBooking;
 import com.ironoak.domain.ServiceOffering;
@@ -103,9 +107,29 @@ public class BookingService {
 
     /** The technician queue. With no statuses given, shows the open ones. */
     @Transactional(readOnly = true)
-    public Page<BookingResponse> queue(Collection<BookingStatus> statuses, Pageable pageable) {
-        Collection<BookingStatus> filter = statuses == null || statuses.isEmpty() ? OPEN : statuses;
-        return bookings.findByStatusInOrderByScheduledAtAsc(filter, pageable).map(mapper::toResponse);
+    public Page<BookingResponse> queue(BookingFilter filter, Pageable pageable) {
+        Collection<BookingStatus> statuses = filter.status() == null || filter.status().isEmpty() ? OPEN : filter.status();
+        Specification<ServiceBooking> spec = Specification.allOf(
+                FilterSpecs.in("status", statuses),
+                FilterSpecs.dateRange("scheduledAt", filter.from(), filter.to()),
+                filter.serviceId() == null ? null
+                        : (root, query, cb) -> cb.equal(root.get("serviceOffering").get("id"), filter.serviceId()),
+                filter.categoryId() == null ? null
+                        : (root, query, cb) -> cb.equal(
+                                root.get("serviceOffering").get("category").get("id"), filter.categoryId()),
+                matching(filter.q()));
+        return bookings.findAll(spec, pageable).map(mapper::toResponse);
+    }
+
+    private static Specification<ServiceBooking> matching(String search) {
+        if (!FilterSpecs.hasText(search)) {
+            return null;
+        }
+        return (root, query, cb) -> {
+            Join<ServiceBooking, Customer> customer = root.join("customer", JoinType.LEFT);
+            return FilterSpecs.anyContains(cb, search, customer.<String>get("name"), customer.<String>get("email"),
+                    root.<String>get("locationAddress"), root.<String>get("machineModel"));
+        };
     }
 
     public BookingResponse updateStatus(Long id, BookingStatus newStatus) {

@@ -1,5 +1,10 @@
 package com.ironoak.services;
 
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+import com.ironoak.dto.request.PaymentFilter;
 import com.ironoak.domain.CustomerOrder;
 import com.ironoak.domain.Payment;
 import com.ironoak.domain.enums.OrderStatus;
@@ -75,6 +80,29 @@ public class PaymentService {
             throw new BusinessRuleException("Order " + order.getId() + " has nothing left to pay");
         }
         return mapper.toResponse(payments.saveAndFlush(new Payment(order, due, provider, reference)));
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PaymentResponse> list(PaymentFilter filter, Pageable pageable) {
+        Specification<Payment> spec = Specification.allOf(
+                FilterSpecs.in("status", filter.status()),
+                FilterSpecs.hasText(filter.provider()) ? FilterSpecs.equal("provider", filter.provider().trim()) : null,
+                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                matching(filter.q()));
+        return payments.findAll(spec, pageable).map(mapper::toResponse);
+    }
+
+    private static Specification<Payment> matching(String search) {
+        if (!FilterSpecs.hasText(search)) {
+            return null;
+        }
+        return (root, query, cb) -> {
+            Predicate reference = FilterSpecs.anyContains(cb, search, root.<String>get("providerReference"));
+            String trimmed = search.trim();
+            return trimmed.matches("\\d{1,18}")
+                    ? cb.or(reference, cb.equal(root.get("order").get("id"), Long.parseLong(trimmed)))
+                    : reference;
+        };
     }
 
     @Transactional(readOnly = true)

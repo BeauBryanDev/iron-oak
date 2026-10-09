@@ -65,6 +65,10 @@ public class Customer {
         return phone;
     }
 
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public String getAddress() {
         return address;
     }

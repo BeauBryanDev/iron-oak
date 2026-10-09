@@ -1,5 +1,12 @@
 package com.ironoak.services;
 
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
+import org.springframework.data.jpa.domain.Specification;
+import com.ironoak.dto.request.OrderFilter;
 import com.ironoak.domain.Customer;
 import com.ironoak.domain.CustomerOrder;
 import com.ironoak.domain.MillingMachine;
@@ -127,11 +134,40 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Page<OrderResponse> list(OrderStatus status, Pageable pageable) {
-        Page<CustomerOrder> page = status == null
-                ? orders.findAll(pageable)
-                : orders.findByStatus(status, pageable);
-        return page.map(mapper::toResponse);
+    public Page<OrderResponse> list(OrderFilter filter, Pageable pageable) {
+        Specification<CustomerOrder> spec = Specification.allOf(
+                FilterSpecs.in("status", filter.status()),
+                FilterSpecs.equal("channel", filter.channel()),
+                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                withItemType(filter.itemType()),
+                matching(filter.q()));
+        return orders.findAll(spec, pageable).map(mapper::toResponse);
+    }
+
+    private static Specification<CustomerOrder> withItemType(OrderItemType type) {
+        if (type == null) {
+            return null;
+        }
+        return (root, query, cb) -> {
+            Subquery<Long> lines = query.subquery(Long.class);
+            Root<OrderItem> item = lines.from(OrderItem.class);
+            lines.select(item.get("id")).where(
+                    cb.equal(item.get("order"), root),
+                    cb.equal(item.get("itemType"), type));
+            return cb.exists(lines);
+        };
+    }
+
+    private static Specification<CustomerOrder> matching(String search) {
+        if (!FilterSpecs.hasText(search)) {
+            return null;
+        }
+        return (root, query, cb) -> {
+            Join<CustomerOrder, Customer> customer = root.join("customer", JoinType.LEFT);
+            Predicate text = FilterSpecs.anyContains(cb, search, customer.<String>get("name"), customer.<String>get("email"));
+            String trimmed = search.trim();
+            return trimmed.matches("\\d{1,18}") ? cb.or(text, cb.equal(root.get("id"), Long.parseLong(trimmed))) : text;
+        };
     }
 
     /** Cancelling returns the stock taken for product lines. */

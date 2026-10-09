@@ -48,7 +48,8 @@ public class AdminProductService {
 
     /** All products including inactive ones; each filter is optional. */
     @Transactional(readOnly = true)
-    public Page<AdminProductResponse> list(String search, String category, Boolean active, Pageable pageable) {
+    public Page<AdminProductResponse> list(String search, String category, Long toolCategoryId, Boolean active,
+                                           Integer maxStock, Pageable pageable) {
         Specification<Product> spec = (root, query, cb) -> {
             List<Predicate> filters = new ArrayList<>();
             if (search != null && !search.isBlank()) {
@@ -61,8 +62,14 @@ public class AdminProductService {
             if (category != null && !category.isBlank()) {
                 filters.add(cb.equal(root.get("category"), category.trim()));
             }
+            if (toolCategoryId != null) {
+                filters.add(cb.equal(root.get("toolCategory").get("id"), toolCategoryId));
+            }
             if (active != null) {
                 filters.add(cb.equal(root.get("isActive"), active));
+            }
+            if (maxStock != null) {
+                filters.add(cb.lessThanOrEqualTo(root.get("stockQuantity"), maxStock)); // low-stock view
             }
             return cb.and(filters.toArray(new Predicate[0]));
         };

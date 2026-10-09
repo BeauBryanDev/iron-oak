@@ -9,6 +9,7 @@ import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.mapper.AdminCatalogMapper;
 import com.ironoak.repository.MillingMachineRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,8 +29,13 @@ public class AdminMachineService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminMillingMachineResponse> list() {
-        return machines.findAll(Sort.by("price")).stream().map(mapper::toResponse).toList();
+    public List<AdminMillingMachineResponse> list(String search, Boolean active) {
+        Specification<MillingMachine> spec = Specification.allOf(
+                FilterSpecs.equal("isActive", active),
+                !FilterSpecs.hasText(search) ? null
+                        : (root, query, cb) -> FilterSpecs.anyContains(cb, search,
+                                root.<String>get("name"), root.<String>get("modelCode")));
+        return machines.findAll(spec, Sort.by("price")).stream().map(mapper::toResponse).toList();
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,11 @@
 package com.ironoak.services;
 
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Join;
+import com.ironoak.domain.Customer;
+import org.springframework.data.jpa.domain.Specification;
+import com.ironoak.dto.request.WarrantyClaimFilter;
 import com.ironoak.domain.CustomerOrder;
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.WarrantyClaim;
@@ -116,9 +122,27 @@ public class WarrantyClaimService {
     }
 
     @Transactional(readOnly = true)
-    public Page<WarrantyClaimResponse> list(ClaimStatus status, Pageable pageable) {
-        Page<WarrantyClaim> page = status == null ? claims.findAll(pageable) : claims.findByStatus(status, pageable);
-        return page.map(mapper::toResponse);
+    public Page<WarrantyClaimResponse> list(WarrantyClaimFilter filter, Pageable pageable) {
+        Specification<WarrantyClaim> spec = Specification.allOf(
+                FilterSpecs.in("status", filter.status()),
+                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                matching(filter.q()));
+        return claims.findAll(spec, pageable).map(mapper::toResponse);
+    }
+
+    private static Specification<WarrantyClaim> matching(String search) {
+        if (!FilterSpecs.hasText(search)) {
+            return null;
+        }
+        return (root, query, cb) -> {
+            Join<WarrantyClaim, Customer> customer = root.join("customer", JoinType.LEFT);
+            Predicate text = FilterSpecs.anyContains(cb, search, customer.<String>get("name"),
+                    customer.<String>get("email"), root.<String>get("description"));
+            String trimmed = search.trim();
+            return trimmed.matches("\\d{1,18}")
+                    ? cb.or(text, cb.equal(root.get("order").get("id"), Long.parseLong(trimmed)))
+                    : text;
+        };
     }
 
     public WarrantyClaimResponse updateStatus(Long id, UpdateWarrantyClaimStatusRequest request) {

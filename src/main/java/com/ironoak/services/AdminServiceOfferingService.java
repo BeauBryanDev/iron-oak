@@ -13,6 +13,7 @@ import com.ironoak.mapper.AdminCatalogMapper;
 import com.ironoak.repository.ServiceOfferingCategoryRepository;
 import com.ironoak.repository.ServiceOfferingRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +38,16 @@ public class AdminServiceOfferingService {
     }
 
     @Transactional(readOnly = true)
-    public List<AdminServiceOfferingResponse> list() {
-        return services.findAll(Sort.by("category.name", "name")).stream().map(mapper::toResponse).toList();
+    public List<AdminServiceOfferingResponse> list(String search, Long categoryId, PricingType pricingType,
+                                                   Boolean active) {
+        Specification<ServiceOffering> spec = Specification.allOf(
+                FilterSpecs.equal("isActive", active),
+                FilterSpecs.equal("pricingType", pricingType),
+                categoryId == null ? null : (root, query, cb) -> cb.equal(root.get("category").get("id"), categoryId),
+                !FilterSpecs.hasText(search) ? null
+                        : (root, query, cb) -> FilterSpecs.anyContains(cb, search,
+                                root.<String>get("name"), root.<String>get("code")));
+        return services.findAll(spec, Sort.by("category.name", "name")).stream().map(mapper::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
