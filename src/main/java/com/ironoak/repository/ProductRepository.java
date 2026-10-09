@@ -4,6 +4,7 @@ import com.ironoak.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,7 +12,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
 
     Optional<Product> findBySku(String sku);
 
@@ -45,6 +46,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Product p SET p.stockQuantity = p.stockQuantity + :quantity WHERE p.id = :id")
     int incrementStock(@Param("id") Long id, @Param("quantity") int quantity);
+
+    /**
+     * Staff stock correction, positive or negative. Returns 0 when it would take
+     * stock below zero. Unlike decrementStock it also works on inactive products.
+     */
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE Product p SET p.stockQuantity = p.stockQuantity + :delta WHERE p.id = :id AND p.stockQuantity + :delta >= 0")
+    int adjustStock(@Param("id") Long id, @Param("delta") int delta);
 
     /** Method to search by VisionName + category */
     List<Product> findByVisionNameAndCategoryAndIsActiveTrue(String visionName, String category);
