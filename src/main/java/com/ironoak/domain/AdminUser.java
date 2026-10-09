@@ -43,6 +43,10 @@ public class AdminUser {
     @Column(name = "last_login_at")
     private OffsetDateTime lastLoginAt;
 
+    /** Access tokens issued before this moment are no longer accepted. */
+    @Column(name = "password_changed_at", nullable = false)
+    private OffsetDateTime passwordChangedAt;
+
     protected AdminUser() {
     }
 
@@ -55,6 +59,7 @@ public class AdminUser {
         this.passwordHash = passwordHash;
         this.fullName = fullName;
         this.createdAt = OffsetDateTime.now();
+        this.passwordChangedAt = this.createdAt;
     }
 
     public Long getId() {
@@ -79,6 +84,20 @@ public class AdminUser {
 
     public OffsetDateTime getLastLoginAt() {
         return lastLoginAt;
+    }
+
+    /** Stores a new hash and invalidates every access token issued before now. */
+    public void changePassword(String newPasswordHash) {
+        this.passwordHash = newPasswordHash;
+        this.passwordChangedAt = OffsetDateTime.now();
+    }
+
+    public OffsetDateTime getPasswordChangedAt() {
+        return passwordChangedAt;
+    }
+
+    public void setPasswordChangedAt(OffsetDateTime passwordChangedAt) {
+        this.passwordChangedAt = passwordChangedAt;
     }
 
     public void recordLogin() {

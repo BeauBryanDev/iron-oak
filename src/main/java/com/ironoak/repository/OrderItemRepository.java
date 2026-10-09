@@ -14,7 +14,10 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
     List<OrderItem> findByOrderId(Long orderId);
 
-    /** Best-selling products by units across orders in the given status, for the dashboard. */
+    /**
+     * Best-selling products by units across orders in the given status, for the
+     * dashboard.
+     */
     @Query("""
             select i.product.id as productId, i.product.name as name, sum(i.quantity) as unitsSold
             from OrderItem i
@@ -24,7 +27,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
             order by sum(i.quantity) desc
             """)
     List<TopProduct> findTopSellingProducts(@Param("itemType") OrderItemType itemType,
-                                            @Param("status") OrderStatus status, Pageable pageable);
+            @Param("status") OrderStatus status,
+            Pageable pageable);
 
     default List<TopProduct> findTopSellingProducts(OrderStatus status, Pageable pageable) {
         return findTopSellingProducts(OrderItemType.PRODUCT, status, pageable);
