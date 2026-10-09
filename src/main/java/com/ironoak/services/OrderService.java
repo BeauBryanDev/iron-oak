@@ -75,7 +75,8 @@ public class OrderService {
     }
 
     /**
-     * Same as above, but safe to retry: a repeated idempotencyKey returns the order the
+     * Same as above, but safe to retry: a repeated idempotencyKey returns the order
+     * the
      * first call created instead of taking stock a second time.
      */
     public OrderResponse create(CreateOrderRequest request, OrderChannel channel, String idempotencyKey) {
@@ -113,7 +114,10 @@ public class OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
     }
 
-    /** For the customer: the order is only visible with the email it was placed under. */
+    /**
+     * For the customer: the order is only visible with the email it was placed
+     * under.
+     */
     @Transactional(readOnly = true)
     public OrderResponse getForCustomer(Long id, String customerEmail) {
         return orders.findWithItemsById(id)
@@ -134,6 +138,7 @@ public class OrderService {
     public OrderResponse updateStatus(Long id, OrderStatus newStatus) {
         CustomerOrder order = orders.findWithItemsById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+
         if (!TRANSITIONS.get(order.getStatus()).contains(newStatus)) {
             throw new InvalidOrderException(
                     "Cannot change order " + id + " from " + order.getStatus() + " to " + newStatus);
