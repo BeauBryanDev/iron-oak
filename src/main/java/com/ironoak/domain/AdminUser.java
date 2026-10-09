@@ -1,10 +1,12 @@
 package com.ironoak.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import java.time.OffsetDateTime;
 
 /**
- * Staff login for the dashboard. Deliberately separate from {@link Customer}: buyers
+ * Staff login for the dashboard. Deliberately separate from {@link Customer}:
+ * buyers
  * never authenticate, so there is no shared account hierarchy between the two.
  */
 @Entity
@@ -16,16 +18,23 @@ public class AdminUser {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 100)
+    @NotBlank
+    @Size(max = 100)
     private String username;
 
     @Column(nullable = false, unique = true, length = 200)
+    @NotBlank
+    @Size(max = 200)
     private String email;
 
     /** BCrypt hash - never the raw password. */
     @Column(name = "password_hash", nullable = false, length = 255)
+    @NotBlank
+    @Size(max = 255)
     private String passwordHash;
 
     @Column(name = "full_name", length = 200)
+    @Size(max = 200)
     private String fullName;
 
     @Column(name = "created_at", nullable = false)
@@ -37,7 +46,10 @@ public class AdminUser {
     protected AdminUser() {
     }
 
-    public AdminUser(String username, String email, String passwordHash, String fullName) {
+    public AdminUser(String username,
+            String email,
+            String passwordHash,
+            String fullName) {
         this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -71,5 +83,33 @@ public class AdminUser {
 
     public void recordLogin() {
         this.lastLoginAt = OffsetDateTime.now();
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setLastLoginAt(OffsetDateTime lastLoginAt) {
+        this.lastLoginAt = lastLoginAt;
     }
 }

@@ -3,6 +3,7 @@ package com.ironoak.domain;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -26,30 +27,32 @@ public class CustomerOrder {
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "status", nullable = false, 
-    columnDefinition = "order_status")
+    @Column(name = "status", nullable = false, columnDefinition = "order_status")
+    @NotNull
     private OrderStatus status;
 
     // lets the dashboard show what Piper closed on its own
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "channel", nullable = false, 
-    columnDefinition = "order_channel")
+    @Column(name = "channel", nullable = false, columnDefinition = "order_channel")
+    @NotNull
     private OrderChannel channel;
 
-    @Column(name = "total_amount", nullable = false, 
-    precision = 10, scale = 2)
+    @Column(name = "total_amount", nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin(value = "0.0")
     private BigDecimal totalAmount;
 
-    // Lets create_order be retried safely: the same key never creates a second order.
+    // Lets create_order be retried safely: the same key never creates a second
+    // order.
     @Column(name = "idempotency_key", unique = true, length = 100)
+    @Size(max = 100)
     private String idempotencyKey;
 
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL,
-     orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
     protected CustomerOrder() {
@@ -108,5 +111,25 @@ public class CustomerOrder {
 
     public List<OrderItem> getItems() {
         return items;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public void setChannel(OrderChannel channel) {
+        this.channel = channel;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

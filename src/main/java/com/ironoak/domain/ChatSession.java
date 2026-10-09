@@ -39,4 +39,16 @@ public class ChatSession {
     public OffsetDateTime getStartedAt() {
         return startedAt;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public void setStartedAt(OffsetDateTime startedAt) {
+        this.startedAt = startedAt;
+    }
 }

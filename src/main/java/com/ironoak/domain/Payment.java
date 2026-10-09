@@ -2,6 +2,7 @@ package com.ironoak.domain;
 
 import com.ironoak.domain.enums.PaymentStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -20,20 +21,26 @@ public class Payment {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
+    @NotNull
     private CustomerOrder order;
 
     @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @Positive
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "payment_status")
+    @NotNull
     private PaymentStatus status = PaymentStatus.PENDING;
 
     @Column(length = 50)
+    @Size(max = 50)
     private String provider;
 
     @Column(name = "provider_reference", length = 100)
+    @Size(max = 100)
     private String providerReference;
 
     @CreationTimestamp
@@ -46,7 +53,10 @@ public class Payment {
     protected Payment() {
     }
 
-    public Payment(CustomerOrder order, BigDecimal amount, String provider, String providerReference) {
+    public Payment(CustomerOrder order,
+            BigDecimal amount,
+            String provider,
+            String providerReference) {
         this.order = order;
         this.amount = amount;
         this.provider = provider;
@@ -92,5 +102,37 @@ public class Payment {
 
     public OffsetDateTime getPaidAt() {
         return paidAt;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setOrder(CustomerOrder order) {
+        this.order = order;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public void setStatus(PaymentStatus status) {
+        this.status = status;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public void setProviderReference(String providerReference) {
+        this.providerReference = providerReference;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setPaidAt(OffsetDateTime paidAt) {
+        this.paidAt = paidAt;
     }
 }

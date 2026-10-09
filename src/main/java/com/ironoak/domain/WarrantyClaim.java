@@ -2,6 +2,7 @@ package com.ironoak.domain;
 
 import com.ironoak.domain.enums.ClaimStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,8 +11,10 @@ import org.hibernate.type.SqlTypes;
 import java.time.OffsetDateTime;
 
 /**
- * A warranty claim on one order line. The database enforces that orderItemId belongs to
- * the order (composite foreign key) and that only one open claim exists per line.
+ * A warranty claim on one order line. The database enforces that orderItemId
+ * belongs to
+ * the order (composite foreign key) and that only one open claim exists per
+ * line.
  */
 @Entity
 @Table(name = "warranty_claim")
@@ -23,21 +26,26 @@ public class WarrantyClaim {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
+    @NotNull
     private Customer customer;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
+    @NotNull
     private CustomerOrder order;
 
     @Column(name = "order_item_id", nullable = false)
+    @NotNull
     private Long orderItemId;
 
     @Column(nullable = false, columnDefinition = "text")
+    @NotBlank
     private String description;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(nullable = false, columnDefinition = "claim_status")
+    @NotNull
     private ClaimStatus status = ClaimStatus.OPEN;
 
     @Column(name = "resolution_note", columnDefinition = "text")
@@ -57,7 +65,10 @@ public class WarrantyClaim {
     protected WarrantyClaim() {
     }
 
-    public WarrantyClaim(Customer customer, CustomerOrder order, Long orderItemId, String description) {
+    public WarrantyClaim(Customer customer,
+            CustomerOrder order,
+            Long orderItemId,
+            String description) {
         this.customer = customer;
         this.order = order;
         this.orderItemId = orderItemId;
@@ -120,5 +131,41 @@ public class WarrantyClaim {
 
     public OffsetDateTime getResolvedAt() {
         return resolvedAt;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public void setOrder(CustomerOrder order) {
+        this.order = order;
+    }
+
+    public void setOrderItemId(Long orderItemId) {
+        this.orderItemId = orderItemId;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setResolutionNote(String resolutionNote) {
+        this.resolutionNote = resolutionNote;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setResolvedAt(OffsetDateTime resolvedAt) {
+        this.resolvedAt = resolvedAt;
     }
 }

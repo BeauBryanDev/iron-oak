@@ -2,14 +2,17 @@ package com.ironoak.domain;
 
 import com.ironoak.domain.enums.OrderItemType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
 /**
- * One line of a mixed cart. itemType discriminates which of the three FK columns is
- * set; chk_item_reference in the schema enforces that exactly one of them is non-null.
+ * One line of a mixed cart. itemType discriminates which of the three FK
+ * columns is
+ * set; chk_item_reference in the schema enforces that exactly one of them is
+ * non-null.
  * quantity is a whole number of units (products, machines, service units).
  */
 @Entity
@@ -22,12 +25,13 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
+    @NotNull
     private CustomerOrder order;
 
     @Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "item_type", nullable = false, 
-    columnDefinition = "order_item_type")
+    @Column(name = "item_type", nullable = false, columnDefinition = "order_item_type")
+    @NotNull
     private OrderItemType itemType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -43,22 +47,30 @@ public class OrderItem {
     private MillingMachine millingMachine;
 
     @Column(nullable = false)
+    @NotNull
+    @Min(1)
     private Integer quantity;
 
     @Column(name = "estimated_hours", precision = 4, scale = 1)
     private BigDecimal estimatedHours;
 
-    @Column(name = "unit_price", nullable = false, 
-    precision = 10, scale = 2)
+    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin(value = "0.0")
     private BigDecimal unitPrice;
 
     @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    @DecimalMin(value = "0.0")
     private BigDecimal subtotal;
 
     protected OrderItem() {
     }
 
-    private OrderItem(OrderItemType itemType, int quantity, BigDecimal estimatedHours, BigDecimal unitPrice) {
+    private OrderItem(OrderItemType itemType,
+            int quantity,
+            BigDecimal estimatedHours,
+            BigDecimal unitPrice) {
         this.itemType = itemType;
         this.quantity = quantity;
         this.estimatedHours = estimatedHours;
@@ -78,10 +90,14 @@ public class OrderItem {
         return item;
     }
 
-    /** unitPrice is the price of one unit of the service: the fixed price, or hourly rate x hours. */
+    /**
+     * unitPrice is the price of one unit of the service: the fixed price, or hourly
+     * rate x hours.
+     */
     public static OrderItem ofService(ServiceOffering service, int quantity,
-                                      BigDecimal estimatedHours, BigDecimal unitPrice) {
-        OrderItem item = new OrderItem(OrderItemType.SERVICE, quantity, estimatedHours, unitPrice);
+            BigDecimal estimatedHours, BigDecimal unitPrice) {
+        OrderItem item = new OrderItem(OrderItemType.SERVICE,
+                quantity, estimatedHours, unitPrice);
         item.serviceOffering = service;
         return item;
     }
@@ -128,5 +144,45 @@ public class OrderItem {
 
     public BigDecimal getSubtotal() {
         return subtotal;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setOrder(CustomerOrder order) {
+        this.order = order;
+    }
+
+    public void setItemType(OrderItemType itemType) {
+        this.itemType = itemType;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
+    public void setServiceOffering(ServiceOffering serviceOffering) {
+        this.serviceOffering = serviceOffering;
+    }
+
+    public void setMillingMachine(MillingMachine millingMachine) {
+        this.millingMachine = millingMachine;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public void setEstimatedHours(BigDecimal estimatedHours) {
+        this.estimatedHours = estimatedHours;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public void setSubtotal(BigDecimal subtotal) {
+        this.subtotal = subtotal;
     }
 }
