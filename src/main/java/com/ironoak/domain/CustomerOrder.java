@@ -41,6 +41,10 @@ public class CustomerOrder {
     precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
+    // Lets create_order be retried safely: the same key never creates a second order.
+    @Column(name = "idempotency_key", unique = true, length = 100)
+    private String idempotencyKey;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
@@ -64,6 +68,14 @@ public class CustomerOrder {
         item.attachTo(this);
         items.add(item);
         totalAmount = totalAmount.add(item.getSubtotal());
+    }
+
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
+
+    public void setIdempotencyKey(String idempotencyKey) {
+        this.idempotencyKey = idempotencyKey;
     }
 
     public void setStatus(OrderStatus status) {

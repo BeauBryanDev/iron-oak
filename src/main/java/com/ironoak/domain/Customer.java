@@ -24,6 +24,9 @@ public class Customer {
     @Column(length = 50)
     private String phone;
 
+    @Column(columnDefinition = "text")
+    private String address;
+
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
@@ -32,7 +35,9 @@ public class Customer {
 
     public Customer(String name, String email, String phone) {
         this.name = name;
-        this.email = email;
+        // Stored lowercase: uq_customer_email is a unique index on lower(email). A blank
+        // email becomes null so that several customers without one do not collide.
+        this.email = email == null || email.isBlank() ? null : email.trim().toLowerCase();
         this.phone = phone;
         this.createdAt = OffsetDateTime.now();
     }
@@ -47,5 +52,17 @@ public class Customer {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }

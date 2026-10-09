@@ -22,8 +22,18 @@ public class ChatSession {
     protected ChatSession() {
     }
 
+    /** customer may be null: anonymous visitors can chat too. */
+    public ChatSession(Customer customer) {
+        this.customer = customer;
+        this.startedAt = OffsetDateTime.now();
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public Customer getCustomer() {
+        return customer;
     }
 
     public OffsetDateTime getStartedAt() {

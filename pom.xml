@@ -98,9 +98,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Spring AI - OpenAI chat + embeddings, tool-calling agent (Piper).
-             No VectorStore starter: pgvector similarity search is hand-written
-             in DocumentChunkRepository against the JPA DocumentChunk entity. -->
+        <!-- Spring AI - OpenAI chat + embeddings, tool-calling agent (Piper). -->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
@@ -111,14 +109,6 @@
             <groupId>com.microsoft.onnxruntime</groupId>
             <artifactId>onnxruntime</artifactId>
             <version>${onnxruntime.version}</version>
-        </dependency>
-
-        <!-- hibernate-vector maps pgvector's vector type to a Java float[], so the
-             embedding column is a real mapped field rather than an opaque blob. -->
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-vector</artifactId>
-            <version>${hibernate.version}</version>
         </dependency>
 
         <!-- .env loading - makes ${DB_PASSWORD}, ${OPENAI_API_KEY} etc. from the

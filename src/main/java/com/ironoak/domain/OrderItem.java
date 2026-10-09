@@ -94,6 +94,10 @@ public class OrderItem {
         return id;
     }
 
+    public CustomerOrder getOrder() {
+        return order;
+    }
+
     public OrderItemType getItemType() {
         return itemType;
     }
