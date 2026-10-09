@@ -30,16 +30,31 @@ spring:
       chat:
         options:
           model: ${GPT_MODEL}
-          temperature: 0.4
+          temperature: 0.3
           max-tokens: 1024
       embedding:
         options:
           model: ${EMBEDDING_MODEL}
-          dimensions: 1024
+          dimensions: 1536
+
+    vectorstore:
+      milvus:
+        client:
+          uri: ${MILVUS_URI}
+          token: ${MILVUS_TOKEN}
+        collection-name: piper-vector-store
+        embedding-dimension: 1536
+        metric-type: COSINE
+        initialize-schema: false
 
   security:
     filter:
       order: 10
+
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
 
   data:
     web:

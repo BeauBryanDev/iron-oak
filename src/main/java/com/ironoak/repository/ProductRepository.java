@@ -25,22 +25,27 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByVisionNameAndIsActiveTrue(String visionName);
 
     /** Distinct storefront categories, for the catalog sidebar. */
-    @Query("select distinct p.category from Product p where p.isActive = true order by p.category")
+    @Query("SELECT DISTINCT p.category FROM Product p WHERE p.isActive = true ORDER BY p.category")
     List<String> findActiveCategories();
 
     /**
      * Atomically takes stock. Returns 1 when the units were available and are now
-     * reserved, 0 when stock is insufficient - the caller maps 0 to OutOfStockException.
+     * reserved, 0 when stock is insufficient - the caller maps 0 to
+     * OutOfStockException.
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-            update Product p set p.stockQuantity = p.stockQuantity - :quantity
-            where p.id = :id and p.stockQuantity >= :quantity
+            UPDATE Product p set p.stockQuantity = p.stockQuantity - :quantity
+            WHERE p.id = :id AND p.stockQuantity >= :quantity
+            AND p.isActive = true
             """)
     int decrementStock(@Param("id") Long id, @Param("quantity") int quantity);
 
     /** Returns stock taken by a cancelled order. */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
-    @Query("update Product p set p.stockQuantity = p.stockQuantity + :quantity where p.id = :id")
+    @Query("UPDATE Product p SET p.stockQuantity = p.stockQuantity + :quantity WHERE p.id = :id")
     int incrementStock(@Param("id") Long id, @Param("quantity") int quantity);
+
+    /** Method to search by VisionName + category */
+    List<Product> findByVisionNameAndCategoryAndIsActiveTrue(String visionName, String category);
 }

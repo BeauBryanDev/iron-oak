@@ -12,22 +12,16 @@ import java.util.List;
 public class ProductMapper {
 
     public ProductResponse toResponse(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getSku(),
-                product.getName(),
-                product.getBrand(),
-                product.getCategory(),
-                product.getVisionName(),
-                product.getDescription(),
-                product.getPrice(),
-                product.getStockQuantity(),
-                product.getStockQuantity() > 0,
-                product.getWarrantyMonths(),
-                product.getImageUrl());
+        return ProductResponse.from(product);
     }
 
     public List<ProductResponse> toResponses(List<Product> products) {
+
+        if (products == null || products.isEmpty()) {
+
+            return List.of();
+        }
+
         return products.stream().map(this::toResponse).toList();
     }
 

@@ -103,7 +103,10 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-model-openai</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.ai</groupId>
+            <artifactId>spring-ai-starter-vector-store-milvus</artifactId>
+        </dependency>
         <!-- Vision - ONNX Runtime Java for the MobileNetV3-Large tool classifier -->
         <dependency>
             <groupId>com.microsoft.onnxruntime</groupId>
