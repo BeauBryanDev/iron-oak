@@ -10,6 +10,9 @@ public record DashboardKPIResponse(
         long agentChatOrders,
         BigDecimal completedRevenue,
         long pendingComplaints,
+        long requestedBookings,
+        long openWarrantyClaims,
+        long openSupportTickets,
         List<TopProduct> topProducts) {
 
     public record TopProduct(Long productId, String name, long unitsSold) {
