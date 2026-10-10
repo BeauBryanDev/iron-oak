@@ -64,6 +64,25 @@ spring:
 server:
   port: ${SERVER_PORT:8080}
 
+# Health checks: only /actuator/health is exposed. Anyone gets UP/DOWN; staff (ROLE_ADMIN token)
+# also see the components (database, disk, payments). /actuator/health/liveness and /readiness
+# are for the process supervisor or load balancer; readiness includes the database.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      roles: ADMIN
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db
+
 # CORS - Next.js frontend on Vercel
 app:
   cors:
@@ -71,7 +90,35 @@ app:
 
   jwt:
     secret: ${JWT_SECRET_KEY}
-    expiration-minutes: 120
+    expiration-minutes: 15          # access token
+    refresh-expiration-days: 7      # refresh token, renewed on every use
+    refresh-max-session-days: 30    # absolute cap on one login session
+
+  checkout:
+    reservation-minutes: 35         # unpaid orders hold their stock this long (must exceed session-minutes)
+    session-minutes: 31             # how long the Stripe Checkout page stays open (Stripe minimum is 30)
+    max-hold-minutes: 120           # a new payment attempt cannot extend the hold past this order age
+    currency: USD
+    frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+
+  stripe:
+    api-key: ${STRIPE_API_KEY:}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+
+  security:
+    trust-forwarded-for: false      # true only behind a proxy that appends X-Forwarded-For
+    login:
+      max-failures-per-account-and-ip: 5
+      max-failures-per-account: 30
+      max-failures-per-ip: 20
+      window-minutes: 15
+      lockout-minutes: 15           # doubles on each repeated lockout
+      max-lockout-minutes: 120
+    rate-limit:
+      login-per-minute: 10
+      refresh-per-minute: 30
+      public-write-per-minute: 30
+      public-lookup-per-minute: 60
 
   vision:
     model-path: ${VISION_MODEL_PATH:classpath:models/hardware_store_mobilenetv3.onnx}

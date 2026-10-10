@@ -114,6 +114,19 @@
             <version>${onnxruntime.version}</version>
         </dependency>
 
+        <!-- Actuator - /actuator/health for Apache, uptime checks and deploy scripts. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Stripe - hosted Checkout, webhooks, refunds. -->
+        <dependency>
+            <groupId>com.stripe</groupId>
+            <artifactId>stripe-java</artifactId>
+            <version>33.4.0</version>
+        </dependency>
+
         <!-- .env loading - makes ${DB_PASSWORD}, ${OPENAI_API_KEY} etc. from the
              project-root .env resolvable as Spring properties. Docker Compose reads
              .env on its own; Spring Boot does not. -->
