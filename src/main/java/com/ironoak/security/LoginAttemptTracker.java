@@ -2,6 +2,7 @@ package com.ironoak.security;
 
 import com.ironoak.config.SecurityProperties;
 import com.ironoak.exceptions.TooManyRequestsException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -49,6 +50,7 @@ public class LoginAttemptTracker {
     private final Map<String, Entry> accounts;
     private final Map<String, Entry> addresses;
 
+    @Autowired
     public LoginAttemptTracker(SecurityProperties properties) {
 
         this(properties.getLogin(), Clock.systemUTC());

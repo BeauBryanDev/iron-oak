@@ -10,10 +10,16 @@ import java.math.BigDecimal;
 
 /**
  * One line of a mixed cart. itemType discriminates which of the three FK
- * columns is
- * set; chk_item_reference in the schema enforces that exactly one of them is
+ * columns is set;
+ * chk_item_reference in the schema enforces that exactly one of them is
  * non-null.
  * quantity is a whole number of units (products, machines, service units).
+ *
+ * itemName, itemCode and unitPrice are snapshots taken at purchase time, so
+ * later catalog
+ * edits never change an existing order. itemCode is the product SKU, the
+ * machine model code
+ * or the service code. The database enforces subtotal = price * quantity.
  */
 @Entity
 @Table(name = "order_item")
@@ -46,6 +52,16 @@ public class OrderItem {
     @JoinColumn(name = "milling_machine_id")
     private MillingMachine millingMachine;
 
+    @Column(name = "item_name", nullable = false, length = 200)
+    @NotBlank
+    @Size(max = 200)
+    private String itemName;
+
+    @Column(name = "item_code", nullable = false, length = 50)
+    @NotBlank
+    @Size(max = 50)
+    private String itemCode;
+
     @Column(nullable = false)
     @NotNull
     @Min(1)
@@ -54,12 +70,13 @@ public class OrderItem {
     @Column(name = "estimated_hours", precision = 4, scale = 1)
     private BigDecimal estimatedHours;
 
-    @Column(name = "unit_price", nullable = false, precision = 10, scale = 2)
+    /** Price of one unit when the order was placed (column {@code price}). */
+    @Column(name = "price", nullable = false, precision = 12, scale = 2)
     @NotNull
     @DecimalMin(value = "0.0")
     private BigDecimal unitPrice;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 12, scale = 2)
     @NotNull
     @DecimalMin(value = "0.0")
     private BigDecimal subtotal;
@@ -68,10 +85,14 @@ public class OrderItem {
     }
 
     private OrderItem(OrderItemType itemType,
+            String itemName,
+            String itemCode,
             int quantity,
             BigDecimal estimatedHours,
             BigDecimal unitPrice) {
         this.itemType = itemType;
+        this.itemName = itemName;
+        this.itemCode = itemCode;
         this.quantity = quantity;
         this.estimatedHours = estimatedHours;
         this.unitPrice = unitPrice;
@@ -79,13 +100,27 @@ public class OrderItem {
     }
 
     public static OrderItem ofProduct(Product product, int quantity) {
-        OrderItem item = new OrderItem(OrderItemType.PRODUCT, quantity, null, product.getPrice());
+
+        OrderItem item = new OrderItem(OrderItemType.PRODUCT,
+                product.getName(),
+                product.getSku(),
+                quantity,
+                null,
+                product.getPrice());
+
         item.product = product;
         return item;
     }
 
     public static OrderItem ofMachine(MillingMachine machine, int quantity) {
-        OrderItem item = new OrderItem(OrderItemType.MACHINE, quantity, null, machine.getPrice());
+
+        OrderItem item = new OrderItem(OrderItemType.MACHINE,
+                machine.getName(),
+                machine.getModelCode(),
+                quantity,
+                null,
+                machine.getPrice());
+
         item.millingMachine = machine;
         return item;
     }
@@ -94,10 +129,18 @@ public class OrderItem {
      * unitPrice is the price of one unit of the service: the fixed price, or hourly
      * rate x hours.
      */
-    public static OrderItem ofService(ServiceOffering service, int quantity,
-            BigDecimal estimatedHours, BigDecimal unitPrice) {
+    public static OrderItem ofService(ServiceOffering service,
+            int quantity,
+            BigDecimal estimatedHours,
+            BigDecimal unitPrice) {
+
         OrderItem item = new OrderItem(OrderItemType.SERVICE,
-                quantity, estimatedHours, unitPrice);
+                service.getName(),
+                service.getCode(),
+                quantity,
+                estimatedHours,
+                unitPrice);
+
         item.serviceOffering = service;
         return item;
     }
@@ -128,6 +171,14 @@ public class OrderItem {
 
     public MillingMachine getMillingMachine() {
         return millingMachine;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public String getItemCode() {
+        return itemCode;
     }
 
     public BigDecimal getUnitPrice() {
@@ -168,6 +219,14 @@ public class OrderItem {
 
     public void setMillingMachine(MillingMachine millingMachine) {
         this.millingMachine = millingMachine;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
     }
 
     public void setQuantity(Integer quantity) {

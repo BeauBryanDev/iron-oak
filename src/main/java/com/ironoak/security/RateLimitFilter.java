@@ -35,7 +35,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final List<String> PUBLIC_WRITE_PATHS = List.of(
             "/api/orders", "/api/complaints", "/api/bookings", "/api/bookings/*/reschedule",
             "/api/bookings/*/cancel", "/api/warranty-claims", "/api/support-tickets",
-            "/api/vision/classify", "/api/chat/**");
+            "/api/vision/classify", "/api/shipping/quote", "/api/orders/*/checkout-session", "/api/chat/**");
 
     private static final List<String> PUBLIC_LOOKUP_PATHS = List.of(
             "/api/orders/*", "/api/bookings", "/api/bookings/*",

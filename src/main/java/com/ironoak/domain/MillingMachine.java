@@ -60,6 +60,19 @@ public class MillingMachine {
     @Min(0)
     private Integer warrantyMonths;
 
+    /**
+     * Shipping weight of one unit, in kg. Null until entered (see
+     * ShippingCalculator).
+     */
+    @Column(name = "weight_kg", precision = 9, scale = 3)
+    @Positive
+    private BigDecimal weightKg;
+
+    /** Shipping volume of one packed unit, in cubic metres. Null until entered. */
+    @Column(name = "volume_m3", precision = 8, scale = 4)
+    @Positive
+    private BigDecimal volumeM3;
+
     @Column(name = "image_url", length = 500)
     @Size(max = 500)
     private String imageUrl;
@@ -139,6 +152,14 @@ public class MillingMachine {
         return warrantyMonths;
     }
 
+    public BigDecimal getWeightKg() {
+        return weightKg;
+    }
+
+    public BigDecimal getVolumeM3() {
+        return volumeM3;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -189,6 +210,14 @@ public class MillingMachine {
 
     public void setWarrantyMonths(Integer warrantyMonths) {
         this.warrantyMonths = warrantyMonths;
+    }
+
+    public void setWeightKg(BigDecimal weightKg) {
+        this.weightKg = weightKg;
+    }
+
+    public void setVolumeM3(BigDecimal volumeM3) {
+        this.volumeM3 = volumeM3;
     }
 
     public void setImageUrl(String imageUrl) {
