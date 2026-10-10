@@ -138,9 +138,11 @@ public class BookingService {
 
         Specification<ServiceBooking> spec = Specification.allOf(
                 FilterSpecs.in("status", statuses),
-                FilterSpecs.dateRange("scheduledAt", filter.from(), filter.to()),
+                FilterSpecs.dateRange("scheduledAt",
+                        filter.from(), filter.to()),
                 filter.serviceId() == null ? null
-                        : (root, query, cb) -> cb.equal(root.get("serviceOffering").get("id"), filter.serviceId()),
+                        : (root, query, cb) -> cb.equal(root.get("serviceOffering").get("id"),
+                                filter.serviceId()),
                 filter.categoryId() == null ? null
                         : (root, query, cb) -> cb.equal(
                                 root.get("serviceOffering").get("category").get("id"),

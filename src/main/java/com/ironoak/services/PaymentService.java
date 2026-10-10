@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.ShippingStatus;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
@@ -101,6 +102,7 @@ public class PaymentService {
      * request or webhook does not create a second one.
      */
     public PaymentResponse create(CreatePaymentRequest request) {
+
         CustomerOrder order = orders.findById(request.orderId())
                 .orElseThrow(() -> new ResourceNotFoundException("Order", request.orderId()));
 
@@ -129,6 +131,10 @@ public class PaymentService {
 
                     "Order " + order.getId() + " is " + order.getStatus() + " and cannot be paid");
         }
+        if (order.getShippingStatus() == ShippingStatus.ON_REQUEST) {
+            throw new BusinessRuleException("Shipping for order " + order.getOrderNumber()
+                    + " has not been quoted yet; set it with PATCH /api/admin/orders/" + order.getId() + "/shipping");
+        }
         BigDecimal due = order.getGrandTotal().subtract(paidSoFar(order));
 
         if (due.signum() <= 0) {
@@ -149,7 +155,8 @@ public class PaymentService {
                 FilterSpecs.in("status", filter.status()),
                 FilterSpecs.hasText(filter.provider()) ? FilterSpecs.equal("provider",
                         filter.provider().trim()) : null,
-                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                FilterSpecs.dateRange("createdAt",
+                        filter.from(), filter.to()),
                 matching(filter.q()));
 
         return payments.findAll(spec, pageable).map(mapper::toResponse);

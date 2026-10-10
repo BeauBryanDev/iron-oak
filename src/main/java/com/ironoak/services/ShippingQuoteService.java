@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.ShippingSource;
 import com.ironoak.domain.MillingMachine;
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.Product;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Public shipping estimate for a cart; the same calculator prices the real
+ * Public shipping estimate for a cart; ShippingService also prices the real
  * order at checkout.
  */
 @Service
@@ -26,14 +27,14 @@ public class ShippingQuoteService {
 
     private final ProductRepository products;
     private final MillingMachineRepository machines;
-    private final ShippingCalculator calculator;
+    private final ShippingService shipping;
 
     public ShippingQuoteService(ProductRepository products,
             MillingMachineRepository machines,
-            ShippingCalculator calculator) {
+            ShippingService shipping) {
         this.products = products;
         this.machines = machines;
-        this.calculator = calculator;
+        this.shipping = shipping;
     }
 
     public ShippingQuoteResponse quote(ShippingQuoteRequest request) {
@@ -54,7 +55,8 @@ public class ShippingQuoteService {
 
                     MillingMachine machine = machines.findById(line.referenceId())
                             .filter(m -> Boolean.TRUE.equals(m.getIsActive()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Milling machine", line.referenceId()));
+                            .orElseThrow(() -> new ResourceNotFoundException("Milling machine",
+                                    line.referenceId()));
                     lines.add(OrderItem.ofMachine(machine, line.quantity()));
                 }
                 case SERVICE -> {
@@ -67,13 +69,21 @@ public class ShippingQuoteService {
 
             throw new InvalidOrderException("country is required to quote shipping for products or machines");
         }
-        ShippingCalculator.Quote quote = calculator.quote(request.country(),
-                request.city(), request.province(), lines);
+        // Browsing never spends a Google call: stored routes or the estimate only.
+        ShippingService.Quote quote = shipping.quote(request.country(),
+                request.city(),
+                request.province(),
+                lines, false);
 
-        return new ShippingQuoteResponse("USD", quote.country(),
+        return new ShippingQuoteResponse("USD",
+                quote.country(),
+                quote.status(),
+                quote.mode(),
                 quote.domestic(),
                 quote.distanceKm(),
-                quote.toolsCost(),
-                quote.machinesCost(), quote.total());
+                quote.source(),
+                quote.source() == ShippingSource.ESTIMATE,
+                quote.cost(),
+                quote.note());
     }
 }

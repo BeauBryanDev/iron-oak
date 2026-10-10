@@ -1,10 +1,14 @@
 package com.ironoak.services;
 
+import com.ironoak.config.ShippingProperties;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
+import com.ironoak.dto.response.PublicOrderResponse;
+import com.ironoak.domain.enums.ShippingStatus;
+import com.ironoak.domain.enums.ShippingSource;
 import com.ironoak.config.CheckoutProperties;
 import com.ironoak.domain.Payment;
 import com.ironoak.domain.enums.PaymentStatus;
@@ -57,9 +61,8 @@ import java.util.Set;
  * every line from
  * the catalog, takes product stock at once and holds it until it is paid or the
  * reservation
- * runs out. Payment moves it to CONFIRMED (see PaymentService); an unpaid order
- * EXPIRES and
- * returns its stock. Staff-entered orders (ADMIN_MANUAL) start CONFIRMED.
+ * runs out. Payment moves it to CONFIRMED; an unpaid order
+ * EXPIRES andreturns its stock. Staff-entered orders start CONFIRMED.
  */
 @Service
 @Transactional
@@ -86,7 +89,7 @@ public class OrderService {
             Set.of(OrderStatus.IN_PROGRESS,
                     OrderStatus.CANCELLED),
             OrderStatus.IN_PROGRESS, Set.of(OrderStatus.COMPLETED,
-                    rderStatus.CANCELLED),
+                    OrderStatus.CANCELLED),
             OrderStatus.COMPLETED,
             Set.of(),
             OrderStatus.CANCELLED,
@@ -103,8 +106,9 @@ public class OrderService {
     private final MillingMachineRepository machines;
     private final PaymentRepository payments;
     private final OrderMapper mapper;
-    private final ShippingCalculator shipping;
+    private final ShippingService shipping;
     private final CheckoutProperties checkout;
+    private final ShippingProperties shippingProperties;
     private final TransactionTemplate transactions;
 
     public OrderService(CustomerOrderRepository orders,
@@ -114,8 +118,9 @@ public class OrderService {
             MillingMachineRepository machines,
             PaymentRepository payments,
             OrderMapper mapper,
-            ShippingCalculator shipping,
+            ShippingService shipping,
             CheckoutProperties checkout,
+            ShippingProperties shippingProperties,
             PlatformTransactionManager transactionManager) {
 
         this.orders = orders;
@@ -127,6 +132,7 @@ public class OrderService {
         this.mapper = mapper;
         this.shipping = shipping;
         this.checkout = checkout;
+        this.shippingProperties = shippingProperties;
         this.transactions = new TransactionTemplate(transactionManager);
     }
 
@@ -165,13 +171,14 @@ public class OrderService {
             items.add(buildItem(line));
         }
         requireCheckoutDetails(request, channel, items);
-        // Staff orders without an address ship nothing; everyone else is priced by
-        // distance, weight and volume.
-        BigDecimal shippingCost = isBlank(request.country()) ? BigDecimal.ZERO
+        // Staff orders without an address ship nothing; everyone else is priced by the
+        // shared
+        // ShippingService. A real order may spend one Google lookup on a city not
+        // stored yet.
+        ShippingService.Quote shippingQuote = isBlank(request.country()) ? ShippingService.Quote.nothingToShip()
                 : shipping.quote(request.country(),
                         request.city(),
-                        request.province(),
-                        items).total();
+                        request.province(), items, true);
 
         // decrementStock clears the persistence context, so it runs after all lookups.
         boolean takesStock = false;
@@ -197,17 +204,84 @@ public class OrderService {
         order.setCity(trimToNull(request.city()));
         order.setShippingAddress(trimToNull(request.shippingAddress()));
         order.setCurrency(checkout.getCurrency());
-        order.setShippingCost(shippingCost);
+        order.setShippingCost(shippingQuote.cost());
+        order.setShippingStatus(shippingQuote.status());
+        order.setShippingMode(shippingQuote.mode());
+        order.setShippingDistanceKm(shippingQuote.distanceKm());
+        order.setShippingSource(shippingQuote.source());
         order.setIdempotencyKey(key);
         order.setStockReserved(takesStock);
 
         if (order.getStatus() == OrderStatus.PENDING_PAYMENT) {
 
-            order.setReservationExpiresAt(OffsetDateTime.now().plusMinutes(checkout.getReservationMinutes()));
+            order.setReservationExpiresAt(OffsetDateTime.now().plusMinutes(holdMinutes(channel, shippingQuote)));
         }
         items.forEach(order::addItem);
 
         return mapper.toResponse(orders.save(order));
+    }
+
+    /**
+     * How long a new unpaid order holds its stock: long enough for staff to quote
+     * shipping, for a
+     * Piper customer to come back with the order number, or for a web customer to
+     * pay now.
+     */
+    private int holdMinutes(OrderChannel channel, ShippingService.Quote quote) {
+
+        if (quote.status() == ShippingStatus.ON_REQUEST) {
+            return shippingProperties.getQuoteHoldHours() * 60;
+        }
+        if (channel == OrderChannel.PIPER) {
+            return shippingProperties.getPiperHoldMinutes();
+        }
+        return checkout.getReservationMinutes();
+    }
+
+    /**
+     * Staff set the shipping of an order (normally one waiting for a quote).
+     * Refused once money
+     * has been received, because the total the customer paid must not change
+     * afterwards.
+     */
+    public OrderResponse setShippingCost(Long id, BigDecimal cost) {
+
+        CustomerOrder order = orders.findLockedById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+
+        if (!Set.of(OrderStatus.PENDING_PAYMENT,
+                OrderStatus.PAYMENT_FAILED,
+                OrderStatus.CONFIRMED,
+                OrderStatus.DRAFT).contains(order.getStatus())) {
+
+            throw new BusinessRuleException("Order " + order.getOrderNumber() + " is " + order.getStatus()
+                    + "; its shipping can no longer change");
+        }
+        if (payments.sumAmountByOrderAndStatus(id, PaymentStatus.PAID).signum() > 0) {
+            throw new BusinessRuleException("Order " + order.getOrderNumber() + " already has a payment");
+        }
+        order.setShippingCost(cost.setScale(2, RoundingMode.HALF_UP));
+        order.setShippingStatus(ShippingStatus.QUOTED);
+        order.setShippingSource(ShippingSource.STAFF);
+        order.recalculateTotals();
+        orders.saveAndFlush(order);
+
+        return mapper.toResponse(orders.findWithItemsById(id).orElseThrow());
+    }
+
+    /**
+     * The customer-safe view of an order, found by its order number (for the cart's
+     * "pay my
+     * order" field and for Piper). No name, email, phone or address is returned.
+     */
+    @Transactional(readOnly = true)
+    public PublicOrderResponse getPublic(String orderNumber) {
+
+        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(Locale.ROOT);
+
+        return orders.findWithItemsByOrderNumber(number)
+                .map(mapper::toPublicResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", number));
     }
 
     /**
@@ -217,6 +291,7 @@ public class OrderService {
     private void requireCheckoutDetails(CreateOrderRequest request,
             OrderChannel channel,
             List<OrderItem> items) {
+
         if (channel == OrderChannel.ADMIN_MANUAL) {
             return;
         }
@@ -287,6 +362,7 @@ public class OrderService {
         return (root, query, cb) -> {
             Predicate text = FilterSpecs.anyContains(cb, search, root.<String>get("orderNumber"),
                     root.<String>get("customerName"), root.<String>get("customerEmail"));
+
             String trimmed = search.trim();
             return trimmed.matches("\\d{1,18}") ? cb.or(text, cb.equal(root.get("id"),
                     Long.parseLong(trimmed))) : text;
@@ -295,6 +371,7 @@ public class OrderService {
 
     /** Staff status change. Cancelling returns any stock the order still holds. */
     public OrderResponse updateStatus(Long id, OrderStatus newStatus) {
+
         CustomerOrder order = orders.findLockedById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", id));
 
@@ -303,7 +380,9 @@ public class OrderService {
                     "Cannot change order " + id + " from " + order.getStatus() + " to " + newStatus);
         }
         if (newStatus == OrderStatus.CANCELLED) {
+
             closeAndReleaseStock(order, OrderStatus.CANCELLED);
+
         } else {
             order.setStatus(newStatus);
             orders.saveAndFlush(order);
@@ -311,15 +390,17 @@ public class OrderService {
         return mapper.toResponse(orders.findWithItemsById(id).orElseThrow());
     }
 
-    // ---- payment-driven transitions, called by PaymentService inside its own
-    // transaction ----
+    // payment-driven transitions, called by PaymentService inside its own
+    // transaction
 
     /**
      * A payment covering the whole order arrived: the order is now paid and being
      * worked.
      */
     public void confirmAfterPayment(CustomerOrder order) {
+
         if (AWAITING_PAYMENT.contains(order.getStatus())) {
+
             order.setStatus(OrderStatus.CONFIRMED);
             order.setReservationExpiresAt(null);
         }
@@ -330,7 +411,9 @@ public class OrderService {
      * runs out.
      */
     public void markPaymentFailed(CustomerOrder order) {
+
         if (order.getStatus() == OrderStatus.PENDING_PAYMENT) {
+
             order.setStatus(OrderStatus.PAYMENT_FAILED);
         }
     }
@@ -340,7 +423,9 @@ public class OrderService {
      * hold is still valid.
      */
     public void reopenForPayment(CustomerOrder order) {
+
         if (!AWAITING_PAYMENT.contains(order.getStatus())) {
+
             return;
         }
         if (order.getReservationExpiresAt() != null && !order.getReservationExpiresAt().isAfter(OffsetDateTime.now())) {

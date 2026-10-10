@@ -46,7 +46,8 @@ public class ComplaintService {
                 FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
                 !FilterSpecs.hasText(filter.q()) ? null
                         : (root, query, cb) -> FilterSpecs.anyContains(cb, filter.q(),
-                                root.<String>get("customerName"), root.<String>get("product"),
+                                root.<String>get("customerName"),
+                                root.<String>get("product"),
                                 root.<String>get("description")));
 
         return complaints.findAll(spec, pageable).map(mapper::toResponse);

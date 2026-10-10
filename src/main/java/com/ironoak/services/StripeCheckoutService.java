@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.ShippingStatus;
 import com.ironoak.config.CheckoutProperties;
 import com.ironoak.domain.CustomerOrder;
 import com.ironoak.domain.OrderItem;
@@ -92,10 +93,30 @@ public class StripeCheckoutService {
     }
 
     public CheckoutSessionResponse createSession(Long orderId, String email) {
+        return createSession(orderId, email, true);
+    }
+
+    /**
+     * Pays an order by its order number alone (the cart's "pay my order" field, for
+     * orders Piper
+     * created). Holding the number is enough to pay; the customer's email is not
+     * put on the page.
+     */
+    public CheckoutSessionResponse createSessionByNumber(String orderNumber) {
+
+        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(java.util.Locale.ROOT);
+        Long orderId = orders.findIdByOrderNumber(number)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", number));
+
+        return createSession(orderId, null, false);
+    }
+
+    private CheckoutSessionResponse createSession(Long orderId, String email,
+            boolean checkOwner) {
 
         for (int round = 0; round < 2; round++) {
 
-            Plan plan = transactions.execute(status -> prepare(orderId, email));
+            Plan plan = transactions.execute(status -> prepare(orderId, email, checkOwner));
 
             if (plan.existingSessionId() != null) {
 
@@ -128,16 +149,20 @@ public class StripeCheckoutService {
         throw new BusinessRuleException("Could not start a payment for this order; try again");
     }
 
-    private Plan prepare(Long orderId, String email) {
+    private Plan prepare(Long orderId, String email, boolean checkOwner) {
 
         CustomerOrder order = orders.findLockedById(orderId)
-                .filter(o -> OrderService.ownedBy(o, email))
+                .filter(o -> !checkOwner || OrderService.ownedBy(o, email))
                 .orElseThrow(() -> new ResourceNotFoundException("Order", orderId));
 
         if (!PAYABLE.contains(order.getStatus())) {
 
             throw new BusinessRuleException("Order " + order.getOrderNumber() + " is " + order.getStatus()
                     + " and cannot be paid");
+        }
+        if (order.getShippingStatus() == ShippingStatus.ON_REQUEST) {
+            throw new BusinessRuleException("Shipping for order " + order.getOrderNumber()
+                    + " is being quoted by our staff; it can be paid once the quote is ready");
         }
         OffsetDateTime now = OffsetDateTime.now();
 
@@ -194,7 +219,13 @@ public class StripeCheckoutService {
             // the stock gone.
             OffsetDateTime holdUntil = sessionExpires.plusMinutes(1);
 
-            if (holdUntil.isAfter(order.getCreatedAt().plusMinutes(checkout.getMaxHoldMinutes()))) {
+            // An order that already holds stock longer (Piper, staff quote) keeps that
+            // hold.
+            OffsetDateTime cap = order.getCreatedAt().plusMinutes(checkout.getMaxHoldMinutes());
+            if (order.getReservationExpiresAt() != null && order.getReservationExpiresAt().isAfter(cap)) {
+                cap = order.getReservationExpiresAt();
+            }
+            if (holdUntil.isAfter(cap)) {
 
                 throw new BusinessRuleException("The reservation for order " + order.getOrderNumber()
                         + " can no longer be extended; place the order again");
@@ -208,7 +239,7 @@ public class StripeCheckoutService {
         }
         return new Plan(order.getId(), order.getOrderNumber(),
                 order.getCurrency(),
-                order.getCustomerEmail(),
+                checkOwner ? order.getCustomerEmail() : null,
                 lines,
                 total,
                 sessionExpires,
@@ -224,7 +255,6 @@ public class StripeCheckoutService {
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setIntegrationIdentifier(INTEGRATION_IDENTIFIER)
                 .setClientReferenceId(reference)
-                .setCustomerEmail(plan.customerEmail())
                 .setExpiresAt(plan.sessionExpiresAt().toEpochSecond())
                 .setSuccessUrl(base + "/checkout/success?order=" + reference + "&session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(base + "/checkout/cancel?order=" + reference)
@@ -236,6 +266,9 @@ public class StripeCheckoutService {
                         .putMetadata("order_number", reference)
                         .build());
 
+        if (plan.customerEmail() != null) {
+            builder.setCustomerEmail(plan.customerEmail());
+        }
         String currency = plan.currency().toLowerCase();
 
         for (Line line : plan.lines()) {
