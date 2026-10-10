@@ -11,7 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
-/** Public: customers send a photo of a tool and get the matching catalog products back. */
+/**
+ * Public: customers send a photo of a tool and get the matching catalog
+ * products back.
+ */
 @RestController
 @RequestMapping("/api/vision")
 public class VisionController {
@@ -26,6 +29,7 @@ public class VisionController {
     public ClassificationResponse classify(@RequestPart("image") MultipartFile image) {
         try {
             return vision.classify(image.getBytes());
+
         } catch (IOException e) {
             throw new InvalidImageException("Could not read the uploaded file");
         }

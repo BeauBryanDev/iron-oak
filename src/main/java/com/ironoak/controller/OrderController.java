@@ -23,7 +23,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Guest checkout is public (POST /api/orders); everything else is under /api/admin and
+ * Guest checkout is public (POST /api/orders); everything else is under
+ * /api/admin and
  * requires a staff token. SecurityConfig owns that split.
  */
 @RestController
@@ -38,39 +39,51 @@ public class OrderController {
     @PostMapping("/api/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse checkout(@Valid @RequestBody CreateOrderRequest request,
-                                  @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey) {
-        return orders.create(request, OrderChannel.AGENT_CHAT, idempotencyKey);
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey) {
+
+        return orders.create(request,
+                OrderChannel.WEB_CHECKOUT,
+                idempotencyKey);
     }
 
-    /** A customer reads back their order by proving the email it was placed under. */
+    /**
+     * A customer reads back their order by proving the email it was placed under.
+     */
     @GetMapping("/api/orders/{id}")
-    public OrderResponse getMine(@PathVariable Long id, @RequestParam String email) {
+    public OrderResponse getMine(@PathVariable Long id,
+            @RequestParam String email) {
+
         return orders.getForCustomer(id, email);
     }
 
     @PostMapping("/api/admin/orders")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponse createManual(@Valid @RequestBody CreateOrderRequest request,
-                                      @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey) {
-        return orders.create(request, OrderChannel.ADMIN_MANUAL, idempotencyKey);
+            @RequestHeader(name = "Idempotency-Key", required = false) String idempotencyKey) {
+
+        return orders.create(request,
+                OrderChannel.ADMIN_MANUAL,
+                idempotencyKey);
     }
 
     @GetMapping("/api/admin/orders")
     public PagedModel<OrderResponse> list(
             OrderFilter filter,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
-            Pageable pageable) {
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+
         return new PagedModel<>(orders.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/orders/{id}")
     public OrderResponse get(@PathVariable Long id) {
+
         return orders.get(id);
     }
 
     @PatchMapping("/api/admin/orders/{id}/status")
     public OrderResponse updateStatus(@PathVariable Long id,
-                                      @Valid @RequestBody UpdateOrderStatusRequest request) {
+            @Valid @RequestBody UpdateOrderStatusRequest request) {
+
         return orders.updateStatus(id, request.status());
     }
 }

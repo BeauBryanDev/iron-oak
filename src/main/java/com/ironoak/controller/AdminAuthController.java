@@ -33,7 +33,8 @@ public class AdminAuthController {
     }
 
     @PostMapping("/login")
-    public AdminLoginResponse login(@Valid @RequestBody AdminLoginRequest request, HttpServletRequest http) {
+    public AdminLoginResponse login(@Valid @RequestBody AdminLoginRequest request,
+            HttpServletRequest http) {
 
         return auth.login(request, clientIp.resolve(http),
                 http.getHeader("User-Agent"));
@@ -44,7 +45,9 @@ public class AdminAuthController {
      * here stops working.
      */
     @PostMapping("/refresh")
-    public AdminLoginResponse refresh(@Valid @RequestBody RefreshTokenRequest request, HttpServletRequest http) {
+    public AdminLoginResponse refresh(@Valid @RequestBody RefreshTokenRequest request,
+            HttpServletRequest http) {
+
         return auth.refresh(request.refreshToken(),
                 clientIp.resolve(http),
                 http.getHeader("User-Agent"));
@@ -56,7 +59,8 @@ public class AdminAuthController {
      */
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void logout(@Valid @RequestBody RefreshTokenRequest request, HttpServletRequest http) {
+    public void logout(@Valid @RequestBody RefreshTokenRequest request,
+            HttpServletRequest http) {
 
         auth.logout(request.refreshToken(),
 
@@ -73,6 +77,7 @@ public class AdminAuthController {
 
     @GetMapping("/me")
     public AdminProfileResponse me(Principal principal) {
+
         return auth.me(principal.getName());
     }
 

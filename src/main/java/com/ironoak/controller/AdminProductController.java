@@ -22,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Staff product management (ROLE_ADMIN via /api/admin/**). Products are deactivated, not deleted. */
+/**
+ * Staff product management (ROLE_ADMIN via /api/admin/**). Products are
+ * deactivated, not deleted.
+ */
 @RestController
 @RequestMapping("/api/admin/products")
 public class AdminProductController {
@@ -41,32 +44,42 @@ public class AdminProductController {
             @RequestParam(required = false) Boolean active,
             @RequestParam(required = false) Integer maxStock,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
-        return new PagedModel<>(products.list(search, category, toolCategoryId, active, maxStock, pageable));
+
+        return new PagedModel<>(products.list(search, category, toolCategoryId,
+                active, maxStock, pageable));
     }
 
     @GetMapping("/{id}")
     public AdminProductResponse get(@PathVariable Long id) {
+
         return products.get(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AdminProductResponse create(@Valid @RequestBody CreateProductRequest request) {
+
         return products.create(request);
     }
 
     @PutMapping("/{id}")
-    public AdminProductResponse update(@PathVariable Long id, @Valid @RequestBody UpdateProductRequest request) {
+    public AdminProductResponse update(@PathVariable Long id,
+            @Valid @RequestBody UpdateProductRequest request) {
+
         return products.update(id, request);
     }
 
     @PatchMapping("/{id}/active")
-    public AdminProductResponse setActive(@PathVariable Long id, @Valid @RequestBody UpdateActiveRequest request) {
+    public AdminProductResponse setActive(@PathVariable Long id,
+            @Valid @RequestBody UpdateActiveRequest request) {
+
         return products.setActive(id, request.isActive());
     }
 
     @PatchMapping("/{id}/stock")
-    public AdminProductResponse adjustStock(@PathVariable Long id, @Valid @RequestBody AdjustStockRequest request) {
+    public AdminProductResponse adjustStock(@PathVariable Long id,
+            @Valid @RequestBody AdjustStockRequest request) {
+
         return products.adjustStock(id, request.delta());
     }
 }

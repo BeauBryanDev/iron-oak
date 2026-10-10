@@ -23,7 +23,9 @@ public class ProductController {
     private final ProductService productService;
     private final ToolCategoryService toolCategoryService;
 
-    public ProductController(ProductService productService, ToolCategoryService toolCategoryService) {
+    public ProductController(ProductService productService,
+            ToolCategoryService toolCategoryService) {
+
         this.productService = productService;
         this.toolCategoryService = toolCategoryService;
     }
@@ -33,21 +35,25 @@ public class ProductController {
             @RequestParam(required = false) String category,
             @RequestParam(name = "q", required = false) String search,
             @PageableDefault(size = 20, sort = "name") Pageable pageable) {
+
         return new PagedModel<>(productService.list(category, search, pageable));
     }
 
     @GetMapping("/{id:\\d+}")
     public ProductResponse getById(@PathVariable Long id) {
+
         return productService.getById(id);
     }
 
     @GetMapping("/sku/{sku}")
     public ProductResponse getBySku(@PathVariable String sku) {
+
         return productService.getBySku(sku);
     }
 
     @GetMapping("/categories")
     public List<String> categories() {
+
         return productService.categories();
     }
 
@@ -56,16 +62,19 @@ public class ProductController {
      */
     @GetMapping("/by-vision/{modelLabel}")
     public List<ProductResponse> byVisionLabel(@PathVariable String modelLabel) {
+
         return productService.findByVisionLabel(modelLabel);
     }
 
     @GetMapping("/tool-categories")
     public List<ToolCategoryResponse> toolCategories() {
+
         return toolCategoryService.list();
     }
 
     @GetMapping("/tool-categories/{modelLabel}")
     public ToolCategoryResponse toolCategory(@PathVariable String modelLabel) {
+
         return toolCategoryService.getByModelLabel(modelLabel);
     }
 }

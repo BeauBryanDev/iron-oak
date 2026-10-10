@@ -21,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Raising a ticket is public (Piper escalates); working the queue is staff-only. */
+/**
+ * Raising a ticket is public (Piper escalates); working the queue is
+ * staff-only.
+ */
 @RestController
 public class SupportTicketController {
 
@@ -34,6 +37,7 @@ public class SupportTicketController {
     @PostMapping("/api/support-tickets")
     @ResponseStatus(HttpStatus.CREATED)
     public SupportTicketResponse raise(@Valid @RequestBody CreateSupportTicketRequest request) {
+
         return tickets.create(request);
     }
 
@@ -41,17 +45,20 @@ public class SupportTicketController {
     public PagedModel<SupportTicketResponse> list(
             SupportTicketFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
         return new PagedModel<>(tickets.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/support-tickets/{id}")
     public SupportTicketResponse get(@PathVariable Long id) {
+
         return tickets.get(id);
     }
 
     @PatchMapping("/api/admin/support-tickets/{id}/status")
     public SupportTicketResponse updateStatus(@PathVariable Long id,
-                                              @Valid @RequestBody UpdateSupportTicketStatusRequest request) {
+            @Valid @RequestBody UpdateSupportTicketStatusRequest request) {
+
         return tickets.updateStatus(id, request.status());
     }
 }

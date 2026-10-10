@@ -19,6 +19,7 @@ public class DashboardController {
 
     @GetMapping("/kpis")
     public DashboardKPIResponse kpis() {
+
         return dashboard.kpis();
     }
 }

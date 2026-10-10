@@ -34,6 +34,7 @@ public class AdminMachineController {
     public List<AdminMillingMachineResponse> list(
             @RequestParam(name = "q", required = false) String search,
             @RequestParam(required = false) Boolean active) {
+
         return machines.list(search, active);
     }
 
@@ -45,16 +46,21 @@ public class AdminMachineController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AdminMillingMachineResponse create(@Valid @RequestBody MillingMachineRequest request) {
+
         return machines.create(request);
     }
 
     @PutMapping("/{id}")
-    public AdminMillingMachineResponse update(@PathVariable Long id, @Valid @RequestBody MillingMachineRequest request) {
+    public AdminMillingMachineResponse update(@PathVariable Long id,
+            @Valid @RequestBody MillingMachineRequest request) {
+
         return machines.update(id, request);
     }
 
     @PatchMapping("/{id}/active")
-    public AdminMillingMachineResponse setActive(@PathVariable Long id, @Valid @RequestBody UpdateActiveRequest request) {
+    public AdminMillingMachineResponse setActive(@PathVariable Long id,
+            @Valid @RequestBody UpdateActiveRequest request) {
+
         return machines.setActive(id, request.isActive());
     }
 }

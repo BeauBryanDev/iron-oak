@@ -25,8 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Customers book, view, reschedule and cancel under /api/bookings, proving ownership with
- * the email on the booking (?email=). Staff manage the queue under /api/admin/bookings.
+ * Customers book, view, reschedule and cancel under /api/bookings, proving
+ * ownership with
+ * the email on the booking (?email=). Staff manage the queue under
+ * /api/admin/bookings.
  */
 @RestController
 public class BookingController {
@@ -40,28 +42,33 @@ public class BookingController {
     @PostMapping("/api/bookings")
     @ResponseStatus(HttpStatus.CREATED)
     public BookingResponse create(@Valid @RequestBody CreateBookingRequest request) {
+
         return bookings.create(request);
     }
 
     @GetMapping("/api/bookings")
     public List<BookingResponse> listMine(@RequestParam String email) {
+
         return bookings.listMine(email);
     }
 
     @GetMapping("/api/bookings/{id}")
     public BookingResponse get(@PathVariable Long id, @RequestParam String email) {
+
         return bookings.get(id, email);
     }
 
     @PostMapping("/api/bookings/{id}/reschedule")
     public BookingResponse reschedule(@PathVariable Long id, @RequestParam String email,
-                                      @Valid @RequestBody RescheduleBookingRequest request) {
+            @Valid @RequestBody RescheduleBookingRequest request) {
+
         return bookings.reschedule(id, email, request);
     }
 
     @PostMapping("/api/bookings/{id}/cancel")
     public BookingResponse cancel(@PathVariable Long id, @RequestParam String email,
-                                  @Valid @RequestBody(required = false) CancelBookingRequest request) {
+            @Valid @RequestBody(required = false) CancelBookingRequest request) {
+
         return bookings.cancel(id, email, request);
     }
 
@@ -69,17 +76,20 @@ public class BookingController {
     public PagedModel<BookingResponse> queue(
             BookingFilter filter,
             @PageableDefault(size = 20, sort = "scheduledAt") Pageable pageable) {
+
         return new PagedModel<>(bookings.queue(filter, pageable));
     }
 
     @GetMapping("/api/admin/bookings/{id}")
     public BookingResponse getForStaff(@PathVariable Long id) {
+
         return bookings.getForStaff(id);
     }
 
     @PatchMapping("/api/admin/bookings/{id}/status")
     public BookingResponse updateStatus(@PathVariable Long id,
-                                        @Valid @RequestBody UpdateBookingStatusRequest request) {
+            @Valid @RequestBody UpdateBookingStatusRequest request) {
+
         return bookings.updateStatus(id, request.status());
     }
 }

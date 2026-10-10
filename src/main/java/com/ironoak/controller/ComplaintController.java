@@ -37,6 +37,7 @@ public class ComplaintController {
     @PostMapping("/api/complaints")
     @ResponseStatus(HttpStatus.CREATED)
     public ComplaintResponse file(@Valid @RequestBody ComplaintRequest request) {
+
         return complaints.create(request);
     }
 
@@ -44,12 +45,14 @@ public class ComplaintController {
     public PagedModel<ComplaintResponse> list(
             ComplaintFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
         return new PagedModel<>(complaints.list(filter, pageable));
     }
 
     @PatchMapping("/api/admin/complaints/{id}/status")
     public ComplaintResponse updateStatus(@PathVariable Long id,
             @Valid @RequestBody UpdateComplaintStatusRequest request) {
+
         return complaints.updateStatus(id, request.status());
     }
 }

@@ -40,6 +40,7 @@ public class AdminServiceOfferingController {
     public AdminServiceOfferingController(AdminServiceOfferingService services,
             AdminToolCategoryService adminToolCategories,
             ToolCategoryService toolCategories) {
+
         this.services = services;
         this.adminToolCategories = adminToolCategories;
         this.toolCategories = toolCategories;
@@ -51,45 +52,53 @@ public class AdminServiceOfferingController {
             @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) PricingType pricingType,
             @RequestParam(required = false) Boolean active) {
+
         return services.list(search, categoryId, pricingType, active);
     }
 
     @GetMapping("/services/{id}")
     public AdminServiceOfferingResponse get(@PathVariable Long id) {
+
         return services.get(id);
     }
 
     @PostMapping("/services")
     @ResponseStatus(HttpStatus.CREATED)
     public AdminServiceOfferingResponse create(@Valid @RequestBody ServiceOfferingRequest request) {
+
         return services.create(request);
     }
 
     @PutMapping("/services/{id}")
     public AdminServiceOfferingResponse update(@PathVariable Long id,
             @Valid @RequestBody ServiceOfferingRequest request) {
+
         return services.update(id, request);
     }
 
     @PatchMapping("/services/{id}/active")
     public AdminServiceOfferingResponse setActive(@PathVariable Long id,
             @Valid @RequestBody UpdateActiveRequest request) {
+
         return services.setActive(id, request.isActive());
     }
 
     @GetMapping("/service-categories")
     public List<ServiceCategoryResponse> serviceCategories() {
+
         return services.listCategories();
     }
 
     @GetMapping("/tool-categories")
     public List<ToolCategoryResponse> toolCategories() {
+
         return toolCategories.list();
     }
 
     @PutMapping("/tool-categories/{id}")
     public ToolCategoryResponse updateToolCategory(@PathVariable Long id,
             @Valid @RequestBody UpdateToolCategoryRequest request) {
+
         return adminToolCategories.update(id, request);
     }
 }

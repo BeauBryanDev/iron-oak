@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Customers file and follow claims with their email (?email=); staff review under /api/admin. */
+/**
+ * Customers file and follow claims with their email (?email=); staff review
+ * under /api/admin.
+ */
 @RestController
 public class WarrantyClaimController {
 
@@ -36,16 +39,19 @@ public class WarrantyClaimController {
     @PostMapping("/api/warranty-claims")
     @ResponseStatus(HttpStatus.CREATED)
     public WarrantyClaimResponse file(@Valid @RequestBody CreateWarrantyClaimRequest request) {
+
         return claims.create(request);
     }
 
     @GetMapping("/api/warranty-claims")
     public List<WarrantyClaimResponse> listMine(@RequestParam String email) {
+
         return claims.listMine(email);
     }
 
     @GetMapping("/api/warranty-claims/{id}")
     public WarrantyClaimResponse get(@PathVariable Long id, @RequestParam String email) {
+
         return claims.get(id, email);
     }
 
@@ -53,17 +59,20 @@ public class WarrantyClaimController {
     public PagedModel<WarrantyClaimResponse> list(
             WarrantyClaimFilter filter,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+
         return new PagedModel<>(claims.list(filter, pageable));
     }
 
     @GetMapping("/api/admin/warranty-claims/{id}")
     public WarrantyClaimResponse getForStaff(@PathVariable Long id) {
+
         return claims.getForStaff(id);
     }
 
     @PatchMapping("/api/admin/warranty-claims/{id}/status")
     public WarrantyClaimResponse updateStatus(@PathVariable Long id,
-                                              @Valid @RequestBody UpdateWarrantyClaimStatusRequest request) {
+            @Valid @RequestBody UpdateWarrantyClaimStatusRequest request) {
+
         return claims.updateStatus(id, request);
     }
 }

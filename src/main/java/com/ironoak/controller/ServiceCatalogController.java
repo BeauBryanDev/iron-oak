@@ -10,7 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-/** Public technical-service catalog and the milling machines it supports. Read-only. */
+/**
+ * Public technical-service catalog and the milling machines it supports.
+ * Read-only.
+ */
 @RestController
 @RequestMapping("/api/services")
 public class ServiceCatalogController {
@@ -23,21 +26,25 @@ public class ServiceCatalogController {
 
     @GetMapping
     public List<ServiceOfferingResponse> listServices() {
+
         return catalog.listServices();
     }
 
     @GetMapping("/{code}")
     public ServiceOfferingResponse getService(@PathVariable String code) {
+
         return catalog.getService(code);
     }
 
     @GetMapping("/machines")
     public List<MillingMachineResponse> listMachines() {
+
         return catalog.listMachines();
     }
 
     @GetMapping("/machines/{modelCode}")
     public MillingMachineResponse getMachine(@PathVariable String modelCode) {
+
         return catalog.getMachine(modelCode);
     }
 }
