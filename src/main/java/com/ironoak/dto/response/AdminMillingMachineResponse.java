@@ -14,6 +14,8 @@ public record AdminMillingMachineResponse(
         int tableWidthMm,
         BigDecimal price,
         int warrantyMonths,
+        BigDecimal weightKg,
+        BigDecimal volumeM3,
         String imageUrl,
         boolean isActive) {
 }

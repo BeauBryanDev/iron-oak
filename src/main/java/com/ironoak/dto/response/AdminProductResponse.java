@@ -14,6 +14,8 @@ public record AdminProductResponse(
         BigDecimal price,
         int stockQuantity,
         int warrantyMonths,
+        BigDecimal weightKg,
+        BigDecimal volumeM3,
         String imageUrl,
         boolean isActive,
         Long toolCategoryId,

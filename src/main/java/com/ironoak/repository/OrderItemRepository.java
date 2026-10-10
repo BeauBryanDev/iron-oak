@@ -19,11 +19,11 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
      * dashboard.
      */
     @Query("""
-            select i.product.id as productId, i.product.name as name, sum(i.quantity) as unitsSold
+            select i.product.id as productId, max(i.itemName) as name, sum(i.quantity) as unitsSold
             from OrderItem i
             where i.itemType = :itemType
               and i.order.status = :status
-            group by i.product.id, i.product.name
+            group by i.product.id
             order by sum(i.quantity) desc
             """)
     List<TopProduct> findTopSellingProducts(@Param("itemType") OrderItemType itemType,

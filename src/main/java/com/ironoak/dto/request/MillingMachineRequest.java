@@ -22,6 +22,8 @@ public record MillingMachineRequest(
         @NotNull @Positive Integer tableWidthMm,
         @NotNull @DecimalMin("0.0") @Digits(integer = 8, fraction = 2) BigDecimal price,
         @NotNull @Min(0) Integer warrantyMonths,
+        @Positive @Digits(integer = 6, fraction = 3) BigDecimal weightKg,
+        @Positive @Digits(integer = 4, fraction = 4) BigDecimal volumeM3,
         @Size(max = 500) String imageUrl,
         Boolean isActive) {
 }

@@ -19,5 +19,15 @@ public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpec
     Optional<Payment> findByProviderAndProviderReference(String provider, String providerReference);
 
     @Query("select coalesce(sum(p.amount), 0) from Payment p where p.order.id = :orderId and p.status = :status")
-    BigDecimal sumAmountByOrderAndStatus(@Param("orderId") Long orderId, @Param("status") PaymentStatus status);
+    BigDecimal sumAmountByOrderAndStatus(@Param("orderId") Long orderId,
+            @Param("status") PaymentStatus status);
+
+    Optional<Payment> findByCheckoutSessionId(String checkoutSessionId);
+
+    Optional<Payment> findByPaymentIntentId(String paymentIntentId);
+
+    Optional<Payment> findByIdempotencyKey(String idempotencyKey);
+
+    boolean existsByOrderIdAndStatusIn(Long orderId,
+            java.util.Collection<PaymentStatus> statuses);
 }

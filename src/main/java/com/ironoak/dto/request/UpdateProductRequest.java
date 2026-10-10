@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -23,6 +24,8 @@ public record UpdateProductRequest(
         String description,
         @NotNull @DecimalMin("0.0") @Digits(integer = 8, fraction = 2) BigDecimal price,
         @NotNull @Min(0) Integer warrantyMonths,
+        @Positive @Digits(integer = 5, fraction = 3) BigDecimal weightKg,
+        @Positive @Digits(integer = 4, fraction = 4) BigDecimal volumeM3,
         @Size(max = 500) String imageUrl,
         Boolean isActive) {
 }
