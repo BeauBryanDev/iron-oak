@@ -37,11 +37,21 @@ public class StripePaymentController {
      * Returns the Stripe-hosted page to send the customer to; asking again returns
      * the same open page.
      */
-    @PostMapping("/api/orders/{id}/checkout-session")
+    @PostMapping("/api/orders/{id:\\d+}/checkout-session")
     public CheckoutSessionResponse startCheckout(@PathVariable Long id,
             @Valid @RequestBody CheckoutSessionRequest request) {
 
         return checkout.createSession(id, request.email());
+    }
+
+    /**
+     * Pays by order number alone (orders Piper created); no email needed, none
+     * shown to Stripe.
+     */
+    @PostMapping("/api/orders/{orderNumber:[Ii][Oo]-[A-Za-z0-9-]+}/checkout-session")
+    public CheckoutSessionResponse startCheckoutByNumber(@PathVariable String orderNumber) {
+
+        return checkout.createSessionByNumber(orderNumber);
     }
 
     /**

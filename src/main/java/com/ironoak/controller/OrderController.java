@@ -1,5 +1,7 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.response.PublicOrderResponse;
+import com.ironoak.dto.request.SetShippingCostRequest;
 import com.ironoak.dto.request.OrderFilter;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
@@ -49,11 +51,33 @@ public class OrderController {
     /**
      * A customer reads back their order by proving the email it was placed under.
      */
-    @GetMapping("/api/orders/{id}")
+    @GetMapping("/api/orders/{id:\\d+}")
     public OrderResponse getMine(@PathVariable Long id,
             @RequestParam String email) {
 
         return orders.getForCustomer(id, email);
+    }
+
+    /**
+     * Anyone with the order number sees the order without personal data, e.g. to
+     * pay an order
+     * Piper created (then POST /api/orders/{orderNumber}/checkout-session).
+     */
+    @GetMapping("/api/orders/{orderNumber:[Ii][Oo]-[A-Za-z0-9-]+}")
+    public PublicOrderResponse getByNumber(@PathVariable String orderNumber) {
+
+        return orders.getPublic(orderNumber);
+    }
+
+    /**
+     * Staff set the shipping of an order, typically one waiting for a freight
+     * quote.
+     */
+    @PatchMapping("/api/admin/orders/{id}/shipping")
+    public OrderResponse setShipping(@PathVariable Long id,
+            @Valid @RequestBody SetShippingCostRequest request) {
+
+        return orders.setShippingCost(id, request.shippingCost());
     }
 
     @PostMapping("/api/admin/orders")
