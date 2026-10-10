@@ -189,8 +189,8 @@ class V3ControllersTest {
         send(asJson(post("/api/admin/payments"), body), 401);
         JsonNode payment = json(send(asJson(asAdmin(post("/api/admin/payments")), body), 201));
         assertThat(payment.get("status").asText()).isEqualTo("PENDING");
-        // 289.99 + 2.50 domestic shipping
-        assertThat(payment.get("amount").decimalValue()).isEqualByComparingTo("292.49");
+        // 289.99 + 2.53 shipping inside Bogota
+        assertThat(payment.get("amount").decimalValue()).isEqualByComparingTo("292.52");
 
         send(asJson(asAdmin(patch("/api/admin/payments/" + payment.get("id").asLong() + "/status")), "{\"status\":\"PAID\"}"), 200);
         mockMvc.perform(asAdmin(get("/api/admin/orders/" + orderId + "/payments")))

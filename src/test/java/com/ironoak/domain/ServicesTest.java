@@ -1,5 +1,6 @@
 package com.ironoak.domain;
 
+import com.ironoak.domain.enums.ShippingStatus;
 import com.ironoak.domain.enums.PaymentStatus;
 import com.ironoak.dto.request.CreatePaymentRequest;
 import com.ironoak.services.PaymentService;
@@ -122,15 +123,16 @@ class ServicesTest {
 
         // 2 x 289.99 + 240.00 + (180.00 x 3.0 = 540.00) + 4250.00
         assertThat(order.subtotal()).isEqualByComparingTo("5609.98");
-        // Bogota to Bogota: domestic base fees only (tools 2.50 + machines 48.00); no weights seeded yet
-        assertThat(order.shippingCost()).isEqualByComparingTo("50.50");
+        // a milling machine makes the whole shipment freight that staff quote: nothing charged yet
+        assertThat(order.shippingStatus()).isEqualTo(ShippingStatus.ON_REQUEST);
+        assertThat(order.shippingCost()).isEqualByComparingTo("0");
         assertThat(order.taxes()).isEqualByComparingTo("0");
-        assertThat(order.grandTotal()).isEqualByComparingTo("5660.48");
+        assertThat(order.grandTotal()).isEqualByComparingTo("5609.98");
         assertThat(order.currency()).isEqualTo("USD");
         assertThat(order.status()).isEqualTo(OrderStatus.PENDING_PAYMENT);
         assertThat(order.channel()).isEqualTo(OrderChannel.WEB_CHECKOUT);
         assertThat(order.orderNumber()).matches("IO-\\d{8}-[A-Z2-9]{8}");
-        assertThat(order.reservationExpiresAt()).isAfter(OffsetDateTime.now());
+        assertThat(order.reservationExpiresAt()).isAfter(OffsetDateTime.now().plusHours(71)); // held while quoted
         assertThat(order.customerName()).isEqualTo("Jane Doe");
         assertThat(order.customerEmail()).isEqualTo("jane@example.com");
         assertThat(order.items()).hasSize(4);
@@ -235,8 +237,8 @@ class ServicesTest {
         assertThat(kpis.webCheckoutOrders()).isEqualTo(1);
         assertThat(kpis.piperOrders()).isZero();
         assertThat(kpis.pendingPaymentOrders()).isZero();
-        // 2 x 289.99 + 2.50 domestic tools shipping
-        assertThat(kpis.completedRevenue()).isEqualByComparingTo("582.48");
+        // 2 x 289.99 + 2.53 shipping (warehouse to Bogota is a 16.1 km route, seeded by V8)
+        assertThat(kpis.completedRevenue()).isEqualByComparingTo("582.51");
         assertThat(kpis.pendingComplaints()).isZero();
         assertThat(kpis.topProducts()).hasSize(1);
         assertThat(kpis.topProducts().get(0).unitsSold()).isEqualTo(2L);
