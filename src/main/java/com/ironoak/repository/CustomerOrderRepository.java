@@ -45,6 +45,9 @@ public interface CustomerOrderRepository
 
         boolean existsByOrderNumber(String orderNumber);
 
+    @Query("select o.id from CustomerOrder o where o.orderNumber = :orderNumber")
+    Optional<Long> findIdByOrderNumber(@Param("orderNumber") String orderNumber);
+
         /**
          * Loads the order and locks its row until the transaction ends (SELECT ... FOR
          * UPDATE), so a

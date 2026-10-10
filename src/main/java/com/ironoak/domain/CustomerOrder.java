@@ -2,6 +2,9 @@ package com.ironoak.domain;
 
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
+import com.ironoak.domain.enums.ShippingMode;
+import com.ironoak.domain.enums.ShippingSource;
+import com.ironoak.domain.enums.ShippingStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -18,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An order header with the buyer's contact and shipping details copied onto it
+ * An order header with the buyer's contact and shi
+ * pping details copied onto it
  * (the customer
  * row can change later; the order must not). The database enforces
  * grand_total = subtotal + shipping_cost + taxes.
@@ -115,6 +119,27 @@ public class CustomerOrder {
     @NotNull
     @Pattern(regexp = "[A-Z]{3}")
     private String currency = "USD";
+
+    /** ON_REQUEST: staff must set shipping_cost before the order can be paid. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "shipping_status", nullable = false, length = 20)
+    @NotNull
+    private ShippingStatus shippingStatus = ShippingStatus.QUOTED;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "shipping_mode", length = 10)
+    private ShippingMode shippingMode;
+
+    /**
+     * Road km the shipping price was computed with; null for air or on-request
+     * shipping.
+     */
+    @Column(name = "shipping_distance_km", precision = 8, scale = 1)
+    private BigDecimal shippingDistanceKm;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "shipping_source", length = 20)
+    private ShippingSource shippingSource;
 
     /**
      * True while this order holds product stock that was taken from inventory and
@@ -331,6 +356,38 @@ public class CustomerOrder {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    public ShippingStatus getShippingStatus() {
+        return shippingStatus;
+    }
+
+    public void setShippingStatus(ShippingStatus shippingStatus) {
+        this.shippingStatus = shippingStatus;
+    }
+
+    public ShippingMode getShippingMode() {
+        return shippingMode;
+    }
+
+    public void setShippingMode(ShippingMode shippingMode) {
+        this.shippingMode = shippingMode;
+    }
+
+    public BigDecimal getShippingDistanceKm() {
+        return shippingDistanceKm;
+    }
+
+    public void setShippingDistanceKm(BigDecimal shippingDistanceKm) {
+        this.shippingDistanceKm = shippingDistanceKm;
+    }
+
+    public ShippingSource getShippingSource() {
+        return shippingSource;
+    }
+
+    public void setShippingSource(ShippingSource shippingSource) {
+        this.shippingSource = shippingSource;
     }
 
     public boolean isStockReserved() {
