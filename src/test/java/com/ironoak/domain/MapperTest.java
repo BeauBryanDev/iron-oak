@@ -90,20 +90,21 @@ class MapperTest {
         Long customerId = ((Number) em.createNativeQuery(
                 "INSERT INTO customer (name) VALUES ('Jane Doe') RETURNING id").getSingleResult()).longValue();
         Long orderId = ((Number) em.createNativeQuery("""
-                INSERT INTO customer_order (customer_id, status, channel, total_amount)
-                VALUES (?, 'CONFIRMED', 'AGENT_CHAT', 0) RETURNING id
+                INSERT INTO customer_order (customer_id, order_number, order_status, channel, customer_name,
+                                            subtotal, grand_total)
+                VALUES (?, 'IO-TEST-MAPPER', 'CONFIRMED', 'ADMIN_MANUAL', 'Jane Doe', 4510.00, 4510.00) RETURNING id
                 """).setParameter(1, customerId).getSingleResult()).longValue();
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, product_id, quantity, unit_price, subtotal)
-                SELECT ?, 'PRODUCT', id, 2, 10.00, 20.00 FROM product WHERE sku = 'IO-AICO-001'
+                INSERT INTO order_item (order_id, item_type, product_id, item_name, item_code, quantity, price, subtotal)
+                SELECT ?, 'PRODUCT', id, 'Air compressor (as sold)', sku, 2, 10.00, 20.00 FROM product WHERE sku = 'IO-AICO-001'
                 """).setParameter(1, orderId).executeUpdate();
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, service_offering_id, quantity, unit_price, subtotal)
-                SELECT ?, 'SERVICE', id, 1, 240.00, 240.00 FROM service_offering WHERE code = 'PREVENTIVE_MAINTENANCE'
+                INSERT INTO order_item (order_id, item_type, service_offering_id, item_name, item_code, quantity, price, subtotal)
+                SELECT ?, 'SERVICE', id, name, code, 1, 240.00, 240.00 FROM service_offering WHERE code = 'PREVENTIVE_MAINTENANCE'
                 """).setParameter(1, orderId).executeUpdate();
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, milling_machine_id, quantity, unit_price, subtotal)
-                SELECT ?, 'MACHINE', id, 1, 4250.00, 4250.00 FROM milling_machine WHERE model_code = 'BM-200'
+                INSERT INTO order_item (order_id, item_type, milling_machine_id, item_name, item_code, quantity, price, subtotal)
+                SELECT ?, 'MACHINE', id, name, model_code, 1, 4250.00, 4250.00 FROM milling_machine WHERE model_code = 'BM-200'
                 """).setParameter(1, orderId).executeUpdate();
         em.flush();
         em.clear();
@@ -114,7 +115,11 @@ class MapperTest {
         assertThat(dto.items()).hasSize(3);
         assertThat(dto.items()).extracting("itemType")
                 .containsExactlyInAnyOrder(OrderItemType.PRODUCT, OrderItemType.SERVICE, OrderItemType.MACHINE);
+        // names come from the order's own snapshot, not from today's catalog
         assertThat(dto.items()).extracting("name")
-                .containsExactlyInAnyOrder("AIR COMPRESSORS", "Preventive Maintenance", "Benchtop Mill");
+                .containsExactlyInAnyOrder("Air compressor (as sold)", "Preventive Maintenance", "Benchtop Mill");
+        assertThat(dto.items()).extracting("itemCode")
+                .containsExactlyInAnyOrder("IO-AICO-001", "PREVENTIVE_MAINTENANCE", "BM-200");
+        assertThat(dto.grandTotal()).isEqualByComparingTo("4510.00");
     }
 }

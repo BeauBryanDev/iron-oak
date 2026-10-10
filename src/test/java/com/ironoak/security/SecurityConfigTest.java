@@ -95,6 +95,24 @@ class SecurityConfigTest {
     }
 
     @Test
+    void healthIsPublicButOnlyStaffSeeTheDetails() throws Exception {
+        mockMvc.perform(get("/actuator/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UP"))
+                .andExpect(jsonPath("$.components").doesNotExist());
+        mockMvc.perform(get("/actuator/health/liveness")).andExpect(status().isOk());
+        mockMvc.perform(get("/actuator/health/readiness")).andExpect(status().isOk());
+
+        mockMvc.perform(get("/actuator/health").header("Authorization", "Bearer " + jwtService.issueToken("owner")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.components.db.status").value("UP"))
+                .andExpect(jsonPath("$.components.payments").exists());
+
+        // nothing else from actuator is exposed
+        mockMvc.perform(get("/actuator/env")).andExpect(status().is4xxClientError());
+    }
+
+    @Test
     void dashboardIsReachableWithAValidToken() throws Exception {
         String token = jwtService.issueToken("owner");
 
@@ -128,7 +146,7 @@ class SecurityConfigTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("owner"))
                 .andExpect(jsonPath("$.fullName").value("Store Owner"))
-                .andExpect(jsonPath("$.expiresInMinutes").value(120))
+                .andExpect(jsonPath("$.expiresInMinutes").value(15))
                 .andReturn().getResponse().getContentAsString();
 
         String token = objectMapper.readTree(response).get("token").asText();

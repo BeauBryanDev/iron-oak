@@ -1,5 +1,10 @@
 package com.ironoak.domain;
 
+import com.ironoak.domain.enums.PaymentStatus;
+import com.ironoak.dto.request.CreatePaymentRequest;
+import com.ironoak.services.PaymentService;
+import com.ironoak.TestOrders;
+import com.ironoak.dto.request.ComplaintFilter;
 import com.ironoak.domain.enums.ComplaintStatus;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderItemType;
@@ -67,6 +72,8 @@ class ServicesTest {
     @Autowired
     private DashboardService dashboard;
     @Autowired
+    private PaymentService payments;
+    @Autowired
     private ProductRepository products;
     @Autowired
     private EntityManager em;
@@ -105,61 +112,90 @@ class ServicesTest {
     @Test
     void createsMixedOrderPricedFromCatalogAndTakesStock() {
         int before = stock("IO-AICO-001");
-        var request = new CreateOrderRequest("Jane Doe", "jane@example.com", null, List.of(
+        var request = TestOrders.web("Jane Doe", "Jane@Example.com", List.of(
                 new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 2, null),
                 new Item(OrderItemType.SERVICE, serviceId("PREVENTIVE_MAINTENANCE"), 1, null),
                 new Item(OrderItemType.SERVICE, serviceId("EMERGENCY_REPAIR"), 1, new BigDecimal("3.0")),
                 new Item(OrderItemType.MACHINE, machineId("BM-200"), 1, null)));
 
-        OrderResponse order = orders.create(request, OrderChannel.AGENT_CHAT);
+        OrderResponse order = orders.create(request, OrderChannel.WEB_CHECKOUT);
 
         // 2 x 289.99 + 240.00 + (180.00 x 3.0 = 540.00) + 4250.00
-        assertThat(order.totalAmount()).isEqualByComparingTo("5609.98");
-        assertThat(order.status()).isEqualTo(OrderStatus.CONFIRMED);
+        assertThat(order.subtotal()).isEqualByComparingTo("5609.98");
+        // Bogota to Bogota: domestic base fees only (tools 2.50 + machines 48.00); no weights seeded yet
+        assertThat(order.shippingCost()).isEqualByComparingTo("50.50");
+        assertThat(order.taxes()).isEqualByComparingTo("0");
+        assertThat(order.grandTotal()).isEqualByComparingTo("5660.48");
+        assertThat(order.currency()).isEqualTo("USD");
+        assertThat(order.status()).isEqualTo(OrderStatus.PENDING_PAYMENT);
+        assertThat(order.channel()).isEqualTo(OrderChannel.WEB_CHECKOUT);
+        assertThat(order.orderNumber()).matches("IO-\\d{8}-[A-Z2-9]{8}");
+        assertThat(order.reservationExpiresAt()).isAfter(OffsetDateTime.now());
         assertThat(order.customerName()).isEqualTo("Jane Doe");
+        assertThat(order.customerEmail()).isEqualTo("jane@example.com");
         assertThat(order.items()).hasSize(4);
+        assertThat(order.items()).extracting("itemCode")
+                .containsExactlyInAnyOrder("IO-AICO-001", "PREVENTIVE_MAINTENANCE", "EMERGENCY_REPAIR", "BM-200");
         assertThat(stock("IO-AICO-001")).isEqualTo(before - 2);
+    }
+
+    @Test
+    void webOrdersNeedAContactAndAnAddressForGoods() {
+        var product = List.of(new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 1, null));
+        assertThatThrownBy(() -> orders.create(TestOrders.staff(product), OrderChannel.WEB_CHECKOUT))
+                .isInstanceOf(InvalidOrderException.class).hasMessageContaining("customerEmail");
+        var noAddress = new CreateOrderRequest("Jane", "jane@example.com", null, null, null, null, null, product);
+        assertThatThrownBy(() -> orders.create(noAddress, OrderChannel.WEB_CHECKOUT))
+                .isInstanceOf(InvalidOrderException.class).hasMessageContaining("shippingAddress");
+        var abroad = new CreateOrderRequest("Jane", "jane@example.com", null, "FR", null, "Paris", "Rue 1", product);
+        assertThatThrownBy(() -> orders.create(abroad, OrderChannel.WEB_CHECKOUT))
+                .isInstanceOf(InvalidOrderException.class).hasMessageContaining("deliver");
+
+        // services are not shipped, so no address is needed
+        var service = List.of(new Item(OrderItemType.SERVICE, serviceId("PREVENTIVE_MAINTENANCE"), 1, null));
+        var serviceOnly = new CreateOrderRequest("Jane", "jane@example.com", null, null, null, null, null, service);
+        assertThat(orders.create(serviceOnly, OrderChannel.WEB_CHECKOUT).shippingCost()).isEqualByComparingTo("0");
+
+        // staff orders need neither and start confirmed
+        OrderResponse staff = orders.create(TestOrders.staff(product), OrderChannel.ADMIN_MANUAL);
+        assertThat(staff.status()).isEqualTo(OrderStatus.CONFIRMED);
+        assertThat(staff.reservationExpiresAt()).isNull();
     }
 
     @Test
     void outOfStockRejectsTheWholeOrder() {
         int before = stock("IO-AICO-001");
-        var request = new CreateOrderRequest(null, null, null, List.of(
+        var request = TestOrders.web("Jane Doe", "jane@example.com", List.of(
                 new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 1, null),
                 new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), before + 5, null)));
 
-        assertThatThrownBy(() -> orders.create(request, OrderChannel.AGENT_CHAT))
+        assertThatThrownBy(() -> orders.create(request, OrderChannel.WEB_CHECKOUT))
                 .isInstanceOf(OutOfStockException.class);
     }
 
     @Test
     void rejectsQuoteOnlyAndBadHourlyServices() {
-        var quote = new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.SERVICE, serviceId("SPINDLE_TOOLING_SERVICE"), 1, null)));
-        assertThatThrownBy(() -> orders.create(quote, OrderChannel.AGENT_CHAT))
+        var quote = TestOrders.staff(List.of(new Item(OrderItemType.SERVICE, serviceId("SPINDLE_TOOLING_SERVICE"), 1, null)));
+        assertThatThrownBy(() -> orders.create(quote, OrderChannel.ADMIN_MANUAL))
                 .isInstanceOf(InvalidOrderException.class).hasMessageContaining("quote");
 
-        var noHours = new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.SERVICE, serviceId("EMERGENCY_REPAIR"), 1, null)));
-        assertThatThrownBy(() -> orders.create(noHours, OrderChannel.AGENT_CHAT))
+        var noHours = TestOrders.staff(List.of(new Item(OrderItemType.SERVICE, serviceId("EMERGENCY_REPAIR"), 1, null)));
+        assertThatThrownBy(() -> orders.create(noHours, OrderChannel.ADMIN_MANUAL))
                 .isInstanceOf(InvalidOrderException.class);
 
-        var tooMany = new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.SERVICE, serviceId("EMERGENCY_REPAIR"), 1, new BigDecimal("9"))));
-        assertThatThrownBy(() -> orders.create(tooMany, OrderChannel.AGENT_CHAT))
+        var tooMany = TestOrders.staff(List.of(new Item(OrderItemType.SERVICE, serviceId("EMERGENCY_REPAIR"), 1, new BigDecimal("9"))));
+        assertThatThrownBy(() -> orders.create(tooMany, OrderChannel.ADMIN_MANUAL))
                 .isInstanceOf(InvalidOrderException.class);
 
-        var missing = new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.PRODUCT, 999999L, 1, null)));
-        assertThatThrownBy(() -> orders.create(missing, OrderChannel.AGENT_CHAT))
+        var missing = TestOrders.staff(List.of(new Item(OrderItemType.PRODUCT, 999999L, 1, null)));
+        assertThatThrownBy(() -> orders.create(missing, OrderChannel.ADMIN_MANUAL))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void statusTransitionsAndCancelRestoresStock() {
         int before = stock("IO-AICO-001");
-        var request = new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 3, null)));
+        var request = TestOrders.staff(List.of(new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 3, null)));
         OrderResponse order = orders.create(request, OrderChannel.ADMIN_MANUAL);
         assertThat(stock("IO-AICO-001")).isEqualTo(before - 3);
 
@@ -179,21 +215,28 @@ class ServicesTest {
         var created = complaints.create(new ComplaintRequest("Jane Doe", OffsetDateTime.now().minusDays(1),
                 "Jigsaw", "Blade snapped on first use"));
         assertThat(created.status()).isEqualTo(ComplaintStatus.PENDING);
-        assertThat(complaints.list(ComplaintStatus.PENDING, PageRequest.of(0, 10)).getContent())
+        assertThat(complaints.list(new ComplaintFilter(List.of(ComplaintStatus.PENDING), null, null, null), PageRequest.of(0, 10)).getContent())
                 .extracting("id").contains(created.id());
         assertThat(complaints.updateStatus(created.id(), ComplaintStatus.RESOLVED).status())
                 .isEqualTo(ComplaintStatus.RESOLVED);
 
-        var order = orders.create(new CreateOrderRequest(null, null, null,
-                List.of(new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 2, null))), OrderChannel.AGENT_CHAT);
+        var order = orders.create(TestOrders.web("Jane Doe", "jane@example.com",
+                List.of(new Item(OrderItemType.PRODUCT, productId("IO-AICO-001"), 2, null))), OrderChannel.WEB_CHECKOUT);
+        assertThat(dashboard.kpis().pendingPaymentOrders()).isEqualTo(1);
+        var payment = payments.create(new CreatePaymentRequest(order.id(), "manual", "bank-transfer-1"));
+        payments.updateStatus(payment.id(), PaymentStatus.PAID); // a full payment confirms the order
+        assertThat(orders.get(order.id()).status()).isEqualTo(OrderStatus.CONFIRMED);
         orders.updateStatus(order.id(), OrderStatus.IN_PROGRESS);
         orders.updateStatus(order.id(), OrderStatus.COMPLETED);
         em.flush();
 
         var kpis = dashboard.kpis();
         assertThat(kpis.completedOrders()).isEqualTo(1);
-        assertThat(kpis.agentChatOrders()).isEqualTo(1);
-        assertThat(kpis.completedRevenue()).isEqualByComparingTo("579.98");
+        assertThat(kpis.webCheckoutOrders()).isEqualTo(1);
+        assertThat(kpis.piperOrders()).isZero();
+        assertThat(kpis.pendingPaymentOrders()).isZero();
+        // 2 x 289.99 + 2.50 domestic tools shipping
+        assertThat(kpis.completedRevenue()).isEqualByComparingTo("582.48");
         assertThat(kpis.pendingComplaints()).isZero();
         assertThat(kpis.topProducts()).hasSize(1);
         assertThat(kpis.topProducts().get(0).unitsSold()).isEqualTo(2L);

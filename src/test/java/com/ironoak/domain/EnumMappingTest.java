@@ -46,8 +46,10 @@ class EnumMappingTest {
     @Test
     void writesAndReadsEveryNativeEnumType() {
         Long orderId = ((Number) em.createNativeQuery("""
-                INSERT INTO customer_order (status, channel, total_amount)
-                VALUES ('CONFIRMED', 'AGENT_CHAT', 149.99) RETURNING id
+                INSERT INTO customer_order (order_number, order_status, channel, subtotal, grand_total,
+                                            reservation_expires_at)
+                VALUES ('IO-TEST-ENUM', 'PENDING_PAYMENT', 'PIPER', 90.00, 90.00, now() + interval '30 minutes')
+                RETURNING id
                 """).getSingleResult()).longValue();
 
         Long categoryId = ((Number) em.createNativeQuery(
@@ -63,8 +65,9 @@ class EnumMappingTest {
                 """).setParameter(1, categoryId).getSingleResult()).longValue();
 
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, service_offering_id, quantity, unit_price, subtotal)
-                VALUES (?, 'SERVICE', ?, 2, 45.00, 90.00)
+                INSERT INTO order_item (order_id, item_type, service_offering_id, item_name, item_code,
+                                        quantity, price, subtotal)
+                VALUES (?, 'SERVICE', ?, 'Leak repair', 'LEAK_REPAIR', 2, 45.00, 90.00)
                 """).setParameter(1, orderId).setParameter(2, serviceId).executeUpdate();
 
         Long sessionId = ((Number) em.createNativeQuery(
@@ -86,8 +89,8 @@ class EnumMappingTest {
         // read path
         assertThat(em.find(Complaint.class, complaintId).getStatus()).isEqualTo(ComplaintStatus.PENDING);
         CustomerOrder order = em.find(CustomerOrder.class, orderId);
-        assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
-        assertThat(order.getChannel()).isEqualTo(OrderChannel.AGENT_CHAT);
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.PENDING_PAYMENT);
+        assertThat(order.getChannel()).isEqualTo(OrderChannel.PIPER);
 
         ServiceOffering service = em.find(ServiceOffering.class, serviceId);
         assertThat(service.getPricingType()).isEqualTo(PricingType.HOURLY);

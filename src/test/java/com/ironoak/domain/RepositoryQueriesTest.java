@@ -1,5 +1,6 @@
 package com.ironoak.domain;
 
+import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
 import com.ironoak.repository.CustomerOrderRepository;
 import com.ironoak.repository.CustomerRepository;
@@ -93,15 +94,17 @@ class RepositoryQueriesTest {
         em.createNativeQuery("INSERT INTO customer (name, email) VALUES ('Jane Doe', 'Jane@Example.com')")
                 .executeUpdate();
         em.createNativeQuery("""
-                INSERT INTO customer_order (status, channel, total_amount)
-                VALUES ('COMPLETED', 'AGENT_CHAT', 100.50), ('COMPLETED', 'ADMIN_MANUAL', 20.00),
-                       ('DRAFT', 'AGENT_CHAT', 5.00)
+                INSERT INTO customer_order (order_number, order_status, channel, subtotal, grand_total)
+                VALUES ('IO-T-1', 'COMPLETED', 'WEB_CHECKOUT', 100.50, 100.50),
+                       ('IO-T-2', 'COMPLETED', 'ADMIN_MANUAL', 20.00, 20.00),
+                       ('IO-T-3', 'DRAFT', 'PIPER', 5.00, 5.00)
                 """).executeUpdate();
         em.flush();
         em.clear();
 
         assertThat(customers.findFirstByEmailIgnoreCase("jane@example.com")).isPresent();
         assertThat(orders.countByStatus(OrderStatus.COMPLETED)).isEqualTo(2);
+        assertThat(orders.countByChannel(OrderChannel.WEB_CHECKOUT)).isEqualTo(1);
         assertThat(orders.sumTotalByStatus(OrderStatus.COMPLETED))
                 .isEqualByComparingTo(new BigDecimal("120.50"));
         assertThat(orders.findByStatus(OrderStatus.DRAFT, PageRequest.of(0, 10)).getContent()).hasSize(1);
@@ -114,12 +117,13 @@ class RepositoryQueriesTest {
         Long second = picked.get(1).getId();
 
         Long orderId = ((Number) em.createNativeQuery("""
-                INSERT INTO customer_order (status, channel, total_amount)
-                VALUES ('COMPLETED', 'AGENT_CHAT', 10.00) RETURNING id
+                INSERT INTO customer_order (order_number, order_status, channel, subtotal, grand_total)
+                VALUES ('IO-T-TOP', 'COMPLETED', 'WEB_CHECKOUT', 25.00, 25.00) RETURNING id
                 """).getSingleResult()).longValue();
         em.createNativeQuery("""
-                INSERT INTO order_item (order_id, item_type, product_id, quantity, unit_price, subtotal)
-                VALUES (?1, 'PRODUCT', ?2, 1, 5.00, 5.00), (?1, 'PRODUCT', ?3, 4, 5.00, 20.00)
+                INSERT INTO order_item (order_id, item_type, product_id, item_name, item_code, quantity, price, subtotal)
+                VALUES (?1, 'PRODUCT', ?2, 'First', 'SKU-1', 1, 5.00, 5.00),
+                       (?1, 'PRODUCT', ?3, 'Second', 'SKU-2', 4, 5.00, 20.00)
                 """).setParameter(1, orderId).setParameter(2, first).setParameter(3, second).executeUpdate();
         em.flush();
         em.clear();
