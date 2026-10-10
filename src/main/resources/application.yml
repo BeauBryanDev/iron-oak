@@ -77,6 +77,8 @@ springdoc:
     persist-authorization: true   # keep the pasted token across page reloads
     tags-sorter: alpha
     operations-sorter: alpha
+    # open on the public group (must equal its displayName in OpenApiConfig); admin is in the top-right dropdown
+    urls-primary-name: "Public (storefront, checkout)"
 
 management:
   endpoints:

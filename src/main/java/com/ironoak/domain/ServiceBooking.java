@@ -40,6 +40,15 @@ public class ServiceBooking {
     @NotBlank
     private String locationAddress;
 
+    /** ISO country of the visit (V11); null on bookings made before V11. */
+    @Column(length = 2)
+    @Size(min = 2, max = 2)
+    private String country;
+
+    @Column(length = 100)
+    @Size(max = 100)
+    private String city;
+
     @Column(name = "scheduled_at", nullable = false)
     @NotNull
     private OffsetDateTime scheduledAt;
@@ -77,6 +86,7 @@ public class ServiceBooking {
             OffsetDateTime scheduledAt,
             String machineModel,
             String notes) {
+
         this.customer = customer;
         this.serviceOffering = serviceOffering;
         this.locationAddress = locationAddress;
@@ -164,6 +174,22 @@ public class ServiceBooking {
 
     public void setLocationAddress(String locationAddress) {
         this.locationAddress = locationAddress;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public void setScheduledAt(OffsetDateTime scheduledAt) {

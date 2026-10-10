@@ -75,12 +75,16 @@ public class BookingService {
                 .orElseThrow(() -> new ResourceNotFoundException("Service",
                         request.serviceOfferingId()));
 
+        ServiceArea.require(request.country(), request.city()); // technicians only in Bogota and Medellin
+
         Customer customer = customers.findOrCreate(request.customerName(),
                 request.customerEmail(),
                 request.customerPhone());
 
         ServiceBooking booking = new ServiceBooking(customer, service, request.locationAddress().trim(),
                 request.scheduledAt(), request.machineModel(), request.notes());
+        booking.setCountry(request.country().trim().toUpperCase(java.util.Locale.ROOT));
+        booking.setCity(request.city().trim());
 
         return mapper.toResponse(bookings.saveAndFlush(booking));
     }

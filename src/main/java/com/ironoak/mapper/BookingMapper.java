@@ -18,6 +18,8 @@ public class BookingMapper {
                 booking.getServiceOffering().getName(),
                 booking.getCustomer().getName(),
                 booking.getLocationAddress(),
+                booking.getCountry(),
+                booking.getCity(),
                 booking.getScheduledAt(),
                 booking.getMachineModel(),
                 booking.getNotes(),

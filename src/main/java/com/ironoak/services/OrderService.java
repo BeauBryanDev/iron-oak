@@ -32,6 +32,8 @@ import com.ironoak.domain.MillingMachine;
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.Product;
 import com.ironoak.domain.ServiceOffering;
+import com.ironoak.domain.ServiceQuote;
+import com.ironoak.domain.enums.ShippingMode;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderItemType;
 import com.ironoak.domain.enums.OrderStatus;
@@ -236,6 +238,26 @@ public class OrderService {
     }
 
     /**
+     * Staff priced a service quote request: one service line at that price, nothing to ship,
+     * taxed like any order, PENDING_PAYMENT for quote-hold-hours so the customer can pay it by
+     * order number. Called by ServiceQuoteService inside its transaction.
+     */
+    public CustomerOrder createForServiceQuote(ServiceQuote quote, BigDecimal price) {
+
+        CustomerOrder order = new CustomerOrder(quote.getCustomer(), OrderChannel.WEB_CHECKOUT);
+        order.setContact(quote.getCustomerName(), quote.getCustomerEmail(), quote.getCustomerPhone());
+        order.setCountry(quote.getCountry());
+        order.setCity(quote.getCity());
+        order.setCurrency(checkout.getCurrency());
+        order.setShippingMode(ShippingMode.NONE);
+        order.setReservationExpiresAt(OffsetDateTime.now().plusHours(shippingProperties.getQuoteHoldHours()));
+        order.addItem(OrderItem.ofService(quote.getServiceOffering(), 1, null, price));
+        order.setTaxes(taxes.taxFor(order.getCountry(), order.getSubtotal()));
+        order.recalculateTotals();
+        return orders.saveAndFlush(order);
+    }
+
+    /**
      * How long a new unpaid order holds its stock: long enough for staff to quote
      * shipping, for a
      * Piper customer to come back with the order number, or for a web customer to
@@ -321,6 +343,10 @@ public class OrderService {
 
         if (physical && (isBlank(request.country()) || isBlank(request.city()) || isBlank(request.shippingAddress()))) {
             throw new InvalidOrderException("country, city and shippingAddress are required for products and machines");
+        }
+        // technicians only work in Bogota and Medellin, Colombia
+        if (items.stream().anyMatch(i -> i.getItemType() == OrderItemType.SERVICE)) {
+            ServiceArea.require(request.country(), request.city());
         }
     }
 
@@ -604,7 +630,8 @@ public class OrderService {
                 yield OrderItem.ofService(service, line.quantity(), hours, unitPrice);
             }
             case QUOTE ->
-                throw new InvalidOrderException(service.getName() + " is quote-only and cannot be ordered directly");
+                throw new InvalidOrderException(service.getName()
+                        + " is quote-only: request a price with POST /api/service-quotes");
         };
     }
 

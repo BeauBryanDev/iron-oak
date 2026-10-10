@@ -86,7 +86,8 @@ public class ServiceQuote {
     }
 
     public ServiceQuote(ServiceOffering serviceOffering,
-            Customer customer, String customerName,
+            Customer customer,
+            String customerName,
             String customerEmail,
             String customerPhone,
             String country,
