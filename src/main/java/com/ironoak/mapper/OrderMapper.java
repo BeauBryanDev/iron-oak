@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 /**
- * Reads lazy associations (items, customer, referenced
- * product/service/machine); call inside a transaction.
+ * Reads lazy associations (items and the product/service/machine ids they point to); call
+ * inside a transaction. Names, codes and prices come from the order's own snapshots.
  */
 @Component
 public class OrderMapper {
@@ -18,11 +18,24 @@ public class OrderMapper {
     public OrderResponse toResponse(CustomerOrder order) {
         return new OrderResponse(
                 order.getId(),
+                order.getOrderNumber(),
                 order.getStatus(),
                 order.getChannel(),
-                order.getCustomer() == null ? null : order.getCustomer().getName(),
-                order.getTotalAmount(),
+                order.getCustomerName(),
+                order.getCustomerEmail(),
+                order.getPhoneNumber(),
+                order.getCountry(),
+                order.getProvince(),
+                order.getCity(),
+                order.getShippingAddress(),
+                order.getCurrency(),
+                order.getSubtotal(),
+                order.getShippingCost(),
+                order.getTaxes(),
+                order.getGrandTotal(),
+                order.getReservationExpiresAt(),
                 order.getCreatedAt(),
+                order.getUpdatedAt(),
                 order.getItems().stream().map(this::toItemResponse).toList());
     }
 
@@ -31,28 +44,17 @@ public class OrderMapper {
     }
 
     public OrderItemResponse toItemResponse(OrderItem item) {
-        Long referenceId;
-        String name;
-        switch (item.getItemType()) {
-            case PRODUCT -> {
-                referenceId = item.getProduct().getId();
-                name = item.getProduct().getName();
-            }
-            case SERVICE -> {
-                referenceId = item.getServiceOffering().getId();
-                name = item.getServiceOffering().getName();
-            }
-            case MACHINE -> {
-                referenceId = item.getMillingMachine().getId();
-                name = item.getMillingMachine().getName();
-            }
-            default -> throw new IllegalStateException("Unhandled item type " + item.getItemType());
-        }
+        Long referenceId = switch (item.getItemType()) {
+            case PRODUCT -> item.getProduct().getId();
+            case SERVICE -> item.getServiceOffering().getId();
+            case MACHINE -> item.getMillingMachine().getId();
+        };
         return new OrderItemResponse(
                 item.getId(),
                 item.getItemType(),
                 referenceId,
-                name,
+                item.getItemName(),
+                item.getItemCode(),
                 item.getQuantity(),
                 item.getEstimatedHours(),
                 item.getUnitPrice(),

@@ -14,10 +14,16 @@ public class PaymentMapper {
                 payment.getId(),
                 payment.getOrder().getId(),
                 payment.getAmount(),
+                payment.getCurrency(),
                 payment.getStatus(),
                 payment.getProvider(),
                 payment.getProviderReference(),
+                payment.getCheckoutSessionId(),
+                payment.getPaymentIntentId(),
+                payment.getFailureCode(),
+                payment.getFailureMessage(),
                 payment.getCreatedAt(),
+                payment.getUpdatedAt(),
                 payment.getPaidAt());
     }
 

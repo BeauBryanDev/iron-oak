@@ -10,11 +10,15 @@ import com.ironoak.dto.response.AdminServiceOfferingResponse;
 import com.ironoak.dto.response.ServiceCategoryResponse;
 import org.springframework.stereotype.Component;
 
-/** Staff-side catalog views. These read lazy relations, so call them inside a transaction. */
+/**
+ * Staff-side catalog views. These read lazy relations, so call them inside a
+ * transaction.
+ */
 @Component
 public class AdminCatalogMapper {
 
     public AdminProductResponse toResponse(Product product) {
+
         return new AdminProductResponse(
                 product.getId(),
                 product.getSku(),
@@ -25,6 +29,8 @@ public class AdminCatalogMapper {
                 product.getPrice(),
                 product.getStockQuantity(),
                 product.getWarrantyMonths(),
+                product.getWeightKg(),
+                product.getVolumeM3(),
                 product.getImageUrl(),
                 Boolean.TRUE.equals(product.getIsActive()),
                 product.getToolCategory().getId(),
@@ -34,6 +40,7 @@ public class AdminCatalogMapper {
     }
 
     public AdminMillingMachineResponse toResponse(MillingMachine machine) {
+
         return new AdminMillingMachineResponse(
                 machine.getId(),
                 machine.getModelCode(),
@@ -46,11 +53,14 @@ public class AdminCatalogMapper {
                 machine.getTableWidthMm(),
                 machine.getPrice(),
                 machine.getWarrantyMonths(),
+                machine.getWeightKg(),
+                machine.getVolumeM3(),
                 machine.getImageUrl(),
                 Boolean.TRUE.equals(machine.getIsActive()));
     }
 
     public AdminServiceOfferingResponse toResponse(ServiceOffering service) {
+
         return new AdminServiceOfferingResponse(
                 service.getId(),
                 service.getCode(),
@@ -68,6 +78,8 @@ public class AdminCatalogMapper {
     }
 
     public ServiceCategoryResponse toResponse(ServiceOfferingCategory category) {
-        return new ServiceCategoryResponse(category.getId(), category.getName());
+
+        return new ServiceCategoryResponse(category.getId(),
+                category.getName());
     }
 }

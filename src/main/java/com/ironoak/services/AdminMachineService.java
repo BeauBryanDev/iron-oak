@@ -54,6 +54,8 @@ public class AdminMachineService {
                 request.spindleMinRpm(), request.spindleMaxRpm(), request.tableLengthMm(),
                 request.tableWidthMm(), request.price(), request.warrantyMonths(),
                 AdminProductService.blankToNull(request.imageUrl()));
+        machine.setWeightKg(request.weightKg());
+        machine.setVolumeM3(request.volumeM3());
         machine.setIsActive(request.isActive() == null || request.isActive());
         machines.saveAndFlush(machine);
         return mapper.toResponse(machine);
@@ -78,6 +80,8 @@ public class AdminMachineService {
         machine.setTableWidthMm(request.tableWidthMm());
         machine.setPrice(request.price());
         machine.setWarrantyMonths(request.warrantyMonths());
+        machine.setWeightKg(request.weightKg());
+        machine.setVolumeM3(request.volumeM3());
         machine.setImageUrl(AdminProductService.blankToNull(request.imageUrl()));
         if (request.isActive() != null) {
             machine.setIsActive(request.isActive());

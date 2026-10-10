@@ -31,11 +31,11 @@ public class DashboardService {
     private final SupportTicketRepository tickets;
 
     public DashboardService(CustomerOrderRepository orders,
-                            OrderItemRepository orderItems,
-                            ComplaintRepository complaints,
-                            ServiceBookingRepository bookings,
-                            WarrantyClaimRepository claims,
-                            SupportTicketRepository tickets) {
+            OrderItemRepository orderItems,
+            ComplaintRepository complaints,
+            ServiceBookingRepository bookings,
+            WarrantyClaimRepository claims,
+            SupportTicketRepository tickets) {
         this.orders = orders;
         this.orderItems = orderItems;
         this.complaints = complaints;
@@ -45,15 +45,22 @@ public class DashboardService {
     }
 
     public DashboardKPIResponse kpis() {
-        var top = orderItems.findTopSellingProducts(OrderStatus.COMPLETED, PageRequest.of(0, TOP_PRODUCTS))
+
+        var top = orderItems.findTopSellingProducts(OrderStatus.COMPLETED,
+                PageRequest.of(0, TOP_PRODUCTS))
                 .stream()
-                .map(t -> new DashboardKPIResponse.TopProduct(t.getProductId(), t.getName(), t.getUnitsSold()))
+                .map(t -> new DashboardKPIResponse.TopProduct(t.getProductId(),
+                        t.getName(), t.getUnitsSold()))
                 .toList();
+
         return new DashboardKPIResponse(
                 orders.countByStatus(OrderStatus.CONFIRMED) + orders.countByStatus(OrderStatus.IN_PROGRESS),
+                orders.countByStatus(OrderStatus.PENDING_PAYMENT),
                 orders.countByStatus(OrderStatus.COMPLETED),
                 orders.countByStatus(OrderStatus.CANCELLED),
-                orders.countByChannel(OrderChannel.AGENT_CHAT),
+                orders.countByStatus(OrderStatus.EXPIRED),
+                orders.countByChannel(OrderChannel.WEB_CHECKOUT),
+                orders.countByChannel(OrderChannel.PIPER),
                 orders.sumTotalByStatus(OrderStatus.COMPLETED),
                 complaints.countByStatus(ComplaintStatus.PENDING),
                 bookings.countByStatus(BookingStatus.REQUESTED),

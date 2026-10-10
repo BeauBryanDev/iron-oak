@@ -24,10 +24,9 @@ import com.ironoak.security.RateLimitFilter;
  * Two zones, one filter chain:
  *
  * public - the storefront. Browsing the catalog, talking to Piper, and placing
- * a
- * guest order require no account, because customers never have one.
+ * a guest order require no account, because customers never have one.
  * admin - the dashboard. JWT bearer token, ROLE_ADMIN, backed by admin_user.
- *
+ * 
  * Stateless: no session is created, so the token is the only thing carrying
  * identity.
  * CSRF is disabled for the same reason - there is no cookie for an attacker to
@@ -61,6 +60,11 @@ public class SecurityConfig {
                                                 // public route is re-evaluated by anyRequest() .
                                                 .requestMatchers("/error").permitAll()
 
+                                                // Health checks for Apache / uptime monitors; details stay staff-only.
+                                                .requestMatchers(HttpMethod.GET, "/actuator/health",
+                                                                "/actuator/health/**")
+                                                .permitAll()
+
                                                 // Staff login - must be reachable to obtain a token at all.
                                                 // The credential (password or refresh token) is in the body.
                                                 .requestMatchers(HttpMethod.POST, "/api/admin/auth/login",
@@ -79,7 +83,12 @@ public class SecurityConfig {
                                                 .requestMatchers(HttpMethod.POST, "/api/orders", "/api/complaints",
                                                                 "/api/bookings", "/api/bookings/*/reschedule",
                                                                 "/api/bookings/*/cancel",
-                                                                "/api/warranty-claims", "/api/support-tickets")
+                                                                "/api/warranty-claims", "/api/support-tickets",
+                                                                "/api/shipping/quote",
+                                                                "/api/orders/*/checkout-session",
+                                                                // Stripe calls this; the signature, not a login,
+                                                                // authenticates it.
+                                                                "/api/payments/stripe/webhook")
                                                 .permitAll()
                                                 // Customers read back their own orders, bookings and claims by proving
                                                 // the
@@ -110,6 +119,7 @@ public class SecurityConfig {
         @Bean
         public AuthenticationManager authenticationManager(AdminUserDetailsService userDetailsService,
                         PasswordEncoder passwordEncoder) {
+
                 DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
                 provider.setPasswordEncoder(passwordEncoder);
 

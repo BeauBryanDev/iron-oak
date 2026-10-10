@@ -16,7 +16,9 @@ public class ToolCategoryService {
     private final ToolCategoryRepository categories;
     private final ProductMapper mapper;
 
-    public ToolCategoryService(ToolCategoryRepository categories, ProductMapper mapper) {
+    public ToolCategoryService(ToolCategoryRepository categories,
+            ProductMapper mapper) {
+
         this.categories = categories;
         this.mapper = mapper;
     }

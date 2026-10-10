@@ -92,6 +92,8 @@ public class AdminProductService {
         product.setBrand(blankToNull(request.brand()));
         product.setDescription(blankToNull(request.description()));
         product.setWarrantyMonths(request.warrantyMonths());
+        product.setWeightKg(request.weightKg());
+        product.setVolumeM3(request.volumeM3());
         product.setImageUrl(blankToNull(request.imageUrl()));
         product.setIsActive(request.isActive() == null || request.isActive());
         products.saveAndFlush(product);
@@ -119,6 +121,8 @@ public class AdminProductService {
         product.setDescription(blankToNull(request.description()));
         product.setPrice(request.price());
         product.setWarrantyMonths(request.warrantyMonths());
+        product.setWeightKg(request.weightKg());
+        product.setVolumeM3(request.volumeM3());
         product.setImageUrl(blankToNull(request.imageUrl()));
         if (request.isActive() != null) {
             product.setIsActive(request.isActive());

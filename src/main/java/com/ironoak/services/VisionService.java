@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class VisionService {
 
-    // The top prediction plus four alternatives for a retake / "did you mean" prompt.
+    // The top prediction plus four alternatives for a retake / "did you mean"
+    // prompt.
     private static final int TOP_K = 5;
 
     private final OnnxVisionClassifier classifier;
@@ -39,11 +40,11 @@ public class VisionService {
     private final ProductMapper productMapper;
 
     public VisionService(OnnxVisionClassifier classifier,
-                         ConfidenceGate gate,
-                         VisionProperties properties,
-                         ToolCategoryRepository toolCategories,
-                         ProductRepository products,
-                         ProductMapper productMapper) {
+            ConfidenceGate gate,
+            VisionProperties properties,
+            ToolCategoryRepository toolCategories,
+            ProductRepository products,
+            ProductMapper productMapper) {
         this.classifier = classifier;
         this.gate = gate;
         this.properties = properties;
@@ -59,32 +60,42 @@ public class VisionService {
         List<Prediction> ranked;
         try {
             ranked = classifier.classify(imageBytes, TOP_K);
+
         } catch (IOException e) {
             throw new InvalidImageException("The file is not a readable image");
+
         } catch (OrtException e) {
             throw new IllegalStateException("Vision model failed to run", e);
         }
 
         Decision decision = gate.evaluate(ranked);
+
         Map<String, ToolCategory> categories = toolCategories
                 .findByModelLabelIn(ranked.stream().map(Prediction::modelLabel).toList()).stream()
                 .collect(Collectors.toMap(ToolCategory::getModelLabel, Function.identity()));
 
         Match top = toMatch(decision.top(), categories);
+
         List<Match> alternatives = decision.alternatives().stream()
                 .map(p -> toMatch(p, categories)).toList();
+
         List<ProductResponse> matches = decision.accepted()
                 ? productMapper.toResponses(products.findByVisionNameAndIsActiveTrue(top.modelLabel()))
                 : List.of();
 
-        return new ClassificationResponse(decision.accepted(), properties.getConfidenceThreshold(),
+        return new ClassificationResponse(decision.accepted(),
+                properties.getConfidenceThreshold(),
                 top, alternatives, matches);
     }
 
-    private Match toMatch(Prediction prediction, Map<String, ToolCategory> categories) {
+    private Match toMatch(Prediction prediction,
+            Map<String, ToolCategory> categories) {
+
         ToolCategory category = categories.get(prediction.modelLabel());
-        // Every class has a tool_category row (VisionPipelineTest); fall back to the label if not.
+        // Every class has a tool_category row (VisionPipelineTest); fall back to the
+        // label if not.
         String displayName = category == null ? prediction.modelLabel() : category.getDisplayName();
+
         return new Match(prediction.modelLabel(), displayName, prediction.score());
     }
 }

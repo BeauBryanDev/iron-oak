@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/** Maps the service-side catalog: service offerings and the milling machines they support. */
+/**
+ * Maps the service-side catalog: service offerings and the milling machines
+ * they support.
+ */
 @Component
 public class ServiceMapper {
 

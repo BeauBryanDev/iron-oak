@@ -21,19 +21,26 @@ public class ComplaintService {
     private final ComplaintRepository complaints;
     private final ComplaintMapper mapper;
 
-    public ComplaintService(ComplaintRepository complaints, ComplaintMapper mapper) {
+    public ComplaintService(ComplaintRepository complaints,
+            ComplaintMapper mapper) {
+
         this.complaints = complaints;
         this.mapper = mapper;
     }
 
     public ComplaintResponse create(ComplaintRequest request) {
-        Complaint complaint = new Complaint(request.customerName().trim(), request.complaintDatetime(),
+
+        Complaint complaint = new Complaint(request.customerName().trim(),
+                request.complaintDatetime(),
                 request.product().trim(), request.description().trim());
+
         return mapper.toResponse(complaints.save(complaint));
     }
 
     @Transactional(readOnly = true)
-    public Page<ComplaintResponse> list(ComplaintFilter filter, Pageable pageable) {
+    public Page<ComplaintResponse> list(ComplaintFilter filter,
+            Pageable pageable) {
+
         Specification<Complaint> spec = Specification.allOf(
                 FilterSpecs.in("status", filter.status()),
                 FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
@@ -41,6 +48,7 @@ public class ComplaintService {
                         : (root, query, cb) -> FilterSpecs.anyContains(cb, filter.q(),
                                 root.<String>get("customerName"), root.<String>get("product"),
                                 root.<String>get("description")));
+
         return complaints.findAll(spec, pageable).map(mapper::toResponse);
     }
 
@@ -48,6 +56,7 @@ public class ComplaintService {
         Complaint complaint = complaints.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Complaint", id));
         complaint.setStatus(status);
+
         return mapper.toResponse(complaint);
     }
 }

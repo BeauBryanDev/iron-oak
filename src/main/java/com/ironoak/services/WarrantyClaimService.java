@@ -45,8 +45,8 @@ public class WarrantyClaimService {
             ClaimStatus.RESOLVED, Set.of());
 
     // Moving into these needs a note explaining the decision.
-    private static final Set<ClaimStatus> NEEDS_NOTE =
-            Set.of(ClaimStatus.APPROVED, ClaimStatus.REJECTED, ClaimStatus.RESOLVED);
+    private static final Set<ClaimStatus> NEEDS_NOTE = Set.of(ClaimStatus.APPROVED,
+            ClaimStatus.REJECTED, ClaimStatus.RESOLVED);
 
     private final WarrantyClaimRepository claims;
     private final CustomerOrderRepository orders;
@@ -55,10 +55,10 @@ public class WarrantyClaimService {
     private final WarrantyClaimMapper mapper;
 
     public WarrantyClaimService(WarrantyClaimRepository claims,
-                                CustomerOrderRepository orders,
-                                OrderItemRepository orderItems,
-                                CustomerService customers,
-                                WarrantyClaimMapper mapper) {
+            CustomerOrderRepository orders,
+            OrderItemRepository orderItems,
+            CustomerService customers,
+            WarrantyClaimMapper mapper) {
         this.claims = claims;
         this.orders = orders;
         this.orderItems = orderItems;
@@ -67,23 +67,31 @@ public class WarrantyClaimService {
     }
 
     /**
-     * A claim is accepted only for a product or machine line on a completed order that
-     * belongs to the customer, inside its warranty period, with no active claim already.
-     * The warranty runs from the order date: the schema does not record a delivery date.
+     * A claim is accepted only for a product or machine line on a completed order
+     * that
+     * belongs to the customer, inside its warranty period, with no active claim
+     * already.
+     * The warranty runs from the order date: the schema does not record a delivery
+     * date.
      */
     public WarrantyClaimResponse create(CreateWarrantyClaimRequest request) {
+
         CustomerOrder order = orders.findById(request.orderId())
                 .filter(o -> CustomerService.hasEmail(o.getCustomer(), request.customerEmail()))
                 .orElseThrow(() -> new ResourceNotFoundException("Order", request.orderId()));
+
         OrderItem item = orderItems.findById(request.orderItemId())
                 .filter(i -> i.getOrder().getId().equals(order.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Order item", request.orderItemId()));
 
         if (order.getStatus() != OrderStatus.COMPLETED) {
+
             throw new BusinessRuleException("Warranty claims can only be made on completed orders");
         }
         int warrantyMonths = warrantyMonths(item);
+
         if (warrantyMonths <= 0) {
+
             throw new BusinessRuleException("This item has no warranty");
         }
         if (order.getCreatedAt().plusMonths(warrantyMonths).isBefore(OffsetDateTime.now())) {
@@ -93,16 +101,19 @@ public class WarrantyClaimService {
             throw new BusinessRuleException("There is already an open claim for this item");
         }
 
-        WarrantyClaim claim = new WarrantyClaim(order.getCustomer(), order, item.getId(),
-                request.description().trim());
+        WarrantyClaim claim = new WarrantyClaim(order.getCustomer(),
+                order, item.getId(), request.description().trim());
+
         return mapper.toResponse(claims.saveAndFlush(claim));
     }
 
     @Transactional(readOnly = true)
     public WarrantyClaimResponse get(Long id, String customerEmail) {
+
         WarrantyClaim claim = claims.findById(id)
                 .filter(c -> CustomerService.hasEmail(c.getCustomer(), customerEmail))
                 .orElseThrow(() -> new ResourceNotFoundException("Warranty claim", id));
+
         return mapper.toResponse(claim);
     }
 
@@ -117,47 +128,61 @@ public class WarrantyClaimService {
 
     @Transactional(readOnly = true)
     public WarrantyClaimResponse getForStaff(Long id) {
+
         return mapper.toResponse(claims.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warranty claim", id)));
     }
 
     @Transactional(readOnly = true)
     public Page<WarrantyClaimResponse> list(WarrantyClaimFilter filter, Pageable pageable) {
+
         Specification<WarrantyClaim> spec = Specification.allOf(
                 FilterSpecs.in("status", filter.status()),
                 FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
                 matching(filter.q()));
+
         return claims.findAll(spec, pageable).map(mapper::toResponse);
     }
 
     private static Specification<WarrantyClaim> matching(String search) {
+
         if (!FilterSpecs.hasText(search)) {
             return null;
         }
         return (root, query, cb) -> {
+
             Join<WarrantyClaim, Customer> customer = root.join("customer", JoinType.LEFT);
             Predicate text = FilterSpecs.anyContains(cb, search, customer.<String>get("name"),
                     customer.<String>get("email"), root.<String>get("description"));
             String trimmed = search.trim();
+
             return trimmed.matches("\\d{1,18}")
-                    ? cb.or(text, cb.equal(root.get("order").get("id"), Long.parseLong(trimmed)))
+                    ? cb.or(text, cb.equal(root.get("order").get("id"),
+                            Long.parseLong(trimmed)))
                     : text;
         };
     }
 
-    public WarrantyClaimResponse updateStatus(Long id, UpdateWarrantyClaimStatusRequest request) {
+    public WarrantyClaimResponse updateStatus(Long id,
+            UpdateWarrantyClaimStatusRequest request) {
+
         WarrantyClaim claim = claims.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Warranty claim", id));
+
         ClaimStatus next = request.status();
         if (!TRANSITIONS.get(claim.getStatus()).contains(next)) {
+
             throw new BusinessRuleException("Cannot change claim " + id + " from " + claim.getStatus() + " to " + next);
         }
         String note = request.resolutionNote() == null ? null : request.resolutionNote().trim();
+
         if (NEEDS_NOTE.contains(next) && (note == null || note.isEmpty())) {
+
             throw new BusinessRuleException("A resolution note is required for " + next);
         }
         if (next == ClaimStatus.REJECTED || next == ClaimStatus.RESOLVED) {
             claim.resolve(next, note);
+
         } else {
             claim.review(next, note);
         }
@@ -165,11 +190,15 @@ public class WarrantyClaimService {
     }
 
     private int warrantyMonths(OrderItem item) {
+
         if (item.getItemType() == OrderItemType.PRODUCT) {
+
             return item.getProduct().getWarrantyMonths();
         }
         if (item.getItemType() == OrderItemType.MACHINE) {
+
             return item.getMillingMachine().getWarrantyMonths();
+
         }
         throw new BusinessRuleException("Services are not covered by the warranty claim process");
     }

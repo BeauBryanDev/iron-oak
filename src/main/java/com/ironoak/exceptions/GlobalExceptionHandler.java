@@ -42,6 +42,18 @@ public class GlobalExceptionHandler {
                 .body(ProblemDetail.forStatusAndDetail(HttpStatus.TOO_MANY_REQUESTS, ex.getMessage()));
     }
 
+    @ExceptionHandler(PaymentProviderException.class)
+    public ProblemDetail paymentProvider(PaymentProviderException ex) {
+        return ProblemDetail.forStatusAndDetail(
+                ex.isNotConfigured() ? HttpStatus.SERVICE_UNAVAILABLE : HttpStatus.BAD_GATEWAY,
+                ex.isNotConfigured() ? ex.getMessage() : "The payment provider could not complete the request");
+    }
+
+    @ExceptionHandler(WebhookSignatureException.class)
+    public ProblemDetail badWebhookSignature(WebhookSignatureException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidOrderException.class)
     public ProblemDetail invalidOrder(InvalidOrderException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());

@@ -43,6 +43,7 @@ public class SupportTicketService {
                         ChatSessionRepository chatSessions,
                         CustomerService customers,
                         SupportTicketMapper mapper) {
+
                 this.tickets = tickets;
                 this.chatSessions = chatSessions;
                 this.customers = customers;
@@ -56,27 +57,35 @@ public class SupportTicketService {
          * accepted.
          */
         public SupportTicketResponse create(CreateSupportTicketRequest request) {
+
                 ChatSession session = request.chatSessionId() == null ? null
                                 : chatSessions.findById(request.chatSessionId())
                                                 .orElseThrow(() -> new ResourceNotFoundException("Chat session",
                                                                 request.chatSessionId()));
+
                 Customer customer = customers.findByEmail(request.customerEmail())
                                 .orElse(session == null ? null : session.getCustomer());
+
                 SupportTicket ticket = new SupportTicket(customer,
                                 CustomerService.normalizeEmail(request.customerEmail()),
-                                session, request.reason().trim(), request.summary().trim());
+                                session, request.reason().trim(),
+                                request.summary().trim());
+
                 return mapper.toResponse(tickets.saveAndFlush(ticket));
         }
 
         @Transactional(readOnly = true)
         public SupportTicketResponse get(Long id) {
+
                 return mapper.toResponse(tickets.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Support ticket", id)));
         }
 
         @Transactional(readOnly = true)
         public Page<SupportTicketResponse> list(SupportTicketFilter filter, Pageable pageable) {
+
                 Specification<SupportTicket> spec = Specification.allOf(
+
                                 FilterSpecs.in("status", filter.status()),
                                 FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
                                 !FilterSpecs.hasText(filter.q()) ? null
@@ -84,18 +93,23 @@ public class SupportTicketService {
                                                                 root.<String>get("customerEmail"),
                                                                 root.<String>get("reason"),
                                                                 root.<String>get("summary")));
+
                 return tickets.findAll(spec, pageable).map(mapper::toResponse);
         }
 
         public SupportTicketResponse updateStatus(Long id, TicketStatus newStatus) {
+
                 SupportTicket ticket = tickets.findById(id)
                                 .orElseThrow(() -> new ResourceNotFoundException("Support ticket", id));
+
                 if (!TRANSITIONS.get(ticket.getStatus()).contains(newStatus)) {
+
                         throw new BusinessRuleException(
                                         "Cannot change ticket " + id + " from " + ticket.getStatus() + " to "
                                                         + newStatus);
                 }
                 ticket.setStatus(newStatus);
+
                 return mapper.toResponse(tickets.saveAndFlush(ticket));
         }
 }

@@ -64,8 +64,10 @@ public class AdminAuthService {
                     new UsernamePasswordAuthenticationToken(username, request.password()));
 
         } catch (AuthenticationException e) {
+
             attempts.recordFailure(username, ip);
             AuditLog.warn("login failed", username, ip);
+
             throw new BadCredentialsException("Invalid credentials");
         }
 
@@ -92,18 +94,21 @@ public class AdminAuthService {
     }
 
     public void logout(String refreshToken, String ip) {
+
         refreshTokens.revokeSession(refreshToken, ip);
     }
 
     /** Ends every session of this account on every device. */
     @Transactional
     public void logoutAll(String username, String ip) {
+
         refreshTokens.revokeAll(find(username), "LOGOUT_ALL");
         AuditLog.info("logout all sessions", username, ip);
     }
 
     @Transactional(readOnly = true)
     public AdminProfileResponse me(String username) {
+
         AdminUser admin = find(username);
         return new AdminProfileResponse(admin.getUsername(),
                 admin.getEmail(), admin.getFullName(),
@@ -120,10 +125,15 @@ public class AdminAuthService {
     @Transactional
     public AdminLoginResponse changePassword(String username,
             ChangePasswordRequest request,
-            String ip, String userAgent) {
+            String ip,
+            String userAgent) {
+
         attempts.assertNotLocked(username, ip);
         AdminUser admin = find(username);
-        if (!passwordEncoder.matches(request.currentPassword(), admin.getPasswordHash())) {
+
+        if (!passwordEncoder.matches(request.currentPassword(),
+                admin.getPasswordHash())) {
+
             attempts.recordFailure(username, ip);
             AuditLog.warn("password change refused: wrong current password", username, ip);
             throw new BusinessRuleException("Current password is incorrect");
@@ -139,11 +149,13 @@ public class AdminAuthService {
     }
 
     private AdminUser find(String username) {
+
         return adminUsers.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Admin user", username));
     }
 
     private AdminLoginResponse respond(RefreshTokenService.Issued refresh) {
+
         return new AdminLoginResponse(
                 jwtService.issueToken(refresh.username()),
                 "Bearer",
