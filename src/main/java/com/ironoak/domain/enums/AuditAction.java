@@ -1,0 +1,36 @@
+package com.ironoak.domain.enums;
+
+/** What a staff member did; stored as text in admin_audit_log.action. */
+public enum AuditAction {
+    LOGIN_SUCCESS,
+    LOGIN_FAILED,
+    LOGOUT_ALL,
+    PASSWORD_CHANGED,
+    PASSWORD_CHANGE_FAILED,
+
+    PRODUCT_CREATE,
+    PRODUCT_UPDATE,
+    PRODUCT_ACTIVE,
+    STOCK_ADJUST,
+    MACHINE_CREATE,
+    MACHINE_UPDATE,
+    MACHINE_ACTIVE,
+    SERVICE_CREATE,
+    SERVICE_UPDATE,
+    SERVICE_ACTIVE,
+    TOOL_CATEGORY_UPDATE,
+
+    CUSTOMER_CREATE,
+    CUSTOMER_UPDATE,
+    CUSTOMER_DELETE,
+
+    ORDER_CREATE,
+    ORDER_STATUS,
+    ORDER_SHIPPING_QUOTE,
+    PAYMENT_CREATE,
+    PAYMENT_STATUS,
+    REFUND,
+
+    SHIPPING_ROUTE_SET,
+    SHIPPING_ROUTES_REFRESH
+}

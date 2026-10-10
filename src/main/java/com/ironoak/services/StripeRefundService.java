@@ -1,5 +1,7 @@
 package com.ironoak.services;
 
+import java.util.Map;
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.domain.Payment;
 import com.ironoak.domain.enums.PaymentStatus;
 import com.ironoak.dto.response.PaymentResponse;
@@ -37,18 +39,21 @@ public class StripeRefundService {
     private final PaymentMapper mapper;
     private final StripeGateway stripe;
     private final TransactionTemplate transactions;
+    private final AuditService audit;
 
     public StripeRefundService(PaymentRepository payments,
             PaymentService paymentService,
             PaymentMapper mapper,
             StripeGateway stripe,
-            PlatformTransactionManager transactionManager) {
+            PlatformTransactionManager transactionManager,
+            AuditService audit) {
 
         this.payments = payments;
         this.paymentService = paymentService;
         this.mapper = mapper;
         this.stripe = stripe;
         this.transactions = new TransactionTemplate(transactionManager);
+        this.audit = audit;
     }
 
     /** Idempotent: refunding an already refunded payment just returns it. */
@@ -108,6 +113,9 @@ public class StripeRefundService {
 
             Payment payment = payments.findById(paymentId).orElseThrow();
             paymentService.markRefunded(payment);
+            audit.record(AuditAction.REFUND, "PAYMENT", paymentId, Map.of("status", PaymentStatus.PAID),
+                    Map.of("status", PaymentStatus.REFUNDED, "orderNumber", target.orderNumber(),
+                            "amount", payment.getAmount(), "reason", reason == null ? "" : reason));
 
             return mapper.toResponse(payment);
         });

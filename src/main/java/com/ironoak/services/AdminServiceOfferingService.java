@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.domain.ServiceOffering;
 import com.ironoak.domain.ServiceOfferingCategory;
 import com.ironoak.domain.enums.PricingType;
@@ -20,7 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 
-/** Staff catalog management for technical services. Services are deactivated, never deleted. */
+/**
+ * Staff catalog management for technical services. Services are deactivated,
+ * never deleted.
+ */
 @Service
 @Transactional
 public class AdminServiceOfferingService {
@@ -28,18 +32,24 @@ public class AdminServiceOfferingService {
     private final ServiceOfferingRepository services;
     private final ServiceOfferingCategoryRepository categories;
     private final AdminCatalogMapper mapper;
+    private final AuditService audit;
 
     public AdminServiceOfferingService(ServiceOfferingRepository services,
-                                       ServiceOfferingCategoryRepository categories,
-                                       AdminCatalogMapper mapper) {
+            ServiceOfferingCategoryRepository categories,
+            AdminCatalogMapper mapper,
+            AuditService audit) {
         this.services = services;
         this.categories = categories;
         this.mapper = mapper;
+        this.audit = audit;
     }
 
     @Transactional(readOnly = true)
-    public List<AdminServiceOfferingResponse> list(String search, Long categoryId, PricingType pricingType,
-                                                   Boolean active) {
+    public List<AdminServiceOfferingResponse> list(String search,
+            Long categoryId,
+            PricingType pricingType,
+            Boolean active) {
+
         Specification<ServiceOffering> spec = Specification.allOf(
                 FilterSpecs.equal("isActive", active),
                 FilterSpecs.equal("pricingType", pricingType),
@@ -47,20 +57,24 @@ public class AdminServiceOfferingService {
                 !FilterSpecs.hasText(search) ? null
                         : (root, query, cb) -> FilterSpecs.anyContains(cb, search,
                                 root.<String>get("name"), root.<String>get("code")));
+
         return services.findAll(spec, Sort.by("category.name", "name")).stream().map(mapper::toResponse).toList();
     }
 
     @Transactional(readOnly = true)
     public AdminServiceOfferingResponse get(Long id) {
+
         return mapper.toResponse(find(id));
     }
 
     @Transactional(readOnly = true)
     public List<ServiceCategoryResponse> listCategories() {
+
         return categories.findAllByOrderByNameAsc().stream().map(mapper::toResponse).toList();
     }
 
     public AdminServiceOfferingResponse create(ServiceOfferingRequest request) {
+
         String code = request.code().trim();
         if (services.findByCode(code).isPresent()) {
             throw new DuplicateResourceException("Service", "code", code);
@@ -69,22 +83,34 @@ public class AdminServiceOfferingService {
         ServiceOffering service = new ServiceOffering(findCategory(request.serviceOfferingCategoryId()),
                 code, request.name().trim(), AdminProductService.blankToNull(request.description()),
                 request.pricingType(), null, null, null, null, null);
+
         applyPricing(service, request);
+
         service.setIsActive(request.isActive() == null || request.isActive());
+
         services.saveAndFlush(service);
-        return mapper.toResponse(service);
+        AdminServiceOfferingResponse created = mapper.toResponse(service);
+        audit.record(AuditAction.SERVICE_CREATE, "SERVICE",
+                service.getId(), null, created);
+
+        return created;
     }
 
     public AdminServiceOfferingResponse update(Long id, ServiceOfferingRequest request) {
+
         ServiceOffering service = find(id);
+        AdminServiceOfferingResponse before = mapper.toResponse(service);
         String code = request.code().trim();
+
         services.findByCode(code)
                 .filter(other -> !other.getId().equals(id))
                 .ifPresent(other -> {
                     throw new DuplicateResourceException("Service", "code", code);
                 });
         checkPricing(request);
+
         if (!service.getCategory().getId().equals(request.serviceOfferingCategoryId())) {
+
             service.setCategory(findCategory(request.serviceOfferingCategoryId()));
         }
         service.setCode(code);
@@ -92,18 +118,30 @@ public class AdminServiceOfferingService {
         service.setDescription(AdminProductService.blankToNull(request.description()));
         service.setPricingType(request.pricingType());
         applyPricing(service, request);
+
         if (request.isActive() != null) {
+
             service.setIsActive(request.isActive());
         }
         services.saveAndFlush(service);
-        return mapper.toResponse(service);
+        AdminServiceOfferingResponse after = mapper.toResponse(service);
+        audit.record(AuditAction.SERVICE_UPDATE, "SERVICE",
+                id, before, after);
+
+        return after;
     }
 
     public AdminServiceOfferingResponse setActive(Long id, boolean active) {
+
         ServiceOffering service = find(id);
+        AdminServiceOfferingResponse before = mapper.toResponse(service);
         service.setIsActive(active);
         services.saveAndFlush(service);
-        return mapper.toResponse(service);
+        AdminServiceOfferingResponse after = mapper.toResponse(service);
+        audit.record(AuditAction.SERVICE_ACTIVE, "SERVICE",
+                id, before, after);
+
+        return after;
     }
 
     private ServiceOffering find(Long id) {
@@ -114,8 +152,12 @@ public class AdminServiceOfferingService {
         return categories.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service category", id));
     }
 
-    /** Mirrors the chk_pricing constraint so staff get a readable 422 instead of a generic 409. */
+    /**
+     * Mirrors the chk_pricing constraint so staff get a readable 422 instead of a
+     * generic 409.
+     */
     private void checkPricing(ServiceOfferingRequest r) {
+
         switch (r.pricingType()) {
             case FIXED -> {
                 if (r.fixedPrice() == null || r.priceUnit() == null || r.priceUnit().isBlank()) {
@@ -138,8 +180,12 @@ public class AdminServiceOfferingService {
         }
     }
 
-    /** Stores only the price fields that apply to the pricing type, so stale values cannot linger. */
+    /**
+     * Stores only the price fields that apply to the pricing type, so stale values
+     * cannot linger.
+     */
     private void applyPricing(ServiceOffering service, ServiceOfferingRequest r) {
+
         PricingType type = r.pricingType();
         BigDecimal fixed = type == PricingType.FIXED ? r.fixedPrice() : null;
         boolean hourly = type == PricingType.HOURLY;

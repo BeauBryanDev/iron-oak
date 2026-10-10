@@ -2,6 +2,7 @@ package com.ironoak.services;
 
 import com.ironoak.domain.Product;
 import com.ironoak.domain.ToolCategory;
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.dto.request.CreateProductRequest;
 import com.ironoak.dto.request.UpdateProductRequest;
 import com.ironoak.dto.response.AdminProductResponse;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Staff catalog management for products. Rows are deactivated, never deleted
@@ -34,25 +36,36 @@ public class AdminProductService {
     private final ToolCategoryRepository toolCategories;
     private final AdminCatalogMapper mapper;
     private final EntityManager entityManager;
+    private final AuditService audit;
 
     public AdminProductService(ProductRepository products,
             ToolCategoryRepository toolCategories,
             AdminCatalogMapper mapper,
-            EntityManager entityManager) {
+            EntityManager entityManager,
+            AuditService audit) {
 
         this.products = products;
         this.toolCategories = toolCategories;
         this.mapper = mapper;
         this.entityManager = entityManager;
+        this.audit = audit;
     }
 
     /** All products including inactive ones; each filter is optional. */
     @Transactional(readOnly = true)
-    public Page<AdminProductResponse> list(String search, String category, Long toolCategoryId, Boolean active,
-                                           Integer maxStock, Pageable pageable) {
+    public Page<AdminProductResponse> list(String search,
+            String category,
+            Long toolCategoryId,
+            Boolean active,
+            Integer maxStock,
+            Pageable pageable) {
+
         Specification<Product> spec = (root, query, cb) -> {
+
             List<Predicate> filters = new ArrayList<>();
+
             if (search != null && !search.isBlank()) {
+
                 String pattern = "%" + search.trim().toLowerCase() + "%";
                 filters.add(cb.or(
                         cb.like(cb.lower(root.get("name")), pattern),
@@ -60,16 +73,22 @@ public class AdminProductService {
                         cb.like(cb.lower(root.get("brand")), pattern)));
             }
             if (category != null && !category.isBlank()) {
-                filters.add(cb.equal(root.get("category"), category.trim()));
+
+                filters.add(cb.equal(root.get("category"),
+                        category.trim()));
             }
             if (toolCategoryId != null) {
-                filters.add(cb.equal(root.get("toolCategory").get("id"), toolCategoryId));
+
+                filters.add(cb.equal(root.get("toolCategory").get("id"),
+                        toolCategoryId));
             }
             if (active != null) {
-                filters.add(cb.equal(root.get("isActive"), active));
+                filters.add(cb.equal(root.get("isActive"),
+                        active));
             }
             if (maxStock != null) {
-                filters.add(cb.lessThanOrEqualTo(root.get("stockQuantity"), maxStock)); // low-stock view
+                filters.add(cb.lessThanOrEqualTo(root.get("stockQuantity"),
+                        maxStock)); // low-stock view
             }
             return cb.and(filters.toArray(new Predicate[0]));
         };
@@ -82,13 +101,21 @@ public class AdminProductService {
     }
 
     public AdminProductResponse create(CreateProductRequest request) {
+
         String sku = request.sku().trim();
         if (products.findBySku(sku).isPresent()) {
+
             throw new DuplicateResourceException("Product", "sku", sku);
         }
         ToolCategory toolCategory = findToolCategory(request.toolCategoryId());
-        Product product = new Product(toolCategory, sku, toolCategory.getModelLabel(),
-                request.name().trim(), request.category().trim(), request.price(), request.stockQuantity());
+        Product product = new Product(toolCategory,
+                sku,
+                toolCategory.getModelLabel(),
+                request.name().trim(),
+                request.category().trim(),
+                request.price(),
+                request.stockQuantity());
+
         product.setBrand(blankToNull(request.brand()));
         product.setDescription(blankToNull(request.description()));
         product.setWarrantyMonths(request.warrantyMonths());
@@ -98,12 +125,20 @@ public class AdminProductService {
         product.setIsActive(request.isActive() == null || request.isActive());
         products.saveAndFlush(product);
         entityManager.refresh(product); // created_at is filled by the database
-        return mapper.toResponse(product);
+        AdminProductResponse created = mapper.toResponse(product);
+        audit.record(AuditAction.PRODUCT_CREATE, "PRODUCT",
+                product.getId(), null, created);
+
+        return created;
     }
 
     public AdminProductResponse update(Long id, UpdateProductRequest request) {
+
         Product product = find(id);
+
+        AdminProductResponse before = mapper.toResponse(product);
         String sku = request.sku().trim();
+
         products.findBySku(sku)
                 .filter(other -> !other.getId().equals(id))
                 .ifPresent(other -> {
@@ -124,38 +159,61 @@ public class AdminProductService {
         product.setWeightKg(request.weightKg());
         product.setVolumeM3(request.volumeM3());
         product.setImageUrl(blankToNull(request.imageUrl()));
+
         if (request.isActive() != null) {
+
             product.setIsActive(request.isActive());
         }
         products.saveAndFlush(product);
-        return mapper.toResponse(product);
+        AdminProductResponse after = mapper.toResponse(product);
+        audit.record(AuditAction.PRODUCT_UPDATE, "PRODUCT",
+                id, before, after);
+
+        return after;
     }
 
     public AdminProductResponse setActive(Long id, boolean active) {
         Product product = find(id);
+        boolean was = Boolean.TRUE.equals(product.getIsActive());
         product.setIsActive(active);
         products.saveAndFlush(product);
+        audit.record(AuditAction.PRODUCT_ACTIVE, "PRODUCT",
+                id, Map.of("isActive", was), Map.of("isActive", active));
+
         return mapper.toResponse(product);
     }
 
     /** Atomic, so it cannot lose a concurrent sale; refuses to go below zero. */
     public AdminProductResponse adjustStock(Long id, int delta) {
-        find(id);
+
+        int before = find(id).getStockQuantity();
+
         if (delta != 0 && products.adjustStock(id, delta) == 0) {
+
             throw new BusinessRuleException("Stock cannot go below zero");
         }
-        return mapper.toResponse(find(id)); // adjustStock cleared the persistence context
+        AdminProductResponse after = mapper.toResponse(find(id)); // adjustStock cleared the persistence context
+        audit.record(AuditAction.STOCK_ADJUST, "PRODUCT",
+                id, Map.of("stockQuantity", before),
+                Map.of("stockQuantity",
+                        after.stockQuantity(),
+                        "delta", delta));
+
+        return after;
     }
 
     private Product find(Long id) {
+
         return products.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", id));
     }
 
     private ToolCategory findToolCategory(Long id) {
+
         return toolCategories.findById(id).orElseThrow(() -> new ResourceNotFoundException("Tool category", id));
     }
 
     static String blankToNull(String value) {
+
         return value == null || value.isBlank() ? null : value.trim();
     }
 }

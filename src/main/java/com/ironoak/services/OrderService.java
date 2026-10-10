@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.config.ShippingProperties;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -110,6 +111,7 @@ public class OrderService {
     private final CheckoutProperties checkout;
     private final ShippingProperties shippingProperties;
     private final TaxService taxes;
+    private final AuditService audit;
     private final TransactionTemplate transactions;
 
     public OrderService(CustomerOrderRepository orders,
@@ -123,6 +125,7 @@ public class OrderService {
             CheckoutProperties checkout,
             ShippingProperties shippingProperties,
             TaxService taxes,
+            AuditService audit,
             PlatformTransactionManager transactionManager) {
 
         this.orders = orders;
@@ -136,6 +139,7 @@ public class OrderService {
         this.checkout = checkout;
         this.shippingProperties = shippingProperties;
         this.taxes = taxes;
+        this.audit = audit;
         this.transactions = new TransactionTemplate(transactionManager);
     }
 
@@ -224,7 +228,11 @@ public class OrderService {
         order.setTaxes(taxes.taxFor(order.getCountry(), order.getSubtotal()));
         order.recalculateTotals();
 
-        return mapper.toResponse(orders.save(order));
+        OrderResponse created = mapper.toResponse(orders.save(order));
+        if (channel == OrderChannel.ADMIN_MANUAL) {
+            audit.record(AuditAction.ORDER_CREATE, "ORDER", created.id(), null, created);
+        }
+        return created;
     }
 
     /**
@@ -266,11 +274,16 @@ public class OrderService {
         if (payments.sumAmountByOrderAndStatus(id, PaymentStatus.PAID).signum() > 0) {
             throw new BusinessRuleException("Order " + order.getOrderNumber() + " already has a payment");
         }
+        Map<String, Object> before = Map.of("shippingCost", order.getShippingCost(),
+                "shippingStatus", order.getShippingStatus(), "grandTotal", order.getGrandTotal());
         order.setShippingCost(cost.setScale(2, RoundingMode.HALF_UP));
         order.setShippingStatus(ShippingStatus.QUOTED);
         order.setShippingSource(ShippingSource.STAFF);
         order.recalculateTotals();
         orders.saveAndFlush(order);
+        audit.record(AuditAction.ORDER_SHIPPING_QUOTE, "ORDER", id, before, Map.of("shippingCost",
+                order.getShippingCost(), "shippingStatus", order.getShippingStatus(), "grandTotal",
+                order.getGrandTotal()));
 
         return mapper.toResponse(orders.findWithItemsById(id).orElseThrow());
     }
@@ -385,6 +398,7 @@ public class OrderService {
             throw new InvalidOrderException(
                     "Cannot change order " + id + " from " + order.getStatus() + " to " + newStatus);
         }
+        OrderStatus oldStatus = order.getStatus();
         if (newStatus == OrderStatus.CANCELLED) {
 
             closeAndReleaseStock(order, OrderStatus.CANCELLED);
@@ -393,6 +407,9 @@ public class OrderService {
             order.setStatus(newStatus);
             orders.saveAndFlush(order);
         }
+        audit.record(AuditAction.ORDER_STATUS, "ORDER", id, Map.of("status", oldStatus),
+                Map.of("status", newStatus));
+
         return mapper.toResponse(orders.findWithItemsById(id).orElseThrow());
     }
 
@@ -570,7 +587,10 @@ public class OrderService {
 
         return switch (service.getPricingType()) {
 
-            case FIXED -> OrderItem.ofService(service, line.quantity(), null, service.getFixedPrice());
+            case FIXED -> OrderItem.ofService(service,
+                    line.quantity(), null,
+                    service.getFixedPrice());
+
             case HOURLY -> {
 
                 BigDecimal hours = line.estimatedHours();
@@ -595,6 +615,7 @@ public class OrderService {
             return null;
         }
         return customers.findOrCreate(request.customerName(),
-                request.customerEmail(), request.customerPhone());
+                request.customerEmail(),
+                request.customerPhone());
     }
 }

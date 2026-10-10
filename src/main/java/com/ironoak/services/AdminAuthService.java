@@ -2,6 +2,7 @@ package com.ironoak.services;
 
 import com.ironoak.config.JwtProperties;
 import com.ironoak.domain.AdminUser;
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.dto.request.AdminLoginRequest;
 import com.ironoak.dto.request.ChangePasswordRequest;
 import com.ironoak.dto.response.AdminLoginResponse;
@@ -32,6 +33,7 @@ public class AdminAuthService {
     private final LoginAttemptTracker attempts;
     private final PasswordEncoder passwordEncoder;
     private final JwtProperties jwtProperties;
+    private final AuditService audit;
 
     public AdminAuthService(AuthenticationManager authenticationManager,
             AdminUserRepository adminUsers,
@@ -39,7 +41,9 @@ public class AdminAuthService {
             RefreshTokenService refreshTokens,
             LoginAttemptTracker attempts,
             PasswordEncoder passwordEncoder,
-            JwtProperties jwtProperties) {
+            JwtProperties jwtProperties,
+            AuditService audit) {
+
         this.authenticationManager = authenticationManager;
         this.adminUsers = adminUsers;
         this.jwtService = jwtService;
@@ -47,18 +51,19 @@ public class AdminAuthService {
         this.attempts = attempts;
         this.passwordEncoder = passwordEncoder;
         this.jwtProperties = jwtProperties;
+        this.audit = audit;
     }
 
     @Transactional
-    public AdminLoginResponse login(AdminLoginRequest request, String ip,
+    public AdminLoginResponse login(AdminLoginRequest request,
+            String ip,
             String userAgent) {
 
         String username = request.username().trim();
         attempts.assertNotLocked(username, ip); // 429 before any password work
 
         try {
-            // A wrong password and an unknown username fail identically (and take similar
-            // time),
+            // A wrong password and an unknown username fail identically
             // so the response cannot be used to enumerate accounts.
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, request.password()));
@@ -67,6 +72,8 @@ public class AdminAuthService {
 
             attempts.recordFailure(username, ip);
             AuditLog.warn("login failed", username, ip);
+            audit.recordAuth(AuditAction.LOGIN_FAILED,
+                    username, ip, userAgent);
 
             throw new BadCredentialsException("Invalid credentials");
         }
@@ -77,6 +84,8 @@ public class AdminAuthService {
         attempts.recordSuccess(username, ip);
         admin.recordLogin();
         AuditLog.info("login ok", username, ip);
+        audit.recordAuth(AuditAction.LOGIN_SUCCESS,
+                username, ip, userAgent);
 
         return respond(refreshTokens.startSession(admin, ip, userAgent));
     }
@@ -104,6 +113,7 @@ public class AdminAuthService {
 
         refreshTokens.revokeAll(find(username), "LOGOUT_ALL");
         AuditLog.info("logout all sessions", username, ip);
+        audit.recordAuth(AuditAction.LOGOUT_ALL, username, ip, null);
     }
 
     @Transactional(readOnly = true)
@@ -136,6 +146,7 @@ public class AdminAuthService {
 
             attempts.recordFailure(username, ip);
             AuditLog.warn("password change refused: wrong current password", username, ip);
+            audit.recordAuth(AuditAction.PASSWORD_CHANGE_FAILED, username, ip, userAgent);
             throw new BusinessRuleException("Current password is incorrect");
         }
         PasswordPolicy.validate(request.newPassword(), username, request.currentPassword());
@@ -145,6 +156,9 @@ public class AdminAuthService {
         adminUsers.saveAndFlush(admin);
         refreshTokens.revokeAll(admin, "PASSWORD_CHANGED");
         AuditLog.info("password changed", username, ip);
+        audit.recordAuth(AuditAction.PASSWORD_CHANGED,
+                username, ip, userAgent);
+
         return respond(refreshTokens.startSession(admin, ip, userAgent));
     }
 

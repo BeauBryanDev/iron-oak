@@ -161,8 +161,10 @@ public class BookingService {
 
             Join<ServiceBooking, Customer> customer = root.join("customer", JoinType.LEFT);
 
-            return FilterSpecs.anyContains(cb, search, customer.<String>get("name"), customer.<String>get("email"),
-                    root.<String>get("locationAddress"), root.<String>get("machineModel"));
+            return FilterSpecs.anyContains(cb, search, customer.<String>get("name"),
+                    customer.<String>get("email"),
+                    root.<String>get("locationAddress"),
+                    root.<String>get("machineModel"));
         };
     }
 

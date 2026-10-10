@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.domain.enums.ShippingStatus;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.EntityManager;
@@ -81,16 +82,19 @@ public class PaymentService {
     private final OrderService orderService;
     private final PaymentMapper mapper;
     private final EntityManager entityManager;
+    private final AuditService audit;
 
     public PaymentService(PaymentRepository payments,
             CustomerOrderRepository orders,
             OrderService orderService,
             PaymentMapper mapper,
-            EntityManager entityManager) {
+            EntityManager entityManager,
+            AuditService audit) {
         this.payments = payments;
         this.orders = orders;
         this.orderService = orderService;
         this.mapper = mapper;
+        this.audit = audit;
         this.entityManager = entityManager;
     }
 
@@ -143,8 +147,10 @@ public class PaymentService {
         }
         orderService.reopenForPayment(order); // PAYMENT_FAILED -> PENDING_PAYMENT; refuses an expired hold
 
-        return mapper.toResponse(payments.saveAndFlush(new Payment(order, due,
+        PaymentResponse created = mapper.toResponse(payments.saveAndFlush(new Payment(order, due,
                 provider, reference)));
+        audit.record(AuditAction.PAYMENT_CREATE, "PAYMENT", created.id(), null, created);
+        return created;
     }
 
     @Transactional(readOnly = true)
@@ -201,7 +207,11 @@ public class PaymentService {
      */
     public PaymentResponse updateStatus(Long id, PaymentStatus newStatus) {
 
-        return updateStatus(id, newStatus, null, null);
+        PaymentStatus oldStatus = payments.findById(id).map(Payment::getStatus).orElse(null);
+        PaymentResponse updated = updateStatus(id, newStatus, null, null);
+        audit.record(AuditAction.PAYMENT_STATUS, "PAYMENT", id, Map.of("status", oldStatus),
+                Map.of("status", updated.status()));
+        return updated;
     }
 
     /**

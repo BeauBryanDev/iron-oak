@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.repository.ChatSessionRepository;
 import com.ironoak.repository.SupportTicketRepository;
 import com.ironoak.repository.WarrantyClaimRepository;
@@ -40,6 +41,7 @@ public class AdminCustomerService {
     private final SupportTicketRepository tickets;
     private final ChatSessionRepository chatSessions;
     private final CustomerMapper mapper;
+    private final AuditService audit;
 
     public AdminCustomerService(CustomerRepository customers,
             CustomerOrderRepository orders,
@@ -47,7 +49,9 @@ public class AdminCustomerService {
             WarrantyClaimRepository claims,
             SupportTicketRepository tickets,
             ChatSessionRepository chatSessions,
-            CustomerMapper mapper) {
+            CustomerMapper mapper,
+            AuditService audit) {
+
         this.customers = customers;
         this.orders = orders;
         this.bookings = bookings;
@@ -55,67 +59,96 @@ public class AdminCustomerService {
         this.tickets = tickets;
         this.chatSessions = chatSessions;
         this.mapper = mapper;
+        this.audit = audit;
     }
 
     @Transactional(readOnly = true)
     public Page<CustomerResponse> list(CustomerFilter filter, Pageable pageable) {
+
         Specification<Customer> spec = Specification.allOf(
-                FilterSpecs.dateRange("createdAt", filter.from(), filter.to()),
+                FilterSpecs.dateRange("createdAt", filter.from(),
+                        filter.to()),
                 !FilterSpecs.hasText(filter.q()) ? null
                         : (root, query, cb) -> FilterSpecs.anyContains(cb, filter.q(),
-                                root.<String>get("name"), root.<String>get("email"), root.<String>get("phone")));
+                                root.<String>get("name"), root.<String>get("email"),
+                                root.<String>get("phone")));
 
         return customers.findAll(spec, pageable).map(mapper::toResponse);
     }
 
     @Transactional(readOnly = true)
     public CustomerResponse get(Long id) {
+
         return mapper.toResponse(find(id));
     }
 
     public CustomerResponse create(CustomerRequest request) {
+
         String email = CustomerService.normalizeEmail(request.email());
         requireFreeEmail(email, null);
-        Customer customer = new Customer(request.name().trim(), email, blankToNull(request.phone()));
+        Customer customer = new Customer(request.name().trim(),
+                email, blankToNull(request.phone()));
         customer.setAddress(blankToNull(request.address()));
-        return mapper.toResponse(customers.saveAndFlush(customer));
+        CustomerResponse created = mapper.toResponse(customers.saveAndFlush(customer));
+        audit.record(AuditAction.CUSTOMER_CREATE,
+                "CUSTOMER", created.id(), null, created);
+
+        return created;
     }
 
     /**
      * Replaces every editable field; an omitted email, phone or address is cleared.
      */
     public CustomerResponse update(Long id, CustomerRequest request) {
+
         Customer customer = find(id);
+        CustomerResponse before = mapper.toResponse(customer);
         String email = CustomerService.normalizeEmail(request.email());
+
         requireFreeEmail(email, id);
         customer.setName(request.name().trim());
         customer.setEmail(email);
         customer.setPhone(blankToNull(request.phone()));
         customer.setAddress(blankToNull(request.address()));
-        return mapper.toResponse(customers.saveAndFlush(customer));
+        CustomerResponse after = mapper.toResponse(customers.saveAndFlush(customer));
+        audit.record(AuditAction.CUSTOMER_UPDATE,
+                "CUSTOMER", id, before, after);
+
+        return after;
     }
 
     /** Changes only the fields that are present. */
     public CustomerResponse patch(Long id, PatchCustomerRequest request) {
+
         Customer customer = find(id);
+        CustomerResponse before = mapper.toResponse(customer);
+
         if (request.name() != null) {
+
             if (request.name().isBlank()) {
                 throw new BusinessRuleException("name must not be blank");
             }
             customer.setName(request.name().trim());
         }
         if (request.email() != null) {
+
             String email = CustomerService.normalizeEmail(request.email());
             requireFreeEmail(email, id);
             customer.setEmail(email);
         }
         if (request.phone() != null) {
+
             customer.setPhone(blankToNull(request.phone()));
         }
         if (request.address() != null) {
+
             customer.setAddress(blankToNull(request.address()));
         }
-        return mapper.toResponse(customers.saveAndFlush(customer));
+        CustomerResponse after = mapper.toResponse(customers.saveAndFlush(customer));
+        audit.record(AuditAction.CUSTOMER_UPDATE,
+                "CUSTOMER", id, before, after);
+
+        return after;
     }
 
     /**
@@ -123,32 +156,41 @@ public class AdminCustomerService {
      * point at the customer.
      */
     public void delete(Long id) {
+
         Customer customer = find(id);
         if (orders.existsByCustomerId(id) || bookings.existsByCustomerId(id) || claims.existsByCustomerId(id)
                 || tickets.existsByCustomerId(id) || chatSessions.existsByCustomerId(id)) {
+
             throw new ResourceInUseException("Customer " + id
                     + " has orders, bookings, claims, tickets or chats and cannot be deleted");
         }
+        CustomerResponse before = mapper.toResponse(customer);
         customers.delete(customer);
         customers.flush();
+        audit.record(AuditAction.CUSTOMER_DELETE,
+                "CUSTOMER", id, before, null);
     }
 
     private Customer find(Long id) {
+
         return customers.findById(id).orElseThrow(() -> new ResourceNotFoundException("Customer", id));
     }
 
     private void requireFreeEmail(String email, Long ownId) {
+
         if (email == null) {
             return;
         }
         customers.findFirstByEmailIgnoreCase(email)
                 .filter(other -> !other.getId().equals(ownId))
                 .ifPresent(other -> {
+
                     throw new DuplicateResourceException("Customer", "email", email);
                 });
     }
 
     private static String blankToNull(String value) {
+
         return value == null || value.isBlank() ? null : value.trim();
     }
 }

@@ -1,5 +1,6 @@
 package com.ironoak.services;
 
+import com.ironoak.domain.enums.AuditAction;
 import com.ironoak.domain.ShippingRoute;
 import com.ironoak.domain.enums.ShippingSource;
 import com.ironoak.exceptions.InvalidOrderException;
@@ -51,13 +52,16 @@ public class ShippingRouteService {
     private final ShippingRouteStore store;
     private final GoogleRoutesClient google;
     private final ShippingCalculator calculator;
+    private final AuditService audit;
 
     public ShippingRouteService(ShippingRouteRepository routes, ShippingRouteStore store,
-                                GoogleRoutesClient google, ShippingCalculator calculator) {
+                                GoogleRoutesClient google, ShippingCalculator calculator,
+            AuditService audit) {
         this.routes = routes;
         this.store = store;
         this.google = google;
         this.calculator = calculator;
+        this.audit = audit;
     }
 
     public Route resolve(String country, String city, String province, boolean mayCallGoogle) {
@@ -97,7 +101,14 @@ public class ShippingRouteService {
         if (key.isEmpty()) {
             throw new com.ironoak.exceptions.BusinessRuleException("city is required");
         }
-        return store.save(code, key, city.trim(), distanceKm.setScale(1, RoundingMode.HALF_UP), ShippingSource.MANUAL);
+        Map<String, Object> before = routes.findByCountryAndCityKey(code, key)
+                .<Map<String, Object>>map(r -> Map.of("distanceKm", r.getDistanceKm(), "source", r.getSource()))
+                .orElse(null);
+        ShippingRoute saved = store.save(code, key, city.trim(), distanceKm.setScale(1, RoundingMode.HALF_UP),
+                ShippingSource.MANUAL);
+        audit.record(AuditAction.SHIPPING_ROUTE_SET, "SHIPPING_ROUTE", code + "/" + key, before,
+                Map.of("distanceKm", saved.getDistanceKm(), "source", saved.getSource()));
+        return saved;
     }
 
     /**
@@ -129,7 +140,9 @@ public class ShippingRouteService {
                 }
             }
         }
-        return new RefreshResult(total, stored, fetched, notFound, google.remainingToday());
+        RefreshResult result = new RefreshResult(total, stored, fetched, notFound, google.remainingToday());
+        audit.record(AuditAction.SHIPPING_ROUTES_REFRESH, "SHIPPING_ROUTE", null, null, result);
+        return result;
     }
 
     private ShippingRoute remember(String country, String key, String cityName, double km) {

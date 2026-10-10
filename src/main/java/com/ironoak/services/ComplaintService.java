@@ -32,7 +32,8 @@ public class ComplaintService {
 
         Complaint complaint = new Complaint(request.customerName().trim(),
                 request.complaintDatetime(),
-                request.product().trim(), request.description().trim());
+                request.product().trim(),
+                request.description().trim());
 
         return mapper.toResponse(complaints.save(complaint));
     }
@@ -54,8 +55,10 @@ public class ComplaintService {
     }
 
     public ComplaintResponse updateStatus(Long id, ComplaintStatus status) {
+
         Complaint complaint = complaints.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Complaint", id));
+
         complaint.setStatus(status);
 
         return mapper.toResponse(complaint);
