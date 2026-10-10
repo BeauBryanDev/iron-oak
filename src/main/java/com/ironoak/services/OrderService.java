@@ -109,6 +109,7 @@ public class OrderService {
     private final ShippingService shipping;
     private final CheckoutProperties checkout;
     private final ShippingProperties shippingProperties;
+    private final TaxService taxes;
     private final TransactionTemplate transactions;
 
     public OrderService(CustomerOrderRepository orders,
@@ -121,6 +122,7 @@ public class OrderService {
             ShippingService shipping,
             CheckoutProperties checkout,
             ShippingProperties shippingProperties,
+            TaxService taxes,
             PlatformTransactionManager transactionManager) {
 
         this.orders = orders;
@@ -133,6 +135,7 @@ public class OrderService {
         this.shipping = shipping;
         this.checkout = checkout;
         this.shippingProperties = shippingProperties;
+        this.taxes = taxes;
         this.transactions = new TransactionTemplate(transactionManager);
     }
 
@@ -217,6 +220,9 @@ public class OrderService {
             order.setReservationExpiresAt(OffsetDateTime.now().plusMinutes(holdMinutes(channel, shippingQuote)));
         }
         items.forEach(order::addItem);
+        // Items only, never shipping, and only above the threshold (TaxService).
+        order.setTaxes(taxes.taxFor(order.getCountry(), order.getSubtotal()));
+        order.recalculateTotals();
 
         return mapper.toResponse(orders.save(order));
     }

@@ -7,13 +7,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CheckoutProperties {
 
     /** Minutes a PENDING_PAYMENT order keeps its product stock before it expires. */
-    private int reservationMinutes = 35;
+    private int reservationMinutes = 360;
 
     /** How long a Stripe Checkout page stays open. Stripe's minimum is 30 minutes. */
     private int sessionMinutes = 31;
 
     /** An order's stock hold can be extended for new payment attempts only up to this age. */
-    private int maxHoldMinutes = 120;
+    private int maxHoldMinutes = 360;
 
     /** Where the storefront lives; Stripe returns the customer to /checkout/success or /checkout/cancel here. */
     private String frontendBaseUrl = "http://localhost:3000";

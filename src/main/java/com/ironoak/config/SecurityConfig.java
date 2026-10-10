@@ -65,6 +65,11 @@ public class SecurityConfig {
                                                                 "/actuator/health/**")
                                                 .permitAll()
 
+                                                // API docs; springdoc only serves them where enabled (local profile).
+                                                .requestMatchers(HttpMethod.GET, "/swagger-ui", "/swagger-ui.html",
+                                                                "/swagger-ui/**", "/v3/api-docs", "/v3/api-docs/**")
+                                                .permitAll()
+
                                                 // Staff login - must be reachable to obtain a token at all.
                                                 // The credential (password or refresh token) is in the body.
                                                 .requestMatchers(HttpMethod.POST, "/api/admin/auth/login",
