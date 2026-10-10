@@ -11,6 +11,8 @@ public record BookingResponse(
         String serviceName,
         String customerName,
         String locationAddress,
+        String country,
+        String city,
         OffsetDateTime scheduledAt,
         String machineModel,
         String notes,

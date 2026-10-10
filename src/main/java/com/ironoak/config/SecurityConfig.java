@@ -89,6 +89,7 @@ public class SecurityConfig {
                                                                 "/api/bookings", "/api/bookings/*/reschedule",
                                                                 "/api/bookings/*/cancel",
                                                                 "/api/warranty-claims", "/api/support-tickets",
+                                                                "/api/service-quotes",
                                                                 "/api/shipping/quote",
                                                                 "/api/orders/*/checkout-session",
                                                                 // Stripe calls this; the signature, not a login,
@@ -100,7 +101,8 @@ public class SecurityConfig {
                                                 // email on the record (?email=); the services enforce that match.
                                                 .requestMatchers(HttpMethod.GET, "/api/orders/*",
                                                                 "/api/bookings", "/api/bookings/*",
-                                                                "/api/warranty-claims", "/api/warranty-claims/*")
+                                                                "/api/warranty-claims", "/api/warranty-claims/*",
+                                                                "/api/service-quotes/*")
                                                 .permitAll()
 
                                                 // Everything under /api/admin and the dashboard is staff-only,
