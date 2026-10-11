@@ -12,12 +12,15 @@ import com.ironoak.domain.enums.OrderStatus;
 import com.ironoak.domain.enums.PaymentStatus;
 import com.ironoak.domain.enums.TicketStatus;
 import com.ironoak.dto.request.CancelBookingRequest;
+import com.ironoak.dto.request.ConfirmBookingRequest;
 import com.ironoak.dto.request.CreateBookingRequest;
 import com.ironoak.dto.request.CreateOrderRequest;
 import com.ironoak.dto.request.CreateOrderRequest.Item;
 import com.ironoak.dto.request.CreatePaymentRequest;
 import com.ironoak.dto.request.CreateSupportTicketRequest;
 import com.ironoak.dto.request.CreateWarrantyClaimRequest;
+import com.ironoak.dto.request.UpdateShipmentRequest;
+import com.ironoak.domain.enums.ShipmentStatus;
 import com.ironoak.dto.request.RescheduleBookingRequest;
 import com.ironoak.dto.request.UpdateWarrantyClaimStatusRequest;
 import com.ironoak.dto.response.OrderResponse;
@@ -114,8 +117,13 @@ class V3ServicesTest {
         return order(new Item(OrderItemType.PRODUCT, productId(), quantity, null));
     }
 
+    /** Paid, shipped and delivered (which completes it and starts the warranty). */
     private OrderResponse completedProductOrder() {
-        return complete(productOrder(1));
+        OrderResponse order = productOrder(1);
+        var payment = payments.create(new CreatePaymentRequest(order.id(), "manual", "ref-" + order.id()));
+        payments.updateStatus(payment.id(), PaymentStatus.PAID);
+        orders.updateShipment(order.id(), new UpdateShipmentRequest(ShipmentStatus.SHIPPED, "Servientrega", null));
+        return orders.updateShipment(order.id(), new UpdateShipmentRequest(ShipmentStatus.DELIVERED, null, null));
     }
 
     private CreateBookingRequest bookingRequest(String email) {
@@ -169,9 +177,30 @@ class V3ServicesTest {
                 .isInstanceOf(BusinessRuleException.class);
         assertThat(bookings.queue(new BookingFilter(null, null, null, null, null, null), PageRequest.of(0, 10)).getContent()).isEmpty();
 
+        // book -> staff confirm (technician available) -> customer pays by order number -> visit completed
         var staffFlow = bookings.create(bookingRequest(EMAIL));
-        assertThat(bookings.updateStatus(staffFlow.id(), BookingStatus.CONFIRMED).status()).isEqualTo(BookingStatus.CONFIRMED);
+        assertThatThrownBy(() -> bookings.updateStatus(staffFlow.id(), BookingStatus.CONFIRMED))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("/confirm");
+        var confirmed = bookings.confirm(staffFlow.id(), new ConfirmBookingRequest(null, null));
+        assertThat(confirmed.status()).isEqualTo(BookingStatus.CONFIRMED);
+        assertThat(confirmed.orderStatus()).isEqualTo(OrderStatus.PENDING_PAYMENT);
+        assertThat(confirmed.grandTotal()).isEqualByComparingTo("285.60"); // 240.00 fixed + 19% tax
+        assertThat(orders.getPublic(confirmed.orderNumber()).payable()).isTrue();
+        assertThatThrownBy(() -> bookings.confirm(staffFlow.id(), new ConfirmBookingRequest(null, null)))
+                .isInstanceOf(BusinessRuleException.class);
+        assertThatThrownBy(() -> bookings.reschedule(staffFlow.id(), EMAIL, new RescheduleBookingRequest(later)))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("confirmed");
+        assertThatThrownBy(() -> bookings.updateStatus(staffFlow.id(), BookingStatus.COMPLETED))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("not paid");
+
+        var payment = payments.create(new CreatePaymentRequest(confirmed.orderId(), "manual", "visit-" + confirmed.orderId()));
+        payments.updateStatus(payment.id(), PaymentStatus.PAID);
         assertThat(bookings.updateStatus(staffFlow.id(), BookingStatus.COMPLETED).status()).isEqualTo(BookingStatus.COMPLETED);
+
+        // cancelling a confirmed but unpaid visit cancels its order too
+        var unpaid = bookings.confirm(bookings.create(bookingRequest(EMAIL)).id(), new ConfirmBookingRequest(null, null));
+        bookings.cancel(unpaid.id(), EMAIL, null);
+        assertThat(orders.get(unpaid.orderId()).status()).isEqualTo(OrderStatus.CANCELLED);
 
         var missingService = new CreateBookingRequest("Jane", EMAIL, null, 999999L, "Plant", "CO", "Bogota", OffsetDateTime.now().plusDays(1), null, null);
         assertThatThrownBy(() -> bookings.create(missingService)).isInstanceOf(ResourceNotFoundException.class);
@@ -212,12 +241,54 @@ class V3ServicesTest {
 
         OrderResponse old = completedProductOrder();
         em.flush();
-        em.createNativeQuery("update customer_order set created_at = now() - interval '2 years' where id = ?1")
+        em.createNativeQuery("update customer_order set delivered_at = now() - interval '2 years' where id = ?1")
                 .setParameter(1, old.id()).executeUpdate();
         em.clear();
         assertThatThrownBy(() -> claims.create(new CreateWarrantyClaimRequest(
                 EMAIL, old.id(), old.items().get(0).id(), "Too late")))
                 .isInstanceOf(BusinessRuleException.class).hasMessageContaining("expired");
+
+        // completed by hand but never marked delivered: no warranty claim
+        OrderResponse undelivered = complete(productOrder(1));
+        assertThatThrownBy(() -> claims.create(new CreateWarrantyClaimRequest(
+                EMAIL, undelivered.id(), undelivered.items().get(0).id(), "Broken")))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("delivered");
+    }
+
+    @Test
+    void staffShipAPaidOrderAndTheWarrantyStartsAtDelivery() {
+        OrderResponse order = productOrder(1); // one compressor to Bogota (16.1 km road route)
+        var ship = new UpdateShipmentRequest(ShipmentStatus.SHIPPED, "Servientrega", "SV-123");
+        assertThatThrownBy(() -> orders.updateShipment(order.id(), ship))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("paid");
+
+        var payment = payments.create(new CreatePaymentRequest(order.id(), "manual", "ship-" + order.id()));
+        payments.updateStatus(payment.id(), PaymentStatus.PAID);
+        assertThatThrownBy(() -> orders.updateShipment(order.id(), new UpdateShipmentRequest(ShipmentStatus.SHIPPED, null, null)))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("carrier");
+
+        OrderResponse shipped = orders.updateShipment(order.id(), ship);
+        assertThat(shipped.status()).isEqualTo(OrderStatus.IN_PROGRESS);
+        assertThat(shipped.shipment().carrier()).isEqualTo("Servientrega");
+        assertThat(shipped.shipment().estimatedDeliveryDays()).isEqualTo(2); // 1 handling + 1 road day
+        assertThat(shipped.shipment().expectedDeliveryDate())
+                .isEqualTo(shipped.shipment().shippedAt().toLocalDate().plusDays(2));
+
+        orders.updateShipment(order.id(), new UpdateShipmentRequest(ShipmentStatus.IN_TRANSIT, null, null));
+        assertThatThrownBy(() -> orders.updateShipment(order.id(), ship)).isInstanceOf(BusinessRuleException.class);
+        OrderResponse delivered = orders.updateShipment(order.id(),
+                new UpdateShipmentRequest(ShipmentStatus.DELIVERED, null, null));
+        assertThat(delivered.status()).isEqualTo(OrderStatus.COMPLETED);
+        assertThat(delivered.shipment().deliveredAt()).isNotNull();
+        assertThat(orders.getPublic(order.orderNumber()).shipment().status()).isEqualTo(ShipmentStatus.DELIVERED);
+
+        // bought two years ago but delivered just now: still under warranty
+        em.flush();
+        em.createNativeQuery("update customer_order set created_at = now() - interval '2 years' where id = ?1")
+                .setParameter(1, order.id()).executeUpdate();
+        em.clear();
+        assertThat(claims.create(new CreateWarrantyClaimRequest(EMAIL, order.id(), order.items().get(0).id(),
+                "Motor stops")).status()).isNotNull();
     }
 
     @Test

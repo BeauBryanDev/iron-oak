@@ -86,13 +86,55 @@ class ControllersTest {
     }
 
     @Test
+    void springErrorsAreProblemDetailsToo() throws Exception {
+        mockMvc.perform(post("/api/orders").contentType("application/json")
+                        .content("{\"customerName\":\"Ada\",\"items\":[}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Malformed JSON request body"));
+        mockMvc.perform(post("/api/orders").contentType("application/json")
+                        .content("{\"items\":[{\"itemType\":\"GADGET\",\"referenceId\":1,\"quantity\":1}]}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Invalid value 'GADGET' for field 'items[0].itemType'"));
+        mockMvc.perform(get("/api/orders/1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("email")));
+        mockMvc.perform(get("/api/bookings/abc").param("email", "a@b.co"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(org.hamcrest.Matchers.containsString("abc")));
+    }
+
+    @Test
+    void publicEndMillCatalog() throws Exception {
+        mockMvc.perform(get("/api/end-mills"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(6))
+                .andExpect(jsonPath("$.content[0].stockQuantity").doesNotExist()) // public view: inStock only
+                .andExpect(jsonPath("$.content[0].visionLabel").doesNotExist());
+        mockMvc.perform(get("/api/end-mills").param("fluteType", "ball nose"))
+                .andExpect(jsonPath("$.page.totalElements").value(3));
+        mockMvc.perform(get("/api/end-mills").param("diameterMm", "2"))
+                .andExpect(jsonPath("$.page.totalElements").value(2));
+        mockMvc.perform(get("/api/end-mills/sku/BN-002"))
+                .andExpect(jsonPath("$.price").value(35.00))
+                .andExpect(jsonPath("$.inStock").value(true));
+        mockMvc.perform(get("/api/end-mills/by-vision/fishtail_end_mill_3mm"))
+                .andExpect(jsonPath("$.sku").value("FS-R-003"));
+        mockMvc.perform(get("/api/end-mills/flute-types"))
+                .andExpect(jsonPath("$[0]").value("Ball Nose"))
+                .andExpect(jsonPath("$[1]").value("Fishtail"));
+        mockMvc.perform(get("/api/end-mills/sku/NOPE")).andExpect(status().isNotFound());
+    }
+
+    @Test
     void publicServicesAndMachines() throws Exception {
         mockMvc.perform(get("/api/services")).andExpect(jsonPath("$.length()").value(6));
         mockMvc.perform(get("/api/services/EMERGENCY_REPAIR"))
                 .andExpect(jsonPath("$.pricingType").value("HOURLY"));
         mockMvc.perform(get("/api/services/machines")).andExpect(jsonPath("$.length()").value(4));
         mockMvc.perform(get("/api/services/machines/BM-200"))
-                .andExpect(jsonPath("$.name").value("Benchtop Mill"));
+                .andExpect(jsonPath("$.name").value("Benchtop Mill"))
+                .andExpect(jsonPath("$.weightKg").hasJsonPath()) // null until staff enter it
+                .andExpect(jsonPath("$.volumeM3").hasJsonPath());
         mockMvc.perform(get("/api/services/plumbing")).andExpect(status().isNotFound());
     }
 

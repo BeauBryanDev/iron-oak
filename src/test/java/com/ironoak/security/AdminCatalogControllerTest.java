@@ -85,6 +85,47 @@ class AdminCatalogControllerTest {
         return request.header("Authorization", bearer);
     }
 
+    private static String endMillBody(String sku, String radius, String visionLabel, String extra) {
+        return "{\"sku\":\"" + sku + "\",\"name\":\"Fishtail End Mill 4mm LH\",\"fluteType\":\"Fishtail\","
+                + "\"cutDirection\":\"Left-Hand\",\"cuttingDiameterMm\":4.00,\"radiusMm\":" + radius + ","
+                + "\"material\":\"Solid Carbide\",\"overallLengthMm\":50.00,\"weightG\":22.5,\"price\":39.90,"
+                + "\"maxRpm\":20000,\"visionLabel\":\"" + visionLabel + "\"" + extra + "}";
+    }
+
+    @Test
+    void endMillCrudAndStock() throws Exception {
+        send(get("/api/admin/end-mills"), 401);
+        JsonNode created = send(admin(post("/api/admin/end-mills"),
+                endMillBody("FS-L-004", "0.00", "fishtail_end_mill_4mm_lh", ",\"stockQuantity\":10")), 201);
+        long id = created.get("id").asLong();
+        assertThat(created.get("stockQuantity").asInt()).isEqualTo(10);
+        assertThat(created.get("cutDirection").asText()).isEqualTo("Left-Hand");
+
+        // sku is unique in code (any case), vision_label in code and in the database
+        send(admin(post("/api/admin/end-mills"), endMillBody("bn-001", "0.00", "x_new_label", "")), 409);
+        send(admin(post("/api/admin/end-mills"), endMillBody("FS-L-005", "0.00", "ball_nose_end_mill_1mm", "")), 409);
+        send(admin(post("/api/admin/end-mills"), endMillBody("FS-L-006", "2.50", "y_new_label", "")), 422); // radius > d/2
+
+        // an edit cannot touch stock; stock moves only through the atomic adjustment
+        send(admin(put("/api/admin/end-mills/" + id), endMillBody("FS-L-004", "0.00", "fishtail_end_mill_4mm_lh",
+                ",\"stockQuantity\":99")), 422);
+        JsonNode edited = send(admin(put("/api/admin/end-mills/" + id),
+                endMillBody("FS-L-004", "0.00", "fishtail_end_mill_4mm_lh", "").replace("39.90", "42.00")), 200);
+        assertThat(edited.get("price").decimalValue()).isEqualByComparingTo("42.00");
+        assertThat(edited.get("stockQuantity").asInt()).isEqualTo(10);
+        send(admin(patch("/api/admin/end-mills/" + id + "/stock"), "{\"delta\":-11}"), 422);
+        assertThat(send(admin(patch("/api/admin/end-mills/" + id + "/stock"), "{\"delta\":5}"), 200)
+                .get("stockQuantity").asInt()).isEqualTo(15);
+
+        // deactivated: gone from the storefront, still listed for staff
+        send(get("/api/end-mills/" + id), 200);
+        send(admin(patch("/api/admin/end-mills/" + id + "/active"), "{\"isActive\":false}"), 200);
+        send(get("/api/end-mills/" + id), 404);
+        assertThat(send(admin(get("/api/admin/end-mills?active=false")), 200).get("page").get("totalElements").asInt())
+                .isEqualTo(1);
+        send(admin(get("/api/admin/end-mills/" + id)), 200);
+    }
+
     private String productBody(long toolCategoryId, String sku, String price) {
         return "{\"toolCategoryId\":" + toolCategoryId + ",\"sku\":\"" + sku + "\",\"name\":\"Test Hammer\","
                 + "\"category\":\"Hand Tools\",\"price\":" + price + ",\"stockQuantity\":10,\"warrantyMonths\":6}";

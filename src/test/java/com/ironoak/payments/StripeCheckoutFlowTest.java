@@ -486,10 +486,23 @@ class StripeCheckoutFlowTest {
         JsonNode home = send(json(post("/api/shipping/quote"), "{\"country\":\"CO\",\"city\":\"Bogota\"," + line + "}"), 200);
         assertThat(home.get("domestic").asBoolean()).isTrue();
         assertThat(home.get("total").decimalValue()).isEqualByComparingTo("2.53");
+        // the same tax as the real order: 19% of the 289.99 item, so the cart shows 347.62 before paying
+        assertThat(home.get("itemsSubtotal").decimalValue()).isEqualByComparingTo("289.99");
+        assertThat(home.get("taxRate").decimalValue()).isEqualByComparingTo("0.19");
+        assertThat(home.get("taxes").decimalValue()).isEqualByComparingTo("55.10");
+        assertThat(home.get("estimatedTotal").decimalValue()).isEqualByComparingTo("347.62");
 
         JsonNode abroad = send(json(post("/api/shipping/quote"), "{\"country\":\"ar\"," + line + "}"), 200);
         assertThat(abroad.get("domestic").asBoolean()).isFalse();
         assertThat(abroad.get("total").decimalValue()).isGreaterThan(home.get("total").decimalValue());
+
+        // end mills are quoted like any tool parcel; 33.00 is under the 100.00 tax threshold
+        long endMillId = jdbc.queryForObject("select id from end_mills where sku = 'BN-001'", Long.class);
+        JsonNode bits = send(json(post("/api/shipping/quote"), "{\"country\":\"CO\",\"city\":\"Medellin\","
+                + "\"items\":[{\"itemType\":\"END_MILL\",\"referenceId\":" + endMillId + ",\"quantity\":1}]}"), 200);
+        assertThat(bits.get("itemsSubtotal").decimalValue()).isEqualByComparingTo("33.00");
+        assertThat(bits.get("taxes").decimalValue()).isEqualByComparingTo("0");
+        assertThat(bits.get("total").decimalValue()).isPositive();
 
         send(json(post("/api/shipping/quote"), "{\"country\":\"FR\"," + line + "}"), 400);
         send(json(post("/api/shipping/quote"), "{" + line + "}"), 400);

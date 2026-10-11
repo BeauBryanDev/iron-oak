@@ -103,8 +103,10 @@ class V3ControllersTest {
         long paymentId = json(send(asJson(asAdmin(post("/api/admin/payments")),
                 "{\"orderId\":" + id + ",\"provider\":\"manual\",\"providerReference\":\"ref-" + id + "\"}"), 201)).get("id").asLong();
         send(asJson(asAdmin(patch("/api/admin/payments/" + paymentId + "/status")), "{\"status\":\"PAID\"}"), 200);
-        send(asJson(asAdmin(patch("/api/admin/orders/" + id + "/status")), "{\"status\":\"IN_PROGRESS\"}"), 200);
-        send(asJson(asAdmin(patch("/api/admin/orders/" + id + "/status")), "{\"status\":\"COMPLETED\"}"), 200);
+        // staff ship it and mark it delivered, which completes it and starts the warranty
+        send(asJson(asAdmin(patch("/api/admin/orders/" + id + "/shipment")),
+                "{\"status\":\"SHIPPED\",\"carrier\":\"Servientrega\"}"), 200);
+        send(asJson(asAdmin(patch("/api/admin/orders/" + id + "/shipment")), "{\"status\":\"DELIVERED\"}"), 200);
         return id;
     }
 

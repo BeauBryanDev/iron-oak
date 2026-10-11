@@ -18,6 +18,7 @@ import com.ironoak.exceptions.BusinessRuleException;
 import com.ironoak.exceptions.InvalidOrderException;
 import com.ironoak.exceptions.OutOfStockException;
 import com.ironoak.exceptions.ResourceNotFoundException;
+import com.ironoak.repository.EndMillRepository;
 import com.ironoak.repository.ProductRepository;
 import com.ironoak.services.ComplaintService;
 import com.ironoak.services.DashboardService;
@@ -78,6 +79,8 @@ class ServicesTest {
     @Autowired
     private ProductRepository products;
     @Autowired
+    private EndMillRepository endMills;
+    @Autowired
     private EntityManager em;
 
     private Long productId(String sku) {
@@ -109,6 +112,29 @@ class ServicesTest {
         assertThat(catalog.listMachines()).hasSize(4);
         assertThatThrownBy(() -> productService.getBySku("NOPE")).isInstanceOf(ResourceNotFoundException.class);
         assertThatThrownBy(() -> toolCategories.getByModelLabel("nope")).isInstanceOf(ResourceNotFoundException.class);
+    }
+
+    @Test
+    void endMillsAreSoldLikeProducts() {
+        var bn003 = endMills.findFirstBySkuIgnoreCase("BN-003").orElseThrow(); // 37.00, 25 in stock
+        int before = bn003.getStockQuantity();
+        var order = orders.create(TestOrders.web("Jane Doe", "jane@example.com",
+                List.of(new Item(OrderItemType.END_MILL, bn003.getId(), 3, null))), OrderChannel.WEB_CHECKOUT);
+
+        assertThat(order.items().get(0).itemType()).isEqualTo(OrderItemType.END_MILL);
+        assertThat(order.items().get(0).itemCode()).isEqualTo("BN-003");
+        assertThat(order.subtotal()).isEqualByComparingTo("111.00");
+        assertThat(order.taxes()).isEqualByComparingTo("21.09"); // 19% of 111.00, above the 100.00 threshold
+        assertThat(order.shippingCost()).isPositive();
+        assertThat(order.reservationExpiresAt()).isAfter(OffsetDateTime.now().plusMinutes(355)); // 6 h hold
+        assertThat(endMills.findById(bn003.getId()).orElseThrow().getStockQuantity()).isEqualTo(before - 3);
+
+        assertThatThrownBy(() -> orders.create(TestOrders.web("Jane Doe", "jane@example.com",
+                List.of(new Item(OrderItemType.END_MILL, bn003.getId(), before, null))), OrderChannel.WEB_CHECKOUT))
+                .isInstanceOf(OutOfStockException.class);
+
+        orders.updateStatus(order.id(), OrderStatus.CANCELLED); // the hold ends: stock comes back
+        assertThat(endMills.findById(bn003.getId()).orElseThrow().getStockQuantity()).isEqualTo(before);
     }
 
     @Test
