@@ -10,7 +10,11 @@ export class ApiError extends Error {
   /** Seconds to wait, from a 429 Retry-After header. */
   readonly retryAfterSeconds?: number;
 
-  constructor(status: number, message: string, problem?: ProblemDetail, retryAfterSeconds?: number) {
+  constructor(status: number,
+    message: string,
+    problem?: ProblemDetail,
+    retryAfterSeconds?: number) {
+
     super(message);
     this.name = "ApiError";
     this.status = status;
@@ -34,15 +38,22 @@ export interface RequestOptions {
   signal?: AbortSignal;
 }
 
-function buildUrl(path: string, query?: RequestOptions["query"]): string {
+function buildUrl(path: string,
+  query?: RequestOptions["query"]): string {
+
   const url = new URL(API_URL + path);
+
   if (query) {
+
     for (const [key, value] of Object.entries(query)) {
+
       if (value !== undefined && value !== null && value !== "") {
+
         url.searchParams.set(key, String(value));
       }
     }
   }
+
   return url.toString();
 }
 
@@ -62,21 +73,35 @@ const GENERIC: Record<number, string> = {
  * One fetch wrapper for server and client components. Errors carry the backend's problem
  * detail text, so UI code can show `error.message` directly.
  */
-export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = { Accept: "application/json", ...options.headers };
+export async function request<T>(path: string,
+  options: RequestOptions = {}): Promise<T> {
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+    ...options.headers
+  };
+
   let body: BodyInit | undefined;
+
   if (options.formData) {
+
     body = options.formData;
+
   } else if (options.body !== undefined) {
+
     headers["Content-Type"] = "application/json";
     body = JSON.stringify(options.body);
   }
+
   if (options.token) {
+
     headers.Authorization = `Bearer ${options.token}`;
   }
 
   let response: Response;
+
   try {
+
     response = await fetch(buildUrl(path, options.query), {
       method: options.method ?? "GET",
       headers,
@@ -84,17 +109,23 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
       signal: options.signal,
       cache: "no-store",
     });
+
   } catch (cause) {
+
     if (cause instanceof DOMException && cause.name === "AbortError") throw cause;
     throw new ApiError(0, "Cannot reach the server. Check your connection and try again.");
+
   }
 
   if (response.status === 204) {
+
     return undefined as T;
   }
 
   const text = await response.text();
+
   let parsed: unknown;
+
   if (text) {
     try {
       parsed = JSON.parse(text);
@@ -104,10 +135,13 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   }
 
   if (!response.ok) {
+
     const problem = parsed as ProblemDetail | undefined;
     const retryHeader = response.headers.get("Retry-After");
     const retry = retryHeader ? Number.parseInt(retryHeader, 10) : undefined;
+
     throw new ApiError(
+
       response.status,
       problem?.detail || GENERIC[response.status] || `Request failed (${response.status}).`,
       problem,

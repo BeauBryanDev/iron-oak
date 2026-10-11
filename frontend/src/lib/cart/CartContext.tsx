@@ -1,6 +1,11 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext, useCallback,
+  useContext, useEffect,
+  useMemo, useState,
+  type ReactNode
+} from "react";
 
 /** Services are not orderable from the cart: they need a service-area city and their own flow. */
 export type CartItemType = "PRODUCT" | "MACHINE";
@@ -29,8 +34,10 @@ interface CartContextValue {
   hydrated: boolean;
   count: number;
   subtotal: number;
-  add: (item: NewCartItem, quantity?: number) => void;
-  setQuantity: (key: string, quantity: number) => void;
+  add: (item: NewCartItem,
+    quantity?: number) => void;
+  setQuantity: (key: string,
+    quantity: number) => void;
   remove: (key: string) => void;
   clear: () => void;
 }
@@ -40,18 +47,25 @@ const HARD_LIMIT = 99;
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-export function cartKey(itemType: CartItemType, referenceId: number): string {
+export function cartKey(itemType: CartItemType,
+  referenceId: number): string {
+
   return `${itemType}:${referenceId}`;
 }
 
-function clampQuantity(quantity: number, maxQuantity: number | null): number {
+function clampQuantity(quantity: number,
+  maxQuantity: number | null): number {
+
   const limit = maxQuantity !== null ? Math.min(maxQuantity, HARD_LIMIT) : HARD_LIMIT;
+
   return Math.max(1, Math.min(Math.floor(quantity), limit));
 }
 
 function isCartItem(value: unknown): value is CartItem {
+
   if (typeof value !== "object" || value === null) return false;
   const v = value as Record<string, unknown>;
+
   return (
     typeof v.key === "string" &&
     (v.itemType === "PRODUCT" || v.itemType === "MACHINE") &&
@@ -101,17 +115,26 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [items, hydrated]);
 
   const add = useCallback((item: NewCartItem, quantity = 1) => {
+
     const key = cartKey(item.itemType, item.referenceId);
+
     setItems((current) => {
       const existing = current.find((line) => line.key === key);
       if (existing) {
         return current.map((line) =>
           line.key === key
-            ? { ...line, ...item, key, quantity: clampQuantity(line.quantity + quantity, item.maxQuantity) }
+            ? {
+              ...line, ...item, key,
+              quantity: clampQuantity(line.quantity + quantity,
+                item.maxQuantity)
+            }
             : line,
         );
       }
-      return [...current, { ...item, key, quantity: clampQuantity(quantity, item.maxQuantity) }];
+      return [...current, {
+        ...item, key,
+        quantity: clampQuantity(quantity, item.maxQuantity)
+      }];
     });
   }, []);
 
@@ -145,7 +168,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
 }
 
 export function useCart(): CartContextValue {
+
   const context = useContext(CartContext);
+
   if (!context) throw new Error("useCart must be used inside <CartProvider>");
+
   return context;
 }
