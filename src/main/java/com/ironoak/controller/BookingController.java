@@ -1,5 +1,6 @@
 package com.ironoak.controller;
 
+import com.ironoak.dto.request.ConfirmBookingRequest;
 import com.ironoak.dto.request.BookingFilter;
 import com.ironoak.domain.enums.BookingStatus;
 import com.ironoak.dto.request.CancelBookingRequest;
@@ -84,6 +85,17 @@ public class BookingController {
     public BookingResponse getForStaff(@PathVariable Long id) {
 
         return bookings.getForStaff(id);
+    }
+
+    /**
+     * Staff confirm the visit once a technician is available on site: prices it and creates the
+     * order the customer pays by order number (the response carries orderNumber).
+     */
+    @PostMapping("/api/admin/bookings/{id}/confirm")
+    public BookingResponse confirm(@PathVariable Long id,
+            @Valid @RequestBody(required = false) ConfirmBookingRequest request) {
+
+        return bookings.confirm(id, request == null ? new ConfirmBookingRequest(null, null) : request);
     }
 
     @PatchMapping("/api/admin/bookings/{id}/status")
