@@ -22,7 +22,7 @@ class V3DtoValidationTest {
     private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 
     private static CreateBookingRequest booking(String email, OffsetDateTime when, String address) {
-        return new CreateBookingRequest("Jane Doe", email, null, 1L, address, when, "VMC-650", null);
+        return new CreateBookingRequest("Jane Doe", email, null, 1L, address, "CO", "Bogota", when, "VMC-650", null);
     }
 
     @Test

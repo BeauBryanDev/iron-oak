@@ -120,7 +120,7 @@ class V3ServicesTest {
 
     private CreateBookingRequest bookingRequest(String email) {
         return new CreateBookingRequest("Jane Doe", email, null, serviceId("PREVENTIVE_MAINTENANCE"),
-                "Plant 1, Bay 2", OffsetDateTime.now().plusDays(3), "VMC-650", null);
+                "Plant 1, Bay 2", "CO", "Medellín", OffsetDateTime.now().plusDays(3), "VMC-650", null);
     }
 
     @Test
@@ -173,7 +173,7 @@ class V3ServicesTest {
         assertThat(bookings.updateStatus(staffFlow.id(), BookingStatus.CONFIRMED).status()).isEqualTo(BookingStatus.CONFIRMED);
         assertThat(bookings.updateStatus(staffFlow.id(), BookingStatus.COMPLETED).status()).isEqualTo(BookingStatus.COMPLETED);
 
-        var missingService = new CreateBookingRequest("Jane", EMAIL, null, 999999L, "Plant", OffsetDateTime.now().plusDays(1), null, null);
+        var missingService = new CreateBookingRequest("Jane", EMAIL, null, 999999L, "Plant", "CO", "Bogota", OffsetDateTime.now().plusDays(1), null, null);
         assertThatThrownBy(() -> bookings.create(missingService)).isInstanceOf(ResourceNotFoundException.class);
     }
 

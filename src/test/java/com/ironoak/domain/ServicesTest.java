@@ -14,6 +14,7 @@ import com.ironoak.dto.request.ComplaintRequest;
 import com.ironoak.dto.request.CreateOrderRequest;
 import com.ironoak.dto.request.CreateOrderRequest.Item;
 import com.ironoak.dto.response.OrderResponse;
+import com.ironoak.exceptions.BusinessRuleException;
 import com.ironoak.exceptions.InvalidOrderException;
 import com.ironoak.exceptions.OutOfStockException;
 import com.ironoak.exceptions.ResourceNotFoundException;
@@ -126,8 +127,9 @@ class ServicesTest {
         // a milling machine makes the whole shipment freight that staff quote: nothing charged yet
         assertThat(order.shippingStatus()).isEqualTo(ShippingStatus.ON_REQUEST);
         assertThat(order.shippingCost()).isEqualByComparingTo("0");
-        assertThat(order.taxes()).isEqualByComparingTo("0");
-        assertThat(order.grandTotal()).isEqualByComparingTo("5609.98");
+        // items above 100 USD shipped to Colombia pay 19% on the items only: 5609.98 x 0.19
+        assertThat(order.taxes()).isEqualByComparingTo("1065.90");
+        assertThat(order.grandTotal()).isEqualByComparingTo("6675.88");
         assertThat(order.currency()).isEqualTo("USD");
         assertThat(order.status()).isEqualTo(OrderStatus.PENDING_PAYMENT);
         assertThat(order.channel()).isEqualTo(OrderChannel.WEB_CHECKOUT);
@@ -153,10 +155,13 @@ class ServicesTest {
         assertThatThrownBy(() -> orders.create(abroad, OrderChannel.WEB_CHECKOUT))
                 .isInstanceOf(InvalidOrderException.class).hasMessageContaining("deliver");
 
-        // services are not shipped, so no address is needed
+        // services are not shipped (no address), but technicians only work in Bogota and Medellin
         var service = List.of(new Item(OrderItemType.SERVICE, serviceId("PREVENTIVE_MAINTENANCE"), 1, null));
-        var serviceOnly = new CreateOrderRequest("Jane", "jane@example.com", null, null, null, null, null, service);
+        var serviceOnly = new CreateOrderRequest("Jane", "jane@example.com", null, "CO", null, "Medellín", null, service);
         assertThat(orders.create(serviceOnly, OrderChannel.WEB_CHECKOUT).shippingCost()).isEqualByComparingTo("0");
+        var inCali = new CreateOrderRequest("Jane", "jane@example.com", null, "CO", null, "Cali", null, service);
+        assertThatThrownBy(() -> orders.create(inCali, OrderChannel.WEB_CHECKOUT))
+                .isInstanceOf(BusinessRuleException.class).hasMessageContaining("Medellín");
 
         // staff orders need neither and start confirmed
         OrderResponse staff = orders.create(TestOrders.staff(product), OrderChannel.ADMIN_MANUAL);
@@ -237,8 +242,8 @@ class ServicesTest {
         assertThat(kpis.webCheckoutOrders()).isEqualTo(1);
         assertThat(kpis.piperOrders()).isZero();
         assertThat(kpis.pendingPaymentOrders()).isZero();
-        // 2 x 289.99 + 2.53 shipping (warehouse to Bogota is a 16.1 km route, seeded by V8)
-        assertThat(kpis.completedRevenue()).isEqualByComparingTo("582.51");
+        // 2 x 289.99 + 2.53 shipping (a 16.1 km route, seeded by V8) + 110.20 tax (19% of the items)
+        assertThat(kpis.completedRevenue()).isEqualByComparingTo("692.71");
         assertThat(kpis.pendingComplaints()).isZero();
         assertThat(kpis.topProducts()).hasSize(1);
         assertThat(kpis.topProducts().get(0).unitsSold()).isEqualTo(2L);

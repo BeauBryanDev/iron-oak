@@ -106,7 +106,7 @@ class ControllersTest {
                 .andExpect(jsonPath("$.channel").value("WEB_CHECKOUT"))
                 .andExpect(jsonPath("$.orderNumber").isNotEmpty())
                 .andExpect(jsonPath("$.shippingCost").value(2.53))
-                .andExpect(jsonPath("$.grandTotal").value(292.52));
+                .andExpect(jsonPath("$.grandTotal").value(347.62));
 
         // a web order needs a contact, and an address for goods
         mockMvc.perform(post("/api/orders").contentType("application/json")

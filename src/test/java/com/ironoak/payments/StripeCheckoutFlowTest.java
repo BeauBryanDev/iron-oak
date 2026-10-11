@@ -126,7 +126,7 @@ class StripeCheckoutFlowTest {
         return request.header("Authorization", bearer);
     }
 
-    /** A web order for one air compressor (289.99) shipped inside Bogota (2.53, a 16.1 km route): 292.52 in total. */
+    /** A web order for one air compressor (289.99) shipped inside Bogota (2.53, a 16.1 km route), plus 19% Colombian tax on the item (55.10): 347.62. */
     private JsonNode placeOrder() throws Exception {
         long productId = products.findBySku("IO-AICO-001").orElseThrow().getId();
         return send(json(post("/api/orders"), TestOrders.webJson("Ada Buyer", EMAIL, "PRODUCT", productId, 1)), 201);
@@ -169,9 +169,9 @@ class StripeCheckoutFlowTest {
         return """
                 {"id":"evt_%s","object":"event","api_version":"%s","created":%d,"type":"charge.refunded",
                  "data":{"object":{"id":"ch_test","object":"charge","payment_intent":"%s","refunded":%s,
-                   "amount":29252,"amount_refunded":%d,"currency":"usd"}}}
+                   "amount":34762,"amount_refunded":%d,"currency":"usd"}}}
                 """.formatted(UUID.randomUUID().toString().replace("-", ""), Stripe.API_VERSION,
-                Instant.now().getEpochSecond(), paymentIntent, full, full ? 29252 : 1000);
+                Instant.now().getEpochSecond(), paymentIntent, full, full ? 34762 : 1000);
     }
 
     /** The Stripe-Signature header for this body, made the way Stripe makes it. */
@@ -228,8 +228,8 @@ class StripeCheckoutFlowTest {
         long minutes = (sent.getExpiresAt() - Instant.now().getEpochSecond()) / 60;
         assertThat(minutes).isBetween(30L, 31L);
 
-        // the lines are the order's snapshot: the item, then shipping; they add up to grand_total
-        assertThat(sent.getLineItems()).hasSize(2);
+        // the lines are the order's snapshot: the item, shipping, then taxes; they add up to grand_total
+        assertThat(sent.getLineItems()).hasSize(3);
         var item = sent.getLineItems().get(0);
         assertThat(item.getPriceData().getUnitAmount()).isEqualTo(28999L);
         assertThat(item.getPriceData().getCurrency()).isEqualTo("usd");
@@ -237,11 +237,13 @@ class StripeCheckoutFlowTest {
         assertThat(item.getQuantity()).isEqualTo(1L);
         assertThat(sent.getLineItems().get(1).getPriceData().getProductData().getName()).isEqualTo("Shipping");
         assertThat(sent.getLineItems().get(1).getPriceData().getUnitAmount()).isEqualTo(253L);
+        assertThat(sent.getLineItems().get(2).getPriceData().getProductData().getName()).isEqualTo("Taxes");
+        assertThat(sent.getLineItems().get(2).getPriceData().getUnitAmount()).isEqualTo(5510L);
 
         // one PENDING payment for the whole order; the stock hold now outlives the page
         assertThat(paymentStatus("cs_test_build")).isEqualTo("PENDING");
         assertThat(jdbc.queryForObject("select amount from payment where checkout_session_id = 'cs_test_build'",
-                java.math.BigDecimal.class)).isEqualByComparingTo("292.52");
+                java.math.BigDecimal.class)).isEqualByComparingTo("347.62");
         OffsetDateTime hold = jdbc.queryForObject("select reservation_expires_at from customer_order where id = ?",
                 OffsetDateTime.class, orderId);
         assertThat(hold.toEpochSecond()).isGreaterThan(sent.getExpiresAt());
@@ -302,7 +304,7 @@ class StripeCheckoutFlowTest {
         JsonNode order = placeOrder();
         long orderId = order.get("id").asLong();
         startCheckout(orderId, "cs_test_paid");
-        String event = sessionEvent("checkout.session.completed", order, "cs_test_paid", 29252, "paid", "pi_test_paid");
+        String event = sessionEvent("checkout.session.completed", order, "cs_test_paid", 34762, "paid", "pi_test_paid");
 
         // forged, unsigned or stale deliveries change nothing
         assertThat(mockMvc.perform(post("/api/payments/stripe/webhook").contentType(MediaType.APPLICATION_JSON)
@@ -356,17 +358,17 @@ class StripeCheckoutFlowTest {
     void delayedPaymentMethodsSettleLaterAndFailuresCanBeRetried() throws Exception {
         JsonNode slow = placeOrder();
         startCheckout(slow.get("id").asLong(), "cs_test_slow");
-        assertThat(webhook(sessionEvent("checkout.session.completed", slow, "cs_test_slow", 29252, "unpaid", "pi_test_slow"))).isEqualTo(200);
+        assertThat(webhook(sessionEvent("checkout.session.completed", slow, "cs_test_slow", 34762, "unpaid", "pi_test_slow"))).isEqualTo(200);
         assertThat(paymentStatus("cs_test_slow")).isEqualTo("PROCESSING");
         assertThat(orderStatus(slow.get("id").asLong())).isEqualTo("PENDING_PAYMENT");
-        assertThat(webhook(sessionEvent("checkout.session.async_payment_succeeded", slow, "cs_test_slow", 29252, "paid", "pi_test_slow"))).isEqualTo(200);
+        assertThat(webhook(sessionEvent("checkout.session.async_payment_succeeded", slow, "cs_test_slow", 34762, "paid", "pi_test_slow"))).isEqualTo(200);
         assertThat(orderStatus(slow.get("id").asLong())).isEqualTo("CONFIRMED");
 
         JsonNode failing = placeOrder();
         long failingId = failing.get("id").asLong();
         startCheckout(failingId, "cs_test_fail");
-        webhook(sessionEvent("checkout.session.completed", failing, "cs_test_fail", 29252, "unpaid", "pi_test_fail"));
-        assertThat(webhook(sessionEvent("checkout.session.async_payment_failed", failing, "cs_test_fail", 29252, "unpaid", "pi_test_fail"))).isEqualTo(200);
+        webhook(sessionEvent("checkout.session.completed", failing, "cs_test_fail", 34762, "unpaid", "pi_test_fail"));
+        assertThat(webhook(sessionEvent("checkout.session.async_payment_failed", failing, "cs_test_fail", 34762, "unpaid", "pi_test_fail"))).isEqualTo(200);
         assertThat(paymentStatus("cs_test_fail")).isEqualTo("FAILED");
         assertThat(orderStatus(failingId)).isEqualTo("PAYMENT_FAILED");
         assertThat(jdbc.queryForObject("select failure_code from payment where checkout_session_id = 'cs_test_fail'", String.class))
@@ -380,7 +382,7 @@ class StripeCheckoutFlowTest {
         // an abandoned page that Stripe expires
         JsonNode abandoned = placeOrder();
         startCheckout(abandoned.get("id").asLong(), "cs_test_abandoned");
-        assertThat(webhook(sessionEvent("checkout.session.expired", abandoned, "cs_test_abandoned", 29252, "unpaid", "pi_test_abandoned"))).isEqualTo(200);
+        assertThat(webhook(sessionEvent("checkout.session.expired", abandoned, "cs_test_abandoned", 34762, "unpaid", "pi_test_abandoned"))).isEqualTo(200);
         assertThat(paymentStatus("cs_test_abandoned")).isEqualTo("EXPIRED");
         assertThat(orderStatus(abandoned.get("id").asLong())).isEqualTo("PENDING_PAYMENT");
     }
@@ -406,7 +408,7 @@ class StripeCheckoutFlowTest {
         JsonNode order = placeOrder();
         long orderId = order.get("id").asLong();
         startCheckout(orderId, "cs_test_refund");
-        webhook(sessionEvent("checkout.session.completed", order, "cs_test_refund", 29252, "paid", "pi_test_refund"));
+        webhook(sessionEvent("checkout.session.completed", order, "cs_test_refund", 34762, "paid", "pi_test_refund"));
         long paymentId = paymentId("cs_test_refund");
 
         send(json(post("/api/admin/payments/" + paymentId + "/refund"), "{\"reason\":\"x\"}"), 401);
@@ -438,7 +440,7 @@ class StripeCheckoutFlowTest {
     void aRefundStripeDeclinesLeavesThePaymentPaid() throws Exception {
         JsonNode order = placeOrder();
         startCheckout(order.get("id").asLong(), "cs_test_declined");
-        webhook(sessionEvent("checkout.session.completed", order, "cs_test_declined", 29252, "paid", "pi_test_declined"));
+        webhook(sessionEvent("checkout.session.completed", order, "cs_test_declined", 34762, "paid", "pi_test_declined"));
         long paymentId = paymentId("cs_test_declined");
 
         doReturn(refund("failed")).when(stripe).createRefund(any(), anyString());
@@ -454,7 +456,7 @@ class StripeCheckoutFlowTest {
         send(json(asAdmin(patch("/api/admin/orders/" + orderId + "/status")), "{\"status\":\"CANCELLED\"}"), 200);
 
         doReturn(refund("succeeded")).when(stripe).createRefund(any(), anyString());
-        assertThat(webhook(sessionEvent("checkout.session.completed", order, "cs_test_late", 29252, "paid", "pi_test_late"))).isEqualTo(200);
+        assertThat(webhook(sessionEvent("checkout.session.completed", order, "cs_test_late", 34762, "paid", "pi_test_late"))).isEqualTo(200);
 
         assertThat(orderStatus(orderId)).isEqualTo("CANCELLED");
         assertThat(paymentStatus("cs_test_late")).isEqualTo("REFUNDED");
@@ -465,7 +467,7 @@ class StripeCheckoutFlowTest {
     void aRefundMadeInTheStripeDashboardIsRecorded() throws Exception {
         JsonNode order = placeOrder();
         startCheckout(order.get("id").asLong(), "cs_test_dashboard");
-        webhook(sessionEvent("checkout.session.completed", order, "cs_test_dashboard", 29252, "paid", "pi_test_dashboard"));
+        webhook(sessionEvent("checkout.session.completed", order, "cs_test_dashboard", 34762, "paid", "pi_test_dashboard"));
 
         assertThat(webhook(chargeRefundedEvent("pi_test_dashboard", false))).isEqualTo(200);
         assertThat(paymentStatus("cs_test_dashboard")).isEqualTo("PAID"); // partial refunds are not modelled
@@ -515,7 +517,8 @@ class StripeCheckoutFlowTest {
                 "{\"shippingCost\":350.00}"), 200);
         assertThat(quoted.get("shippingStatus").asText()).isEqualTo("QUOTED");
         assertThat(quoted.get("grandTotal").decimalValue())
-                .isEqualByComparingTo(quoted.get("subtotal").decimalValue().add(new java.math.BigDecimal("350.00")));
+                .isEqualByComparingTo(quoted.get("subtotal").decimalValue().add(new java.math.BigDecimal("350.00"))
+                        .add(quoted.get("taxes").decimalValue()));
 
         // the order number alone shows the order, without personal data, and pays it
         JsonNode view = send(get("/api/orders/" + number.toLowerCase()), 200);

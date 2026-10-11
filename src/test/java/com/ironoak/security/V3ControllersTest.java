@@ -136,7 +136,7 @@ class V3ControllersTest {
         String when = OffsetDateTime.now().plusDays(4).toString();
         String body = "{\"customerName\":\"Bo Ker\",\"customerEmail\":\"" + email + "\",\"serviceOfferingId\":"
                 + serviceOfferings.findByCode("PREVENTIVE_MAINTENANCE").orElseThrow().getId()
-                + ",\"locationAddress\":\"Plant 1\",\"scheduledAt\":\"" + when + "\"}";
+                + ",\"locationAddress\":\"Plant 1\",\"country\":\"CO\",\"city\":\"Bogota\",\"scheduledAt\":\"" + when + "\"}";
         long id = json(send(asJson(post("/api/bookings"), body), 201)).get("id").asLong();
 
         send(get("/api/bookings/" + id).param("email", email), 200);
@@ -190,7 +190,7 @@ class V3ControllersTest {
         JsonNode payment = json(send(asJson(asAdmin(post("/api/admin/payments")), body), 201));
         assertThat(payment.get("status").asText()).isEqualTo("PENDING");
         // 289.99 + 2.53 shipping inside Bogota
-        assertThat(payment.get("amount").decimalValue()).isEqualByComparingTo("292.52");
+        assertThat(payment.get("amount").decimalValue()).isEqualByComparingTo("347.62");
 
         send(asJson(asAdmin(patch("/api/admin/payments/" + payment.get("id").asLong() + "/status")), "{\"status\":\"PAID\"}"), 200);
         mockMvc.perform(asAdmin(get("/api/admin/orders/" + orderId + "/payments")))

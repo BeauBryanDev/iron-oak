@@ -171,7 +171,7 @@ class AdminListFiltersTest {
         OffsetDateTime visit = OffsetDateTime.now(java.time.ZoneOffset.UTC).plusDays(4);
         String when = visit.toString();
         long id = send(admin(post("/api/bookings"), "{\"customerName\":\"Bo Ker\",\"customerEmail\":\"bo@example.com\","
-                + "\"serviceOfferingId\":" + service.getId() + ",\"locationAddress\":\"Plant 7\",\"scheduledAt\":\"" + when + "\"}"), 201)
+                + "\"serviceOfferingId\":" + service.getId() + ",\"locationAddress\":\"Plant 7\",\"country\":\"CO\",\"city\":\"Bogota\",\"scheduledAt\":\"" + when + "\"}"), 201)
                 .get("id").asLong();
 
         assertThat(contains(send(admin(get("/api/admin/bookings")), 200), id)).isTrue();
