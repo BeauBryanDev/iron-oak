@@ -8,12 +8,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import jakarta.persistence.LockModeType;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, Long>, JpaSpecificationExecutor<ServiceBooking> {
+public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, Long>,
+        JpaSpecificationExecutor<ServiceBooking> {
 
     /**
      * Loads the booking with the customer and service it names, for response
@@ -29,14 +35,23 @@ public interface ServiceBookingRepository extends JpaRepository<ServiceBooking, 
 
     /** The technician queue: e.g. REQUESTED and CONFIRMED visits, soonest first. */
     @EntityGraph(attributePaths = { "customer", "serviceOffering" })
-    Page<ServiceBooking> findByStatusInOrderByScheduledAtAsc(Collection<BookingStatus> statuses, Pageable pageable);
+    Page<ServiceBooking> findByStatusInOrderByScheduledAtAsc(Collection<BookingStatus> statuses,
+            Pageable pageable);
 
-    /** Filtered staff list; loads the customer and service up front for response mapping. */
+    /**
+     * Filtered staff list; loads the customer and service up front for response
+     * mapping.
+     */
     @Override
     @EntityGraph(attributePaths = { "customer", "serviceOffering" })
     Page<ServiceBooking> findAll(Specification<ServiceBooking> spec, Pageable pageable);
 
     long countByStatus(BookingStatus status);
+
+    /** Locks the row, so two staff members cannot confirm the same visit twice. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select b from ServiceBooking b where b.id = :id")
+    Optional<ServiceBooking> findLockedById(@Param("id") Long id);
 
     boolean existsByCustomerId(Long customerId);
 }

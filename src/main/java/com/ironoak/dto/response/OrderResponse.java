@@ -39,5 +39,6 @@ public record OrderResponse(
                 OffsetDateTime reservationExpiresAt,
                 OffsetDateTime createdAt,
                 OffsetDateTime updatedAt,
-                List<OrderItemResponse> items) {
+                List<OrderItemResponse> items,
+                ShipmentInfo shipment) {
 }

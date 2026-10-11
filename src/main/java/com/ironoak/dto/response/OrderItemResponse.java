@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 /**
  * name, itemCode and unitPrice are what the item was called and cost when it was bought.
- * referenceId is the product, service offering or milling machine id, per itemType.
+ * referenceId is the product, service offering, milling machine or end mill id, per itemType.
  */
 public record OrderItemResponse(
         Long id,

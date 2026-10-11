@@ -11,7 +11,8 @@ import java.util.List;
  * What anyone holding an order number may see: no name, email, phone or
  * address. payable is true
  * when the order can be paid right now (unpaid, shipping quoted, stock hold
- * still valid).
+ * still valid). shipment tells where the parcel is and when it should arrive (null when nothing
+ * is shipped).
  */
 public record PublicOrderResponse(
         String orderNumber,
@@ -25,7 +26,8 @@ public record PublicOrderResponse(
         BigDecimal grandTotal,
         OffsetDateTime reservationExpiresAt,
         OffsetDateTime createdAt,
-        List<Line> items) {
+        List<Line> items,
+        ShipmentInfo shipment) {
 
     public record Line(String name,
             String itemCode,

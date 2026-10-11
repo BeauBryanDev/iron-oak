@@ -1,8 +1,10 @@
 package com.ironoak.domain.enums;
 
-/** Maps to the PostgreSQL enum type {@code order_item_type}. */
+/** order_item.item_type (VARCHAR with a CHECK since V13; the Postgres enum was dropped). */
 public enum OrderItemType {
     PRODUCT,
     SERVICE,
-    MACHINE
+    MACHINE,
+    /** An end mill (milling cutter), V13: sold like a product, no warranty. */
+    END_MILL
 }

@@ -1,5 +1,6 @@
 package com.ironoak.domain;
 
+import com.ironoak.domain.enums.ShipmentStatus;
 import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderStatus;
 import com.ironoak.domain.enums.ShippingMode;
@@ -21,10 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An order header with the buyer's contact and shi
- * pping details copied onto it
- * (the customer
- * row can change later; the order must not). The database enforces
+ * An order header with the buyer's contact and shipping details copied onto it
+ * The database enforces
  * grand_total = subtotal + shipping_cost + taxes.
  *
  * Web and Piper orders start PENDING_PAYMENT and hold their product stock until
@@ -140,6 +139,27 @@ public class CustomerOrder {
     @Enumerated(EnumType.STRING)
     @Column(name = "shipping_source", length = 20)
     private ShippingSource shippingSource;
+
+    // Shipment tracking (V13), set by staff once the order ships.
+
+    @Column(length = 100)
+    @Size(max = 100)
+    private String carrier;
+
+    @Column(name = "tracking_number", length = 100)
+    @Size(max = 100)
+    private String trackingNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "shipment_status", length = 20)
+    private ShipmentStatus shipmentStatus;
+
+    @Column(name = "shipped_at")
+    private OffsetDateTime shippedAt;
+
+    /** Also starts the warranty of the products and machines in the order. */
+    @Column(name = "delivered_at")
+    private OffsetDateTime deliveredAt;
 
     /**
      * True while this order holds product stock that was taken from inventory and
@@ -388,6 +408,46 @@ public class CustomerOrder {
 
     public void setShippingSource(ShippingSource shippingSource) {
         this.shippingSource = shippingSource;
+    }
+
+    public String getCarrier() {
+        return carrier;
+    }
+
+    public void setCarrier(String carrier) {
+        this.carrier = carrier;
+    }
+
+    public String getTrackingNumber() {
+        return trackingNumber;
+    }
+
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
+
+    public ShipmentStatus getShipmentStatus() {
+        return shipmentStatus;
+    }
+
+    public void setShipmentStatus(ShipmentStatus shipmentStatus) {
+        this.shipmentStatus = shipmentStatus;
+    }
+
+    public OffsetDateTime getShippedAt() {
+        return shippedAt;
+    }
+
+    public void setShippedAt(OffsetDateTime shippedAt) {
+        this.shippedAt = shippedAt;
+    }
+
+    public OffsetDateTime getDeliveredAt() {
+        return deliveredAt;
+    }
+
+    public void setDeliveredAt(OffsetDateTime deliveredAt) {
+        this.deliveredAt = deliveredAt;
     }
 
     public boolean isStockReserved() {

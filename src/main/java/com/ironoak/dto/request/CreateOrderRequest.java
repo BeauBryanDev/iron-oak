@@ -28,7 +28,7 @@ public record CreateOrderRequest(
         @NotEmpty @Valid List<Item> items) {
 
     /**
-     * referenceId is the product, service offering or milling machine id, per itemType.
+     * referenceId is the product, service offering, milling machine or end mill id, per itemType.
      * estimatedHours is required for HOURLY services and ignored otherwise.
      */
     public record Item(

@@ -3,8 +3,6 @@ package com.ironoak.domain;
 import com.ironoak.domain.enums.OrderItemType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.math.BigDecimal;
 
@@ -34,9 +32,9 @@ public class OrderItem {
     @NotNull
     private CustomerOrder order;
 
+    // VARCHAR + CHECK since V13 (was the order_item_type Postgres enum)
     @Enumerated(EnumType.STRING)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "item_type", nullable = false, columnDefinition = "order_item_type")
+    @Column(name = "item_type", nullable = false, length = 20)
     @NotNull
     private OrderItemType itemType;
 
@@ -51,6 +49,10 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "milling_machine_id")
     private MillingMachine millingMachine;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "end_mill_id")
+    private EndMill endMill;
 
     @Column(name = "item_name", nullable = false, length = 200)
     @NotBlank
@@ -90,6 +92,7 @@ public class OrderItem {
             int quantity,
             BigDecimal estimatedHours,
             BigDecimal unitPrice) {
+
         this.itemType = itemType;
         this.itemName = itemName;
         this.itemCode = itemCode;
@@ -122,6 +125,19 @@ public class OrderItem {
                 machine.getPrice());
 
         item.millingMachine = machine;
+        return item;
+    }
+
+    public static OrderItem ofEndMill(EndMill endMill, int quantity) {
+
+        OrderItem item = new OrderItem(OrderItemType.END_MILL,
+                endMill.getName(),
+                endMill.getSku(),
+                quantity,
+                null,
+                endMill.getPrice());
+
+        item.endMill = endMill;
         return item;
     }
 
@@ -171,6 +187,10 @@ public class OrderItem {
 
     public MillingMachine getMillingMachine() {
         return millingMachine;
+    }
+
+    public EndMill getEndMill() {
+        return endMill;
     }
 
     public String getItemName() {
