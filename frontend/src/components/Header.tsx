@@ -29,7 +29,7 @@ export default function Header() {
         {/* BRAND */}
         <Link
           href="/"
-          className="flex h-full items-center gap-3 border-r border-orange/30 px-6"
+          className="flex h-full shrink-0 items-center gap-3 whitespace-nowrap border-r border-orange/30 px-6"
         >
           <img
             src="/assets/main_tools.svg"
@@ -55,18 +55,32 @@ export default function Header() {
         </Link>
 
         {/* SLOGAN */}
-        <div className="hidden px-6 lg:block">
-          <div className="text-lg font-black text-orange">
-            BUILT TO WORK
-          </div>
+        <div className="hidden shrink-0 items-center gap-3 whitespace-nowrap px-6 min-[1360px]:flex">
+          <img
+            src="/assets/gears.svg"
+            alt=""
+            className="hidden h-9 w-9 shrink-0 min-[1700px]:block"
+          />
 
-          <div className="text-xs text-cream/60">
-            TOOLS. MATERIALS. PEOPLE.
+          <img
+            src="/assets/harmer.svg"
+            alt=""
+            className="hidden h-9 w-9 shrink-0 min-[1700px]:block"
+          />
+
+          <div>
+            <div className="text-lg font-black text-orange">
+              BUILT TO WORK
+            </div>
+
+            <div className="text-xs text-cream/60">
+              TOOLS. MATERIALS. PEOPLE.
+            </div>
           </div>
         </div>
 
         {/* NAVIGATION */}
-        <nav className="flex flex-1 justify-center gap-8">
+        <nav className="flex min-w-0 flex-1 justify-center gap-3 whitespace-nowrap min-[1500px]:gap-5 min-[1700px]:gap-8">
           <Link href="/" className="font-bold hover:text-orange">
             Home
           </Link>
@@ -89,11 +103,11 @@ export default function Header() {
         </nav>
 
         {/* ACTIONS */}
-        <div className="flex items-center gap-4 px-5">
+        <div className="flex shrink-0 items-center gap-4 px-5">
           <img
             src="/assets/tools.svg"
             alt=""
-            className="hidden h-8 w-8 shrink-0 xl:block"
+            className="hidden h-8 w-8 shrink-0 min-[1700px]:block"
           />
 
           <form
@@ -108,12 +122,16 @@ export default function Header() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search tools, materials..."
-              className="w-52 bg-transparent text-sm outline-none"
+              className="w-40 bg-transparent text-sm outline-none min-[1700px]:w-52"
             />
           </form>
 
           <Link href="/orders" aria-label="Track an order" title="Track an order">
             <UserRound className="h-6 w-6 hover:text-orange" />
+          </Link>
+
+          <Link href="/admin/login" aria-label="Staff sign in" title="Staff sign in" className="shrink-0">
+            <img src="/assets/admin.svg" alt="" className="h-8 w-8 shrink-0" />
           </Link>
 
           <Link href="/cart" aria-label="Cart" className="relative">

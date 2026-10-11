@@ -21,7 +21,7 @@ export default function Piper() {
         Closing sets html[data-piper="closed"], which hides the whole rail and
         gives the page its full width back (see globals.css).
       */}
-      <aside className="piper-rail fixed bottom-0 right-0 top-20 z-40 hidden w-[20%] min-w-[320px] overflow-hidden border-l border-orange/40 bg-[#17110a] xl:block">
+      <aside className="piper-rail fixed bottom-0 right-[6px] top-20 z-40 hidden w-[20%] min-w-[320px] overflow-hidden border-l border-orange/40 bg-[#17110a] xl:block">
 
         <img
           src={BACKGROUND}
