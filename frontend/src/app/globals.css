@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --iron-black: #17110a;
+  --iron-brown: #241b0e;
+  --oak: #704e2e;
+  --orange: #bf6715;
+  --orange-light: #d98227;
+  --cream: #f3eadb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--iron-brown);
+  color: var(--cream);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.industrial-title {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+  letter-spacing: 0.03em;
+}
+
+.orange {
+  color: var(--orange);
+}
+
+/* Hand-lettered accent used for the "Make / Build / Repair / Repeat" mark. */
+.script-accent {
+  font-family: "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive;
+  font-weight: 400;
+}
+
+
