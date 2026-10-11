@@ -14,6 +14,8 @@ import com.ironoak.config.CheckoutProperties;
 import com.ironoak.domain.Payment;
 import com.ironoak.domain.enums.PaymentStatus;
 import com.ironoak.dto.request.OrderFilter;
+import com.ironoak.dto.request.UpdateShipmentRequest;
+import com.ironoak.domain.enums.ShipmentStatus;
 import com.ironoak.exceptions.BusinessRuleException;
 import com.ironoak.repository.PaymentRepository;
 import org.slf4j.Logger;
@@ -28,10 +30,12 @@ import java.util.Locale;
 import java.util.EnumSet;
 import com.ironoak.domain.Customer;
 import com.ironoak.domain.CustomerOrder;
+import com.ironoak.domain.EndMill;
 import com.ironoak.domain.MillingMachine;
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.Product;
 import com.ironoak.domain.ServiceOffering;
+import com.ironoak.domain.ServiceBooking;
 import com.ironoak.domain.ServiceQuote;
 import com.ironoak.domain.enums.ShippingMode;
 import com.ironoak.domain.enums.OrderChannel;
@@ -44,6 +48,7 @@ import com.ironoak.exceptions.OutOfStockException;
 import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.mapper.OrderMapper;
 import com.ironoak.repository.CustomerOrderRepository;
+import com.ironoak.repository.EndMillRepository;
 import com.ironoak.repository.MillingMachineRepository;
 import com.ironoak.repository.ProductRepository;
 import com.ironoak.repository.ServiceOfferingRepository;
@@ -105,6 +110,7 @@ public class OrderService {
     private final CustomerOrderRepository orders;
     private final CustomerService customers;
     private final ProductRepository products;
+    private final EndMillRepository endMills;
     private final ServiceOfferingRepository serviceOfferings;
     private final MillingMachineRepository machines;
     private final PaymentRepository payments;
@@ -119,6 +125,7 @@ public class OrderService {
     public OrderService(CustomerOrderRepository orders,
             CustomerService customers,
             ProductRepository products,
+            EndMillRepository endMills,
             ServiceOfferingRepository serviceOfferings,
             MillingMachineRepository machines,
             PaymentRepository payments,
@@ -133,6 +140,7 @@ public class OrderService {
         this.orders = orders;
         this.customers = customers;
         this.products = products;
+        this.endMills = endMills;
         this.serviceOfferings = serviceOfferings;
         this.machines = machines;
         this.payments = payments;
@@ -184,7 +192,8 @@ public class OrderService {
         // shared
         // ShippingService. A real order may spend one Google lookup on a city not
         // stored yet.
-        ShippingService.Quote shippingQuote = isBlank(request.country()) ? ShippingService.Quote.nothingToShip()
+        ShippingService.Quote shippingQuote = isBlank(request.country())
+                ? ShippingService.Quote.nothingToShip()
                 : shipping.quote(request.country(),
                         request.city(),
                         request.province(), items, true);
@@ -199,6 +208,14 @@ public class OrderService {
                 if (products.decrementStock(item.getProduct().getId(), item.getQuantity()) == 0) {
 
                     throw new OutOfStockException(item.getProduct().getSku(), item.getQuantity());
+                }
+            } else if (item.getItemType() == OrderItemType.END_MILL) {
+                takesStock = true;
+                if (endMills.decrementStock(item.getEndMill().getId(),
+                        item.getQuantity()) == 0) {
+
+                    throw new OutOfStockException(item.getItemCode(),
+                            item.getQuantity());
                 }
             }
         }
@@ -238,23 +255,113 @@ public class OrderService {
     }
 
     /**
-     * Staff priced a service quote request: one service line at that price, nothing to ship,
-     * taxed like any order, PENDING_PAYMENT for quote-hold-hours so the customer can pay it by
+     * Staff priced a service quote request: one service line at that price, nothing
+     * to ship,
+     * taxed like any order, PENDING_PAYMENT for quote-hold-hours so the customer
+     * can pay it by
      * order number. Called by ServiceQuoteService inside its transaction.
      */
     public CustomerOrder createForServiceQuote(ServiceQuote quote, BigDecimal price) {
 
-        CustomerOrder order = new CustomerOrder(quote.getCustomer(), OrderChannel.WEB_CHECKOUT);
-        order.setContact(quote.getCustomerName(), quote.getCustomerEmail(), quote.getCustomerPhone());
-        order.setCountry(quote.getCountry());
-        order.setCity(quote.getCity());
+        return createServiceOrder(quote.getCustomer(),
+                quote.getCustomerName(),
+                quote.getCustomerEmail(),
+                quote.getCustomerPhone(),
+                quote.getCountry(),
+                quote.getCity(),
+                OrderItem.ofService(quote.getServiceOffering(), 1,
+                        null, price),
+                OffsetDateTime.now().plusHours(shippingProperties.getQuoteHoldHours()));
+    }
+
+    /**
+     * Staff confirmed a technician visit: one service line, nothing to ship, normal
+     * tax,
+     * PENDING_PAYMENT until holdUntil, paid by order number. Called by
+     * BookingService.
+     */
+    public CustomerOrder createForBooking(ServiceBooking booking,
+            OrderItem line,
+            OffsetDateTime holdUntil) {
+
+        Customer customer = booking.getCustomer();
+
+        return createServiceOrder(customer,
+                customer.getName(),
+                customer.getEmail(),
+                customer.getPhone(),
+                booking.getCountry(),
+                booking.getCity(),
+                line, holdUntil);
+    }
+
+    /**
+     * A web-checkout order for one service line (quotes and bookings), paid by
+     * order number.
+     */
+    private CustomerOrder createServiceOrder(Customer customer,
+            String name,
+            String email,
+            String phone,
+            String country,
+            String city,
+            OrderItem line,
+            OffsetDateTime holdUntil) {
+
+        CustomerOrder order = new CustomerOrder(customer, OrderChannel.WEB_CHECKOUT);
+        order.setContact(name, email, phone);
+        order.setCountry(country == null ? null : country.toUpperCase(Locale.ROOT));
+        order.setCity(city);
         order.setCurrency(checkout.getCurrency());
         order.setShippingMode(ShippingMode.NONE);
-        order.setReservationExpiresAt(OffsetDateTime.now().plusHours(shippingProperties.getQuoteHoldHours()));
-        order.addItem(OrderItem.ofService(quote.getServiceOffering(), 1, null, price));
-        order.setTaxes(taxes.taxFor(order.getCountry(), order.getSubtotal()));
+        order.setReservationExpiresAt(holdUntil);
+        order.addItem(line);
+        order.setTaxes(taxes.taxFor(order.getCountry(),
+                order.getSubtotal()));
         order.recalculateTotals();
+
         return orders.saveAndFlush(order);
+    }
+
+    /**
+     * Prices one service line from the catalog: FIXED uses the listed price, HOURLY
+     * the hourly
+     * rate x hours (inside the service's min/max), QUOTE the price staff give.
+     * Shared by orders and
+     * booking confirmations so a technician visit is priced the same way
+     * everywhere.
+     */
+    public OrderItem priceServiceLine(ServiceOffering service,
+            int quantity,
+            BigDecimal hours,
+            BigDecimal quotedPrice) {
+
+        return switch (service.getPricingType()) {
+
+            case FIXED -> OrderItem.ofService(service,
+                    quantity, null,
+                    service.getFixedPrice());
+
+            case HOURLY -> {
+                if (hours == null || hours.compareTo(service.getEstimatedMinHours()) < 0
+                        || hours.compareTo(service.getEstimatedMaxHours()) > 0) {
+
+                    throw new InvalidOrderException(service.getName() + " needs estimatedHours between "
+                            + service.getEstimatedMinHours() + " and " + service.getEstimatedMaxHours());
+                }
+                yield OrderItem.ofService(service,
+                        quantity, hours,
+                        service.getHourlyRate().multiply(hours).setScale(2, RoundingMode.HALF_UP));
+            }
+            case QUOTE -> {
+                if (quotedPrice == null) {
+                    throw new InvalidOrderException(service.getName()
+                            + " is quote-only: request a price with POST /api/service-quotes");
+                }
+                yield OrderItem.ofService(service, quantity, null,
+                        quotedPrice.setScale(2, RoundingMode.HALF_UP));
+            }
+        };
     }
 
     /**
@@ -272,6 +379,82 @@ public class OrderService {
             return shippingProperties.getPiperHoldMinutes();
         }
         return checkout.getReservationMinutes();
+    }
+
+    /**
+     * Staff record where a paid order's parcel is. SHIPPED needs a carrier
+     * (tracking number
+     * optional) and moves a CONFIRMED order to IN_PROGRESS; the status only moves
+     * forward
+     * (SHIPPED -> IN_TRANSIT -> DELIVERED); DELIVERED stamps delivered_at, which
+     * starts the
+     * warranty, and completes the order unless it also has service lines (the visit
+     * completes those).
+     * Carrier and tracking number can be corrected until delivery.
+     */
+    public OrderResponse updateShipment(Long id, UpdateShipmentRequest request) {
+
+        CustomerOrder order = orders.findLockedById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", id));
+
+        if (order.getShippingMode() == null || order.getShippingMode() == ShippingMode.NONE) {
+
+            throw new BusinessRuleException("Order " + order.getOrderNumber() + " has nothing to ship");
+        }
+        if (order.getStatus() != OrderStatus.CONFIRMED && order.getStatus() != OrderStatus.IN_PROGRESS) {
+
+            throw new BusinessRuleException("Order " + order.getOrderNumber() + " is " + order.getStatus()
+                    + "; only a paid order (CONFIRMED or IN_PROGRESS) can be shipped");
+        }
+        ShipmentStatus current = order.getShipmentStatus();
+        ShipmentStatus next = request.status();
+
+        if (current == ShipmentStatus.DELIVERED) {
+            throw new BusinessRuleException("Order " + order.getOrderNumber() + " was already delivered");
+        }
+        if (current == null ? next != ShipmentStatus.SHIPPED : next.ordinal() < current.ordinal()) {
+            throw new BusinessRuleException("Cannot change the shipment of order " + order.getOrderNumber()
+                    + " from " + (current == null ? "not shipped" : current) + " to " + next);
+        }
+        Map<String, Object> before = shipmentFields(order);
+
+        if (trimToNull(request.carrier()) != null) {
+            order.setCarrier(request.carrier().trim());
+        }
+        if (trimToNull(request.trackingNumber()) != null) {
+            order.setTrackingNumber(request.trackingNumber().trim());
+        }
+        if (current == null) {
+            if (order.getCarrier() == null) {
+                throw new BusinessRuleException("carrier is required to ship order " + order.getOrderNumber());
+            }
+            order.setShippedAt(OffsetDateTime.now());
+            if (order.getStatus() == OrderStatus.CONFIRMED) {
+                order.setStatus(OrderStatus.IN_PROGRESS);
+            }
+        }
+        if (next == ShipmentStatus.DELIVERED) {
+            order.setDeliveredAt(OffsetDateTime.now());
+            boolean hasServices = order.getItems().stream().anyMatch(i -> i.getItemType() == OrderItemType.SERVICE);
+            if (!hasServices) {
+                order.setStatus(OrderStatus.COMPLETED);
+            }
+        }
+        order.setShipmentStatus(next);
+        orders.saveAndFlush(order);
+        audit.record(AuditAction.ORDER_SHIPMENT, "ORDER", id, before, shipmentFields(order));
+
+        return mapper.toResponse(orders.findWithItemsById(id).orElseThrow());
+    }
+
+    private static Map<String, Object> shipmentFields(CustomerOrder order) {
+        Map<String, Object> fields = new java.util.LinkedHashMap<>();
+        fields.put("status", order.getStatus());
+        fields.put("shipmentStatus", order.getShipmentStatus());
+        fields.put("carrier", order.getCarrier());
+        fields.put("trackingNumber", order.getTrackingNumber());
+
+        return fields;
     }
 
     /**
@@ -342,7 +525,8 @@ public class OrderService {
         boolean physical = items.stream().anyMatch(i -> i.getItemType() != OrderItemType.SERVICE);
 
         if (physical && (isBlank(request.country()) || isBlank(request.city()) || isBlank(request.shippingAddress()))) {
-            throw new InvalidOrderException("country, city and shippingAddress are required for products and machines");
+            throw new InvalidOrderException(
+                    "country, city and shippingAddress are required for products, machines and end mills");
         }
         // technicians only work in Bogota and Medellin, Colombia
         if (items.stream().anyMatch(i -> i.getItemType() == OrderItemType.SERVICE)) {
@@ -538,15 +722,18 @@ public class OrderService {
      */
     private void closeAndReleaseStock(CustomerOrder order, OrderStatus closedStatus) {
 
-        List<long[]> toRestock = new ArrayList<>();
+        record Restock(OrderItemType type, long id, int quantity) {
+        }
+        List<Restock> toRestock = new ArrayList<>();
 
         if (order.isStockReserved()) {
 
             for (OrderItem item : order.getItems()) {
 
                 if (item.getItemType() == OrderItemType.PRODUCT) {
-
-                    toRestock.add(new long[] { item.getProduct().getId(), item.getQuantity() });
+                    toRestock.add(new Restock(OrderItemType.PRODUCT, item.getProduct().getId(), item.getQuantity()));
+                } else if (item.getItemType() == OrderItemType.END_MILL) {
+                    toRestock.add(new Restock(OrderItemType.END_MILL, item.getEndMill().getId(), item.getQuantity()));
                 }
             }
         }
@@ -554,9 +741,12 @@ public class OrderService {
         order.setStockReserved(false);
         orders.saveAndFlush(order);
 
-        for (long[] line : toRestock) {
-
-            products.incrementStock(line[0], (int) line[1]);
+        for (Restock line : toRestock) {
+            if (line.type() == OrderItemType.END_MILL) {
+                endMills.incrementStock(line.id(), line.quantity());
+            } else {
+                products.incrementStock(line.id(), line.quantity());
+            }
         }
     }
 
@@ -599,6 +789,12 @@ public class OrderService {
                         .orElseThrow(() -> new ResourceNotFoundException("Milling machine", line.referenceId()));
                 yield OrderItem.ofMachine(machine, line.quantity());
             }
+            case END_MILL -> {
+                EndMill endMill = endMills.findById(line.referenceId())
+                        .filter(e -> Boolean.TRUE.equals(e.getIsActive()))
+                        .orElseThrow(() -> new ResourceNotFoundException("End mill", line.referenceId()));
+                yield OrderItem.ofEndMill(endMill, line.quantity());
+            }
             case SERVICE -> {
                 ServiceOffering service = serviceOfferings.findById(line.referenceId())
                         .filter(s -> Boolean.TRUE.equals(s.getIsActive()))
@@ -611,28 +807,10 @@ public class OrderService {
     private OrderItem buildServiceItem(ServiceOffering service,
             CreateOrderRequest.Item line) {
 
-        return switch (service.getPricingType()) {
-
-            case FIXED -> OrderItem.ofService(service,
-                    line.quantity(), null,
-                    service.getFixedPrice());
-
-            case HOURLY -> {
-
-                BigDecimal hours = line.estimatedHours();
-                if (hours == null || hours.compareTo(service.getEstimatedMinHours()) < 0
-                        || hours.compareTo(service.getEstimatedMaxHours()) > 0) {
-
-                    throw new InvalidOrderException(service.getName() + " needs estimatedHours between "
-                            + service.getEstimatedMinHours() + " and " + service.getEstimatedMaxHours());
-                }
-                BigDecimal unitPrice = service.getHourlyRate().multiply(hours).setScale(2, RoundingMode.HALF_UP);
-                yield OrderItem.ofService(service, line.quantity(), hours, unitPrice);
-            }
-            case QUOTE ->
-                throw new InvalidOrderException(service.getName()
-                        + " is quote-only: request a price with POST /api/service-quotes");
-        };
+        // a customer can never set a price: QUOTE services go through
+        // /api/service-quotes
+        return priceServiceLine(service, line.quantity(),
+                line.estimatedHours(), null);
     }
 
     private Customer findOrCreateCustomer(CreateOrderRequest request) {

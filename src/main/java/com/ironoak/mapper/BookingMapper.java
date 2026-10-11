@@ -25,6 +25,9 @@ public class BookingMapper {
                 booking.getNotes(),
                 booking.getCancelReason(),
                 booking.getOrder() == null ? null : booking.getOrder().getId(),
+                booking.getOrder() == null ? null : booking.getOrder().getOrderNumber(),
+                booking.getOrder() == null ? null : booking.getOrder().getStatus(),
+                booking.getOrder() == null ? null : booking.getOrder().getGrandTotal(),
                 booking.getCreatedAt(),
                 booking.getUpdatedAt());
     }

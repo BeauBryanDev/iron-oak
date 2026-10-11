@@ -48,6 +48,8 @@ public class ServiceMapper {
                 machine.getTableWidthMm(),
                 machine.getPrice(),
                 machine.getWarrantyMonths(),
+                machine.getWeightKg(),
+                machine.getVolumeM3(),
                 machine.getImageUrl());
     }
 

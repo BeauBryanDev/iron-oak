@@ -2,6 +2,7 @@ package com.ironoak.services;
 
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.enums.OrderItemType;
+import com.ironoak.domain.enums.ShippingMode;
 import com.ironoak.exceptions.InvalidOrderException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,18 +17,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Iron & Oak shipping prices and constants, in USD, from Bogota. ShippingService decides which
+ * Iron & Oak shipping prices and constants, in USD, from Bogota.
+ * ShippingService decides which
  * of these applies; this class only does the arithmetic.
  *
  * Road shipments (Colombia and the South American countries) use:
  * cost = PER_100KM * distance + PER_KG * weight + PER_M3 * volume + BASE
- * where distance is the road distance from Bogota in units of 100 km (from the shipping_route
- * table, or the straight-line estimate below), weight is in kg and volume in cubic metres. All
- * products in an order ship together as one "tools" shipment (total weight and volume, one base
- * fee). Colombia uses the domestic formula, the other road countries the international one.
+ * where distance is the road distance from Bogota in units of 100 km (from the
+ * shipping_route
+ * table, or the straight-line estimate below), weight is in kg and volume in
+ * cubic metres. All
+ * products in an order ship together as one "tools" shipment (total weight and
+ * volume, one base
+ * fee). Colombia uses the domestic formula, the other road countries the
+ * international one.
  *
- * AIR_COUNTRIES have no road from Colombia (Darien Gap): tools ship by air at a fixed price per
- * country. Milling machines are always quoted on request by staff; the CNC formulas are kept
+ * AIR_COUNTRIES have no road from Colombia (Darien Gap): tools ship by air at a
+ * fixed price per
+ * country. Milling machines are always quoted on request by staff; the CNC
+ * formulas are kept
  * only as an indicative figure for them. Services are not shipped.
  */
 @Component
@@ -70,13 +78,26 @@ public class ShippingCalculator {
      */
     static final boolean FAIL_ON_MISSING_DIMENSIONS = false;
 
-    // Air freight (no road across the Darien Gap): fixed price per order's tools shipment.
+    // Air freight (no road across the Darien Gap): fixed price per order's tools
+    // shipment.
     // A null price means "not set yet": such orders are quoted on request by staff.
     static final Set<String> AIR_COUNTRIES = Set.of("US", "MX", "CR", "PA");
-    static final BigDecimal AIR_PRICE_US = new BigDecimal("86");   // USD, one tools shipment to the USA
-    static final BigDecimal AIR_PRICE_MX = new BigDecimal("64");   // Mexico
-    static final BigDecimal AIR_PRICE_CR = new BigDecimal("48");   // Costa Rica
-    static final BigDecimal AIR_PRICE_PA = new BigDecimal("36");   // Panama
+    static final BigDecimal AIR_PRICE_US = new BigDecimal("86"); // USD, one tools shipment to the USA
+    static final BigDecimal AIR_PRICE_MX = new BigDecimal("64"); // Mexico
+    static final BigDecimal AIR_PRICE_CR = new BigDecimal("48"); // Costa Rica
+    static final BigDecimal AIR_PRICE_PA = new BigDecimal("36"); // Panama
+
+    // Delivery time (simple model for customers and Piper, not a carrier promise):
+    // road = handling + one day per ROAD_KM_PER_DAY (rounded up); air = handling +
+    // AIR_TRANSIT_DAYS.
+    public static final int HANDLING_DAYS = 1;
+    public static final int ROAD_KM_PER_DAY = 500;
+    public static final int AIR_TRANSIT_DAYS = 4;
+    /**
+     * When the road distance is unknown (staff-quoted freight with no stored
+     * route).
+     */
+    public static final int DEFAULT_TRANSIT_DAYS = 5;
 
     // Origin and distance model
     static final String HOME_COUNTRY = "CO";
@@ -142,8 +163,10 @@ public class ShippingCalculator {
             Map.entry("yopal", new double[] { 5.3378, -72.3959 }));
 
     /**
-     * The 10 major cities of each road-reachable country, pre-filled into shipping_route. Other
-     * cities there still ship: their route is fetched when an order is placed. Cities with no road
+     * The 10 major cities of each road-reachable country, pre-filled into
+     * shipping_route. Other
+     * cities there still ship: their route is fetched when an order is placed.
+     * Cities with no road
      * from Bogota (for example Iquitos) are left out.
      */
     static final Map<String, List<String>> ROAD_COUNTRY_CITIES = Map.of(
@@ -159,15 +182,22 @@ public class ShippingCalculator {
                     "Sucre", "Tarija", "Potosi", "Sacaba", "Montero"));
 
     /** What an order puts on the truck: totals per shipment group. */
-    public record Load(boolean tools, BigDecimal toolsKg, BigDecimal toolsM3,
-                       boolean machines, BigDecimal machinesKg, BigDecimal machinesM3) {
+    public record Load(boolean tools,
+            BigDecimal toolsKg,
+            BigDecimal toolsM3,
+            boolean machines,
+            BigDecimal machinesKg,
+            BigDecimal machinesM3) {
 
         public boolean shipsAnything() {
             return tools || machines;
         }
     }
 
-    /** Totals the weight and volume of the physical lines of an order (products and machines). */
+    /**
+     * Totals the weight and volume of the physical lines of an order (products and
+     * machines).
+     */
     public Load load(List<OrderItem> items) {
 
         BigDecimal toolsKg = BigDecimal.ZERO;
@@ -180,19 +210,30 @@ public class ShippingCalculator {
             BigDecimal qty = BigDecimal.valueOf(item.getQuantity());
             if (item.getItemType() == OrderItemType.PRODUCT) {
                 tools = true;
-                toolsKg = toolsKg.add(dimension(item.getProduct().getWeightKg(), item.getItemCode()).multiply(qty));
-                toolsM3 = toolsM3.add(dimension(item.getProduct().getVolumeM3(), item.getItemCode()).multiply(qty));
+                toolsKg = toolsKg.add(dimension(item.getProduct().getWeightKg(),
+                        item.getItemCode()).multiply(qty));
+                toolsM3 = toolsM3.add(dimension(item.getProduct().getVolumeM3(),
+                        item.getItemCode()).multiply(qty));
+
+            } else if (item.getItemType() == OrderItemType.END_MILL) {
+                tools = true; // a small parcel like any tool; end mills have no volume column
+                BigDecimal grams = item.getEndMill().getWeightG();
+                toolsKg = toolsKg.add(dimension(grams == null ? null : grams.movePointLeft(3),
+                        item.getItemCode()).multiply(qty));
 
             } else if (item.getItemType() == OrderItemType.MACHINE) {
 
                 machines = true;
                 machinesKg = machinesKg
-                        .add(dimension(item.getMillingMachine().getWeightKg(), item.getItemCode()).multiply(qty));
+                        .add(dimension(item.getMillingMachine().getWeightKg(),
+                                item.getItemCode()).multiply(qty));
                 machinesM3 = machinesM3
-                        .add(dimension(item.getMillingMachine().getVolumeM3(), item.getItemCode()).multiply(qty));
+                        .add(dimension(item.getMillingMachine().getVolumeM3(),
+                                item.getItemCode()).multiply(qty));
             }
         }
-        return new Load(tools, toolsKg, toolsM3, machines, machinesKg, machinesM3);
+        return new Load(tools, toolsKg, toolsM3,
+                machines, machinesKg, machinesM3);
     }
 
     private static BigDecimal dimension(BigDecimal value, String itemCode) {
@@ -220,6 +261,25 @@ public class ShippingCalculator {
         return AIR_COUNTRIES.contains(code);
     }
 
+    /**
+     * Days from shipping to delivery, from the order's shipping mode and road
+     * distance; null when
+     * nothing is shipped. See HANDLING_DAYS, ROAD_KM_PER_DAY, AIR_TRANSIT_DAYS.
+     */
+    public static Integer deliveryDays(ShippingMode mode, BigDecimal roadDistanceKm) {
+        if (mode == null || mode == ShippingMode.NONE) {
+            return null;
+        }
+        if (mode == ShippingMode.AIR) {
+            return HANDLING_DAYS + AIR_TRANSIT_DAYS;
+        }
+        if (roadDistanceKm == null) {
+            return HANDLING_DAYS + DEFAULT_TRANSIT_DAYS;
+        }
+        int roadDays = (int) Math.ceil(roadDistanceKm.doubleValue() / ROAD_KM_PER_DAY);
+        return HANDLING_DAYS + Math.max(1, roadDays);
+    }
+
     /** The fixed air price for a country, or null when it has not been set. */
     static BigDecimal airPrice(String code) {
         return switch (code) {
@@ -235,24 +295,48 @@ public class ShippingCalculator {
     BigDecimal toolsCost(boolean domestic, BigDecimal distanceKm, BigDecimal kg, BigDecimal m3) {
         BigDecimal distance = distanceKm.divide(KM_PER_DISTANCE_UNIT, 6, RoundingMode.HALF_UP);
         return domestic
-                ? price(distance, kg, m3, TOOLS_DOMESTIC_PER_100KM, TOOLS_DOMESTIC_PER_KG,
-                        TOOLS_DOMESTIC_PER_M3, TOOLS_DOMESTIC_BASE)
-                : price(distance, kg, m3, TOOLS_INTL_PER_100KM, TOOLS_INTL_PER_KG,
-                        TOOLS_INTL_PER_M3, TOOLS_INTL_BASE);
+                ? price(distance, kg, m3, TOOLS_DOMESTIC_PER_100KM,
+                        TOOLS_DOMESTIC_PER_KG,
+                        TOOLS_DOMESTIC_PER_M3,
+                        TOOLS_DOMESTIC_BASE)
+                : price(distance, kg, m3, TOOLS_INTL_PER_100KM,
+                        TOOLS_INTL_PER_KG,
+                        TOOLS_INTL_PER_M3,
+                        TOOLS_INTL_BASE);
     }
 
-    /** Indicative road price of the machines shipment (machines are quoted on request). */
-    BigDecimal machinesCost(boolean domestic, BigDecimal distanceKm, BigDecimal kg, BigDecimal m3) {
-        BigDecimal distance = distanceKm.divide(KM_PER_DISTANCE_UNIT, 6, RoundingMode.HALF_UP);
+    /**
+     * Indicative road price of the machines shipment (machines are quoted on
+     * request).
+     */
+    BigDecimal machinesCost(boolean domestic,
+            BigDecimal distanceKm,
+            BigDecimal kg,
+            BigDecimal m3) {
+
+        BigDecimal distance = distanceKm.divide(KM_PER_DISTANCE_UNIT, 6,
+                RoundingMode.HALF_UP);
+
         return domestic
-                ? price(distance, kg, m3, CNC_DOMESTIC_PER_100KM, CNC_DOMESTIC_PER_KG,
-                        CNC_DOMESTIC_PER_M3, CNC_DOMESTIC_BASE)
-                : price(distance, kg, m3, CNC_INTL_PER_100KM, CNC_INTL_PER_KG,
-                        CNC_INTL_PER_M3, CNC_INTL_BASE);
+                ? price(distance, kg, m3,
+                        CNC_DOMESTIC_PER_100KM,
+                        CNC_DOMESTIC_PER_KG,
+                        CNC_DOMESTIC_PER_M3,
+                        CNC_DOMESTIC_BASE)
+                : price(distance, kg, m3,
+                        CNC_INTL_PER_100KM,
+                        CNC_INTL_PER_KG,
+                        CNC_INTL_PER_M3,
+                        CNC_INTL_BASE);
     }
 
-    private static BigDecimal price(BigDecimal distance, BigDecimal kg, BigDecimal m3,
-            BigDecimal perDistance, BigDecimal perKg, BigDecimal perM3, BigDecimal base) {
+    private static BigDecimal price(BigDecimal distance,
+            BigDecimal kg,
+            BigDecimal m3,
+            BigDecimal perDistance,
+            BigDecimal perKg,
+            BigDecimal perM3,
+            BigDecimal base) {
 
         return perDistance.multiply(distance)
                 .add(perKg.multiply(kg))
@@ -262,7 +346,8 @@ public class ShippingCalculator {
     }
 
     /**
-     * Straight-line estimate from Bogota, in km, used only when no road route is stored. Colombia
+     * Straight-line estimate from Bogota, in km, used only when no road route is
+     * stored. Colombia
      * is matched by city, then province; other countries use their capital.
      */
     BigDecimal distanceKm(String code, String city, String province) {
@@ -286,7 +371,9 @@ public class ShippingCalculator {
                 .setScale(1, RoundingMode.HALF_UP);
     }
 
-    static double haversineKm(double lat1, double lon1, double lat2, double lon2) {
+    static double haversineKm(double lat1, double lon1,
+            double lat2, double lon2) {
+
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
 
@@ -297,7 +384,9 @@ public class ShippingCalculator {
         return EARTH_RADIUS_KM * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
-    /** Lower case, accents removed, single spaces: the key routes are stored under. */
+    /**
+     * Lower case, accents removed, single spaces: the key routes are stored under.
+     */
     static String normalize(String name) {
         if (name == null) {
             return "";

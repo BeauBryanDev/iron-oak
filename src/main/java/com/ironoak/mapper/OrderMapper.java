@@ -3,6 +3,7 @@ package com.ironoak.mapper;
 import java.time.OffsetDateTime;
 import com.ironoak.domain.enums.ShippingStatus;
 import com.ironoak.domain.enums.OrderStatus;
+import com.ironoak.dto.response.ShipmentInfo;
 import com.ironoak.dto.response.PublicOrderResponse;
 import com.ironoak.domain.CustomerOrder;
 import com.ironoak.domain.OrderItem;
@@ -46,7 +47,8 @@ public class OrderMapper {
                 order.getReservationExpiresAt(),
                 order.getCreatedAt(),
                 order.getUpdatedAt(),
-                order.getItems().stream().map(this::toItemResponse).toList());
+                order.getItems().stream().map(this::toItemResponse).toList(),
+                ShipmentInfo.from(order));
     }
 
     /** The customer-safe view (no personal data); see PublicOrderResponse. */
@@ -74,7 +76,8 @@ public class OrderMapper {
                         item.getItemCode(),
                         item.getQuantity(),
                         item.getUnitPrice(),
-                        item.getSubtotal())).toList());
+                        item.getSubtotal())).toList(),
+                ShipmentInfo.from(order));
     }
 
     public List<OrderResponse> toResponses(List<CustomerOrder> orders) {
@@ -88,6 +91,7 @@ public class OrderMapper {
             case PRODUCT -> item.getProduct().getId();
             case SERVICE -> item.getServiceOffering().getId();
             case MACHINE -> item.getMillingMachine().getId();
+            case END_MILL -> item.getEndMill().getId();
         };
         return new OrderItemResponse(
 

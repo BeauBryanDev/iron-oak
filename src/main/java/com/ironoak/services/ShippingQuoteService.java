@@ -1,6 +1,7 @@
 package com.ironoak.services;
 
 import com.ironoak.domain.enums.ShippingSource;
+import com.ironoak.domain.EndMill;
 import com.ironoak.domain.MillingMachine;
 import com.ironoak.domain.OrderItem;
 import com.ironoak.domain.Product;
@@ -9,11 +10,14 @@ import com.ironoak.dto.request.ShippingQuoteRequest;
 import com.ironoak.dto.response.ShippingQuoteResponse;
 import com.ironoak.exceptions.InvalidOrderException;
 import com.ironoak.exceptions.ResourceNotFoundException;
+import com.ironoak.repository.EndMillRepository;
 import com.ironoak.repository.MillingMachineRepository;
 import com.ironoak.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,15 +30,22 @@ import java.util.List;
 public class ShippingQuoteService {
 
     private final ProductRepository products;
+    private final EndMillRepository endMills;
     private final MillingMachineRepository machines;
     private final ShippingService shipping;
+    private final TaxService taxes;
 
     public ShippingQuoteService(ProductRepository products,
+            EndMillRepository endMills,
             MillingMachineRepository machines,
-            ShippingService shipping) {
+            ShippingService shipping,
+            TaxService taxes) {
+
         this.products = products;
+        this.endMills = endMills;
         this.machines = machines;
         this.shipping = shipping;
+        this.taxes = taxes;
     }
 
     public ShippingQuoteResponse quote(ShippingQuoteRequest request) {
@@ -48,7 +59,8 @@ public class ShippingQuoteService {
 
                     Product product = products.findById(line.referenceId())
                             .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
-                            .orElseThrow(() -> new ResourceNotFoundException("Product", line.referenceId()));
+                            .orElseThrow(() -> new ResourceNotFoundException("Product",
+                                    line.referenceId()));
                     lines.add(OrderItem.ofProduct(product, line.quantity()));
                 }
                 case MACHINE -> {
@@ -58,6 +70,14 @@ public class ShippingQuoteService {
                             .orElseThrow(() -> new ResourceNotFoundException("Milling machine",
                                     line.referenceId()));
                     lines.add(OrderItem.ofMachine(machine, line.quantity()));
+                }
+                case END_MILL -> {
+
+                    EndMill endMill = endMills.findById(line.referenceId())
+                            .filter(e -> Boolean.TRUE.equals(e.getIsActive()))
+                            .orElseThrow(() -> new ResourceNotFoundException("End mill",
+                                    line.referenceId()));
+                    lines.add(OrderItem.ofEndMill(endMill, line.quantity()));
                 }
                 case SERVICE -> {
                     // services are not shipped
@@ -75,6 +95,10 @@ public class ShippingQuoteService {
                 request.province(),
                 lines, false);
 
+        BigDecimal itemsSubtotal = lines.stream().map(OrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal tax = taxes.taxFor(quote.country(), itemsSubtotal);
+
         return new ShippingQuoteResponse("USD",
                 quote.country(),
                 quote.status(),
@@ -84,6 +108,10 @@ public class ShippingQuoteService {
                 quote.source(),
                 quote.source() == ShippingSource.ESTIMATE,
                 quote.cost(),
-                quote.note());
+                quote.note(),
+                itemsSubtotal,
+                taxes.rate(quote.country()),
+                tax,
+                itemsSubtotal.add(quote.cost()).add(tax));
     }
 }

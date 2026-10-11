@@ -79,6 +79,7 @@ public class SecurityConfig {
                                                 // Storefront: read-only catalog browsing.
                                                 .requestMatchers(HttpMethod.GET,
                                                                 "/api/products/**",
+                                                                "/api/end-mills/**",
                                                                 "/api/services/**",
                                                                 "/api/materials/**")
                                                 .permitAll()

@@ -59,6 +59,7 @@ public class WarrantyClaimService {
             OrderItemRepository orderItems,
             CustomerService customers,
             WarrantyClaimMapper mapper) {
+
         this.claims = claims;
         this.orders = orders;
         this.orderItems = orderItems;
@@ -71,18 +72,21 @@ public class WarrantyClaimService {
      * that
      * belongs to the customer, inside its warranty period, with no active claim
      * already.
-     * The warranty runs from the order date: the schema does not record a delivery
-     * date.
+     * The warranty runs from delivered_at (V13); an order never marked DELIVERED
+     * cannot be claimed on.
      */
     public WarrantyClaimResponse create(CreateWarrantyClaimRequest request) {
 
         CustomerOrder order = orders.findById(request.orderId())
-                .filter(o -> CustomerService.hasEmail(o.getCustomer(), request.customerEmail()))
-                .orElseThrow(() -> new ResourceNotFoundException("Order", request.orderId()));
+                .filter(o -> CustomerService.hasEmail(o.getCustomer(),
+                        request.customerEmail()))
+                .orElseThrow(() -> new ResourceNotFoundException("Order",
+                        request.orderId()));
 
         OrderItem item = orderItems.findById(request.orderItemId())
                 .filter(i -> i.getOrder().getId().equals(order.getId()))
-                .orElseThrow(() -> new ResourceNotFoundException("Order item", request.orderItemId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Order item",
+                        request.orderItemId()));
 
         if (order.getStatus() != OrderStatus.COMPLETED) {
 
@@ -94,7 +98,13 @@ public class WarrantyClaimService {
 
             throw new BusinessRuleException("This item has no warranty");
         }
-        if (order.getCreatedAt().plusMonths(warrantyMonths).isBefore(OffsetDateTime.now())) {
+        // the warranty runs from delivery: an order never marked DELIVERED has no
+        // warranty yet
+        if (order.getDeliveredAt() == null) {
+            throw new BusinessRuleException("Order " + order.getOrderNumber()
+                    + " has not been marked as delivered; warranty claims open once it is delivered");
+        }
+        if (order.getDeliveredAt().plusMonths(warrantyMonths).isBefore(OffsetDateTime.now())) {
             throw new BusinessRuleException("The " + warrantyMonths + "-month warranty on this item has expired");
         }
         if (claims.existsByOrderItemIdAndStatusIn(item.getId(), ACTIVE)) {
@@ -199,6 +209,9 @@ public class WarrantyClaimService {
 
             return item.getMillingMachine().getWarrantyMonths();
 
+        }
+        if (item.getItemType() == OrderItemType.END_MILL) {
+            throw new BusinessRuleException("End mills are consumables and have no warranty");
         }
         throw new BusinessRuleException("Services are not covered by the warranty claim process");
     }
