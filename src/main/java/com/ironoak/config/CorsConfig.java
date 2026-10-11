@@ -23,7 +23,8 @@ public class CorsConfig {
         config.setAllowedOrigins(properties.getAllowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Idempotency-Key"));
-        config.setExposedHeaders(List.of("Authorization"));
+        // Retry-After must be exposed or the browser hides it from the admin login lockout message (HTTP 429).
+        config.setExposedHeaders(List.of("Authorization", "Retry-After"));
         // No cookies are used - the bearer token carries identity - so credentials stay off.
         config.setAllowCredentials(false);
         config.setMaxAge(3600L);
