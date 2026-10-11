@@ -1,6 +1,7 @@
 package com.ironoak.controller;
 
 import com.ironoak.dto.response.PublicOrderResponse;
+import com.ironoak.dto.request.UpdateShipmentRequest;
 import com.ironoak.dto.request.SetShippingCostRequest;
 import com.ironoak.dto.request.OrderFilter;
 import com.ironoak.domain.enums.OrderChannel;
@@ -102,6 +103,17 @@ public class OrderController {
     public OrderResponse get(@PathVariable Long id) {
 
         return orders.get(id);
+    }
+
+    /**
+     * Carrier, tracking number and SHIPPED / IN_TRANSIT / DELIVERED for a paid
+     * order.
+     */
+    @PatchMapping("/api/admin/orders/{id}/shipment")
+    public OrderResponse updateShipment(@PathVariable Long id,
+            @Valid @RequestBody UpdateShipmentRequest request) {
+
+        return orders.updateShipment(id, request);
     }
 
     @PatchMapping("/api/admin/orders/{id}/status")
