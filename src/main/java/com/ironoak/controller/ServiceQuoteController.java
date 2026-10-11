@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Quote requests for QUOTE-priced services. Customers create one and read it back with the
- * email on it (?email=); staff list, price (which creates the order to pay) or decline them.
+ * Quote requests for QUOTE-priced services. Customers create one and read it
+ * back with the
+ * email on it (?email=); staff list, price (which creates the order to pay) or
+ * decline them.
  */
 @RestController
 public class ServiceQuoteController {
