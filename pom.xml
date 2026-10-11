@@ -172,6 +172,19 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <!-- each Spring test class has its own Postgres container: close its app
+                             when the next one starts instead of keeping them all alive -->
+                        <spring.test.context.cache.maxSize>1</spring.test.context.cache.maxSize>
+                        <!-- no background jobs against test databases; tests call them directly -->
+                        <app.scheduling.enabled>false</app.scheduling.enabled>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

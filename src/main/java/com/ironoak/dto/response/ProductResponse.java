@@ -18,7 +18,8 @@ public record ProductResponse(
                 int warrantyMonths,
                 String imageUrl,
                 String toolCategoryDisplayName,
-                Long toolCategoryId
+                Long toolCategoryId,
+                BigDecimal weightKg
 
 ) {
 
@@ -37,6 +38,7 @@ public record ProductResponse(
                                 product.getWarrantyMonths(),
                                 product.getImageUrl(),
                                 product.getToolCategory() != null ? product.getToolCategory().getDisplayName() : null,
-                                product.getToolCategory() != null ? product.getToolCategory().getId() : null);
+                                product.getToolCategory() != null ? product.getToolCategory().getId() : null,
+                                product.getWeightKg());
         }
 }

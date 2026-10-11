@@ -1,13 +1,27 @@
 "use client";
 
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   ShoppingCart,
   UserRound,
 } from "lucide-react";
 
+import { useCart } from "@/lib/cart/CartContext";
+
 export default function Header() {
+  const router = useRouter();
+  const { count, hydrated } = useCart();
+  const [query, setQuery] = useState("");
+
+  function handleSearch(event: FormEvent) {
+    event.preventDefault();
+    const term = query.trim();
+    router.push(term ? `/catalog?q=${encodeURIComponent(term)}` : "/catalog");
+  }
+
   return (
     <header className="sticky top-0 z-50 border-b border-orange/40 bg-[#17110a]">
       <div className="flex h-20 items-center">
@@ -82,23 +96,33 @@ export default function Header() {
             className="hidden h-8 w-8 shrink-0 xl:block"
           />
 
-          <div className="hidden items-center border border-orange/40 px-3 py-2 xl:flex">
-            <Search className="mr-2 h-5 w-5 text-orange" />
+          <form
+            onSubmit={handleSearch}
+            role="search"
+            className="hidden items-center border border-orange/40 px-3 py-2 xl:flex"
+          >
+            <button type="submit" aria-label="Search" className="mr-2">
+              <Search className="h-5 w-5 text-orange" />
+            </button>
             <input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
               placeholder="Search tools, materials..."
               className="w-52 bg-transparent text-sm outline-none"
             />
-          </div>
+          </form>
 
-          <UserRound className="h-6 w-6 cursor-pointer hover:text-orange" />
+          <Link href="/orders" aria-label="Track an order" title="Track an order">
+            <UserRound className="h-6 w-6 hover:text-orange" />
+          </Link>
 
-          <div className="relative">
-            <ShoppingCart className="h-7 w-7 cursor-pointer text-orange" />
+          <Link href="/cart" aria-label="Cart" className="relative">
+            <ShoppingCart className="h-7 w-7 text-orange" />
 
-            <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-orange text-xs font-bold text-black">
-              0
+            <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange px-1 text-xs font-bold text-black">
+              {hydrated ? count : 0}
             </span>
-          </div>
+          </Link>
         </div>
       </div>
     </header>

@@ -2,12 +2,13 @@ import Link from "next/link";
 import { Heart } from "lucide-react";
 
 import AddToCartButton from "./AddToCartButton";
-import { imageSrc, money } from "@/lib/format";
+import ProductImage from "./ProductImage";
+import { LOW_STOCK_THRESHOLD, formatWeight, money } from "@/lib/format";
 import type { ProductResponse } from "@/lib/api/types";
 
 export default function ProductCard({ product }: { product: ProductResponse }) {
   return (
-    <article className="flex flex-col border border-orange/30 bg-[#f3eadb] text-black">
+    <article className="flex flex-col border border-orange/30 bg-[#dbac60] text-black">
       <div className="relative h-56 bg-white">
         <span
           className={`absolute left-3 top-3 px-3 py-1 text-xs font-black ${
@@ -21,8 +22,8 @@ export default function ProductCard({ product }: { product: ProductResponse }) {
           <Heart className="h-5 w-5" />
         </button>
 
-        <img
-          src={imageSrc(product.imageUrl)}
+        <ProductImage
+          src={product.imageUrl}
           alt={product.name}
           className="h-full w-full object-contain p-5"
         />
@@ -31,9 +32,30 @@ export default function ProductCard({ product }: { product: ProductResponse }) {
       <div className="flex flex-1 flex-col p-5">
         <h3 className="text-lg font-black">{product.name}</h3>
 
-        {product.brand && <p className="mt-1 text-xs font-bold tracking-wide text-black/50">{product.brand}</p>}
+        <p className="mt-2 line-clamp-3 flex-1 text-sm text-black/70">{product.description}</p>
 
-        <p className="mt-2 line-clamp-3 flex-1 text-sm text-black/60">{product.description}</p>
+        <dl className="mt-4 space-y-1 border-t border-black/15 pt-3 text-xs">
+          <div className="flex justify-between gap-3">
+            <dt className="font-bold tracking-wide text-black/60">BRAND</dt>
+            <dd className="truncate text-right font-black">{product.brand ?? "—"}</dd>
+          </div>
+
+          <div className="flex justify-between gap-3">
+            <dt className="font-bold tracking-wide text-black/60">STOCK</dt>
+            <dd className="text-right font-black">
+              {!product.inStock
+                ? "Out of stock"
+                : product.stockQuantity <= LOW_STOCK_THRESHOLD
+                  ? `Only ${product.stockQuantity} left`
+                  : `${product.stockQuantity} in stock`}
+            </dd>
+          </div>
+
+          <div className="flex justify-between gap-3">
+            <dt className="font-bold tracking-wide text-black/60">WEIGHT</dt>
+            <dd className="text-right font-black">{formatWeight(product.weightKg) ?? "Not listed"}</dd>
+          </div>
+        </dl>
 
         <div className="mt-4 text-2xl font-black text-orange">{money(product.price)}</div>
 
