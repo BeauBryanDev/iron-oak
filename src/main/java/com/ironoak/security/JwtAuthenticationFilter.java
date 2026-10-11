@@ -55,18 +55,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /** Granted while a temporary password is in use: reaches only change-password, /me and logout-all. */
+    public static final String ROLE_PASSWORD_CHANGE_REQUIRED = "ROLE_PASSWORD_CHANGE_REQUIRED";
+
     /**
-     * The account must still exist and the token must not predate its last password
-     * change,
-     * so changing the password kills every access token issued before it.
+     * The account must still exist and be active, and the token must not predate its last
+     * password change, so changing the password (or disabling the account) kills every access
+     * token issued before it.
      */
     private void authenticate(JwtService.AccessToken token, HttpServletRequest request) {
         adminUsers.findByUsername(token.username())
+                .filter(admin -> admin.isActive())
                 .filter(admin -> !token.issuedAt().isBefore(
                         admin.getPasswordChangedAt().toInstant().truncatedTo(ChronoUnit.SECONDS)))
                 .ifPresent(admin -> {
+                    String role = admin.isMustChangePassword() ? ROLE_PASSWORD_CHANGE_REQUIRED : "ROLE_ADMIN";
                     var authentication = new UsernamePasswordAuthenticationToken(
-                            admin.getUsername(), null, List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                            admin.getUsername(), null, List.of(new SimpleGrantedAuthority(role)));
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 });

@@ -23,6 +23,7 @@ public class AdminUserDetailsService implements UserDetailsService {
                 .map(admin -> User.withUsername(admin.getUsername())
                         .password(admin.getPasswordHash())
                         .roles("ADMIN")
+                        .disabled(!admin.isActive()) // refused like a wrong password (same 401)
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("No admin user '" + username + "'"));
     }

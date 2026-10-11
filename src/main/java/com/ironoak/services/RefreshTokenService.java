@@ -42,7 +42,8 @@ public class RefreshTokenService {
     public record Issued(String rawToken,
             OffsetDateTime expiresAt,
             String username,
-            String fullName) {
+            String fullName,
+            boolean passwordChangeRequired) {
     }
 
     private static final SecureRandom RANDOM = new SecureRandom();
@@ -81,6 +82,9 @@ public class RefreshTokenService {
         AdminRefreshToken current = tokens.findForUpdateByTokenHash(hash(rawToken))
                 .orElseThrow(() -> new BadCredentialsException("Invalid refresh token"));
 
+        if (!current.getAdminUser().isActive()) {
+            throw new BadCredentialsException("Invalid refresh token"); // disabled account
+        }
         if (current.isRevoked()) {
 
             tokens.revokeFamily(current.getFamilyId(), now, "REUSE_DETECTED");
@@ -162,7 +166,7 @@ public class RefreshTokenService {
                 truncate(userAgent, 255),
                 truncate(ip, 45)));
 
-        return new Issued(raw, expires, admin.getUsername(), admin.getFullName());
+        return new Issued(raw, expires, admin.getUsername(), admin.getFullName(), admin.isMustChangePassword());
     }
 
     static String hash(String rawToken) {

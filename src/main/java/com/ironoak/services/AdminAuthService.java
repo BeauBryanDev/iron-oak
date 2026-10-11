@@ -177,6 +177,7 @@ public class AdminAuthService {
                 refresh.rawToken(),
                 refresh.expiresAt(),
                 refresh.username(),
-                refresh.fullName());
+                refresh.fullName(),
+                refresh.passwordChangeRequired());
     }
 }
