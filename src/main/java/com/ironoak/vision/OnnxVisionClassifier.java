@@ -17,7 +17,8 @@ import java.util.Map;
 /**
  * Runs the MobileNetV3 tool classifier.
  *
- * The exported graph outputs raw logits (shape [batch, 87]), NOT probabilities, so
+ * The exported graph outputs raw logits (shape [batch, 87]), NOT probabilities,
+ * so
  * softmax is applied here before anything compares a score against a threshold.
  * Skipping it makes the confidence gate meaningless - logits are unbounded and
  * routinely exceed 1.0 even for a wrong prediction.
@@ -32,10 +33,11 @@ public class OnnxVisionClassifier {
     private final List<String> labels;
 
     public OnnxVisionClassifier(OrtEnvironment environment,
-                                OrtSession session,
-                                ImagePreprocessor preprocessor,
-                                VisionProperties properties,
-                                List<String> toolClassLabels) {
+            OrtSession session,
+            ImagePreprocessor preprocessor,
+            VisionProperties properties,
+            List<String> toolClassLabels) {
+
         this.environment = environment;
         this.session = session;
         this.preprocessor = preprocessor;
@@ -51,11 +53,13 @@ public class OnnxVisionClassifier {
     public List<Prediction> classify(byte[] imageBytes, int topK) throws IOException, OrtException {
         FloatBuffer input = preprocessor.toTensor(imageBytes);
         int size = properties.getInputSize();
-        long[] shape = {1, 3, size, size};
+        long[] shape = { 1, 3, size, size };
 
         String inputName = session.getInputNames().iterator().next();
+
         try (OnnxTensor tensor = OnnxTensor.createTensor(environment, input, shape);
-             OrtSession.Result result = session.run(Map.of(inputName, tensor))) {
+
+                OrtSession.Result result = session.run(Map.of(inputName, tensor))) {
 
             float[] logits = ((float[][]) result.get(0).getValue())[0];
             float[] probabilities = softmax(logits);
@@ -65,22 +69,27 @@ public class OnnxVisionClassifier {
                 ranked.add(new Prediction(labels.get(i), probabilities[i]));
             }
             ranked.sort(Comparator.comparing(Prediction::score).reversed());
+
             return ranked.subList(0, Math.min(topK, ranked.size()));
         }
     }
 
     /**
-     * Numerically stable softmax: subtracting the max before exponentiating prevents
+     * Numerically stable softmax: subtracting the max before exponentiating
+     * prevents
      * overflow to Infinity on large logits, which would yield NaN probabilities.
      */
     static float[] softmax(float[] logits) {
+
         float max = Float.NEGATIVE_INFINITY;
+
         for (float logit : logits) {
             max = Math.max(max, logit);
         }
 
         float sum = 0f;
         float[] exponentials = new float[logits.length];
+
         for (int i = 0; i < logits.length; i++) {
             exponentials[i] = (float) Math.exp(logits[i] - max);
             sum += exponentials[i];
