@@ -107,6 +107,14 @@ public class SecurityConfig {
 
                                                 // Everything under /api/admin and the dashboard is staff-only,
                                                 // as is any catalog mutation.
+                                                // Self-service with an access token, also allowed while a
+                                                // temporary password must be replaced (every other admin
+                                                // route answers 403 until then).
+                                                .requestMatchers(HttpMethod.POST, "/api/admin/auth/change-password",
+                                                                "/api/admin/auth/logout-all")
+                                                .authenticated()
+                                                .requestMatchers(HttpMethod.GET, "/api/admin/auth/me").authenticated()
+
                                                 .requestMatchers("/api/admin/**", "/api/dashboard/**").hasRole("ADMIN")
 
                                                 .anyRequest().authenticated())

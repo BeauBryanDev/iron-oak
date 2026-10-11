@@ -17,5 +17,6 @@ public record AdminLoginResponse(
                 String refreshToken,
                 OffsetDateTime refreshExpiresAt,
                 String username,
-                String fullName) {
+                String fullName,
+                boolean passwordChangeRequired) {
 }

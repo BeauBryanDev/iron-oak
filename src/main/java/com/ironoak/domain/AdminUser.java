@@ -47,6 +47,14 @@ public class AdminUser {
     @Column(name = "password_changed_at", nullable = false)
     private OffsetDateTime passwordChangedAt;
 
+    /** False = disabled (V12): cannot log in, tokens are rejected. Never deleted. */
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
+    /** True until the person replaces a temporary password (V12). */
+    @Column(name = "must_change_password", nullable = false)
+    private boolean mustChangePassword = false;
+
     protected AdminUser() {
     }
 
@@ -87,9 +95,41 @@ public class AdminUser {
     }
 
     /** Stores a new hash and invalidates every access token issued before now. */
+    /** The person chose this password themselves; clears the forced-change flag. */
     public void changePassword(String newPasswordHash) {
         this.passwordHash = newPasswordHash;
         this.passwordChangedAt = OffsetDateTime.now();
+        this.mustChangePassword = false;
+    }
+
+    /**
+     * Someone else set this password (bootstrap, new staff, reset): older tokens stop working
+     * and the account is limited to changing it until the person picks their own.
+     */
+    public void setTemporaryPassword(String temporaryPasswordHash) {
+        this.passwordHash = temporaryPasswordHash;
+        this.passwordChangedAt = OffsetDateTime.now();
+        this.mustChangePassword = true;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isMustChangePassword() {
+        return mustChangePassword;
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
     public OffsetDateTime getPasswordChangedAt() {
