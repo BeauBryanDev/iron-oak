@@ -45,6 +45,7 @@ public class VisionService {
             ToolCategoryRepository toolCategories,
             ProductRepository products,
             ProductMapper productMapper) {
+
         this.classifier = classifier;
         this.gate = gate;
         this.properties = properties;
@@ -72,7 +73,8 @@ public class VisionService {
 
         Map<String, ToolCategory> categories = toolCategories
                 .findByModelLabelIn(ranked.stream().map(Prediction::modelLabel).toList()).stream()
-                .collect(Collectors.toMap(ToolCategory::getModelLabel, Function.identity()));
+                .collect(Collectors.toMap(ToolCategory::getModelLabel,
+                        Function.identity()));
 
         Match top = toMatch(decision.top(), categories);
 
@@ -96,6 +98,7 @@ public class VisionService {
         // label if not.
         String displayName = category == null ? prediction.modelLabel() : category.getDisplayName();
 
-        return new Match(prediction.modelLabel(), displayName, prediction.score());
+        return new Match(prediction.modelLabel(),
+                displayName, prediction.score());
     }
 }
