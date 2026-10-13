@@ -31,7 +31,8 @@ spring:
         options:
           model: ${GPT_MODEL}
           temperature: 0.3
-          max-tokens: 1024
+          reasoning-effort: none
+          max-completion-tokens: 1024
       embedding:
         options:
           model: ${EMBEDDING_MODEL}
@@ -40,9 +41,14 @@ spring:
     vectorstore:
       milvus:
         client:
-          uri: ${MILVUS_URI}
+          host: ${MILVUS_HOST}
+          port: ${MILVUS_PORT:19530}
+          secure: ${MILVUS_SECURE:false}
           token: ${MILVUS_TOKEN}
-        collection-name: piper-vector-store
+        # Zilliz serverless: the token only has rights on the cluster's own database,
+        # not on `default` (searching `default` answers PERMISSION_DENIED)
+        database-name: ${MILVUS_DATABASE:db_912b2d58f7608ba}
+        collection-name: piper_vector_store
         embedding-dimension: 1536
         metric-type: COSINE
         initialize-schema: false
@@ -55,6 +61,7 @@ spring:
     multipart:
       max-file-size: 8MB
       max-request-size: 8MB
+      file-size-threshold: 8MB
 
   data:
     web:

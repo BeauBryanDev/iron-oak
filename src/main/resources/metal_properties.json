@@ -1,0 +1,111 @@
+{
+  "metadata": {
+    "units": {
+      "kc1": "N/mm^2",
+      "mc": "dimensionless",
+      "vc_ref": "m/min",
+      "hardness": "HB (Brinell Hardness)",
+      "density": "g/cm^3",
+      "thermal_conductivity": "W/m·K"
+    },
+    "description": "Industrial materials database for CNC milling operations based on Kienzle model and physical properties."
+  },
+  "materials": {
+    "aluminum_6061_t6": {
+      "kc1": 700.0,
+      "mc": 0.17,
+      "vc_ref": 200.0,
+      "hardness": 95,
+      "density": 2.70,
+      "thermal_conductivity": 167.0
+    },
+    "alloy_steel_4140": {
+      "kc1": 2100.0,
+      "mc": 0.25,
+      "vc_ref": 45.0,
+      "hardness": 280,
+      "density": 7.85,
+      "thermal_conductivity": 42.7
+    },
+    "carbon_steel_1045": {
+      "kc1": 1850.0,
+      "mc": 0.24,
+      "vc_ref": 60.0,
+      "hardness": 170,
+      "density": 7.87,
+      "thermal_conductivity": 49.8
+    },
+    "stainless_steel_304": {
+      "kc1": 2400.0,
+      "mc": 0.25,
+      "vc_ref": 30.0,
+      "hardness": 200,
+      "density": 8.00,
+      "thermal_conductivity": 16.2
+    },
+    "stainless_steel_316": {
+      "kc1": 2500.0,
+      "mc": 0.26,
+      "vc_ref": 25.0,
+      "hardness": 215,
+      "density": 8.00,
+      "thermal_conductivity": 16.3
+    },
+    "cast_iron_gray": {
+      "kc1": 1150.0,
+      "mc": 0.21,
+      "vc_ref": 70.0,
+      "hardness": 220,
+      "density": 7.20,
+      "thermal_conductivity": 50.0
+    },
+    "titanium_ti6al4v": {
+      "kc1": 2800.0,
+      "mc": 0.22,
+      "vc_ref": 35.0,
+      "hardness": 350,
+      "density": 4.43,
+      "thermal_conductivity": 6.7
+    },
+    "brass_c36000": {
+      "kc1": 650.0,
+      "mc": 0.18,
+      "vc_ref": 250.0,
+      "hardness": 120,
+      "density": 8.50,
+      "thermal_conductivity": 115.0
+    },
+    "copper_c11000": {
+      "kc1": 900.0,
+      "mc": 0.20,
+      "vc_ref": 180.0,
+      "hardness": 90,
+      "density": 8.96,
+      "thermal_conductivity": 391.0
+    },
+    "inconel_718": {
+      "kc1": 3100.0,
+      "mc": 0.24,
+      "vc_ref": 15.0,
+      "hardness": 360,
+      "density": 8.19,
+      "thermal_conductivity": 11.4
+    },
+    "tool_steel_d2": {
+      "kc1": 2600.0,
+      "mc": 0.26,
+      "vc_ref": 20.0,
+      "hardness": 450,
+      "density": 7.70,
+      "thermal_conductivity": 20.0
+    },
+    "magnesium_az31b": {
+      "kc1": 450.0,
+      "mc": 0.15,
+      "vc_ref": 350.0,
+      "hardness": 73,
+      "density": 1.77,
+      "thermal_conductivity": 96.0
+    }
+  }
+}

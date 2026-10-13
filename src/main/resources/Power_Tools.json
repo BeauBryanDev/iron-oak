@@ -1,0 +1,155 @@
+{
+  "air_compressors": {
+    "voltage": 460.0,
+    "ampere": 18.5,
+    "Power": 11185.5,
+    "technical_description": "Industrial rotary screw air compressor designed for continuous duty in manufacturing plants. It uses two intermeshing helical rotors to compress atmospheric air up to 8.5 bar, delivering stable air volume to pneumatic tools with integrated oil-air separation systems."
+  },
+  "angle_grinder": {
+    "voltage": 230.0,
+    "ampere": 11.0,
+    "Power": 2400.0,
+    "technical_description": "Heavy-duty 230mm angle grinder equipped with a high-torque brush motor. Operates via high-speed rotational disc shear forces to cut structural steel and weld seams, featuring direct airflow cooling and soft-start electronics to manage high startup currents."
+  },
+  "concrete_mixer": {
+    "voltage": 400.0,
+    "ampere": 7.2,
+    "Power": 3700.0,
+    "technical_description": "Heavy-construction concrete mixer featuring a 350-liter rotating drum driven by an induction motor through a hardened ring gear. Uses internal mixing blades to produce homogeneous cement blends via controlled gravitational tumbling and continuous torque delivery."
+  },
+  "digital_caliper": {
+    "voltage": 3.0,
+    "ampere": 0.00002,
+    "Power": 0.00006,
+    "technical_description": "Precision electronic linear measuring tool utilizing a capacitive grid sensor array mounted along the main scale. Detects subtle capacitive variance to compute internal, external, depth, and step dimensions displayed on a digital LCD with 0.01 mm resolution."
+  },
+  "digital_torque_wrench": {
+    "voltage": 3.0,
+    "ampere": 0.015,
+    "Power": 0.045,
+    "technical_description": "Industrial mechanical fastener tightening tool driven by embedded piezoresistive strain gauges on the drive shaft. Measures micro-deformation under applied force, converting mechanical strain into accurate torque measurements displayed on an LED interface with audible threshold alerts."
+  },
+  "electric_drill_ai": {
+    "voltage": 20.0,
+    "ampere": 25.0,
+    "Power": 500.0,
+    "technical_description": "Smart cordless brushless drill incorporating embedded microcontroller monitoring load torque and rotational velocity. Continuously optimizes pulse-width modulation (PWM) power distribution to prevent stall states and bit shear when drilling high-density alloys."
+  },
+  "extension_cord": {
+    "voltage": 240.0,
+    "ampere": 32.0,
+    "Power": 7680.0,
+    "technical_description": "Heavy-duty industrial power distribution cable constructed with three 6 mm² stranded copper conductors insulated in heavy neoprene rubber (H07RN-F). Designed for high-current single-phase equipment drops with low resistive voltage degradation across extended distances."
+  },
+  "flashlight": {
+    "voltage": 3.7,
+    "ampere": 2.5,
+    "Power": 9.25,
+    "technical_description": "High-intensity inspection flashlight using a Cree XHP series COB LED driven by a constant-current buck driver circuit. Uses an aluminum reflector assembly to emit up to 3000 lumens for precise structural inspection in hazardous environments."
+  },
+  "generator": {
+    "voltage": 480.0,
+    "ampere": 75.0,
+    "Power": 50000.0,
+    "technical_description": "Three-phase prime power diesel generator pairing a turbocharged 4-cylinder engine with a brushless synchronous alternator. Converts mechanical crankshaft rotation into regulated AC electrical energy via an Automatic Voltage Regulator (AVR) for job site power grids."
+  },
+  "glue_gun_ai": {
+    "voltage": 120.0,
+    "ampere": 1.67,
+    "Power": 200.0,
+    "technical_description": "Industrial adhesive dispensing tool with positive temperature coefficient (PTC) heating element controlled by an internal closed-loop micro-stepper driver. Dynamically adjusts extrusion nozzle temperature and feed rate based on material viscosity sensors."
+  },
+  "head_flashlight": {
+    "voltage": 3.7,
+    "ampere": 1.2,
+    "Power": 4.44,
+    "technical_description": "Hands-free headlamp powered by a rechargeable lithium-ion cell with PWM-regulated output modes. Houses multi-emitter LEDs behind total internal reflection (TIR) optics to flood work areas with color-accurate neutral white light."
+  },
+  "heat_gun": {
+    "voltage": 230.0,
+    "ampere": 8.7,
+    "Power": 2000.0,
+    "technical_description": "Industrial hot-air blower incorporating a ceramic-encased nickel-chromium heating coil and a high-static pressure fan motor. Generates precise airflow streams up to 650°C for heat-shrink sleeve applications, paint stripping, and plastic welding."
+  },
+  "heavy_duty_vacuum_cleaner": {
+    "voltage": 230.0,
+    "ampere": 13.0,
+    "Power": 3000.0,
+    "technical_description": "Dual-stage industrial wet/dry extractor powered by dual bypass motor units creating a high vacuum pressure seal (>25 kPa). Pulls air through a multi-stage HEPA filtration setup with automated pulse-jet filter cleaning for continuous silica dust containment."
+  },
+  "infrared_digital_thermometer": {
+    "voltage": 9.0,
+    "ampere": 0.02,
+    "Power": 0.18,
+    "technical_description": "Non-contact radiometric thermal sensor utilizing a thermopile detector array. Focuses emitted Planck infrared radiation from surfaces onto internal detector elements to calculate surface temperature accurately without physical contact based on adjustable emissivity values."
+  },
+  "jack_hammer": {
+    "voltage": 230.0,
+    "ampere": 8.7,
+    "Power": 2000.0,
+    "technical_description": "Electropneumatic demolition breaker using a crank-driven piston mechanism to compress air pockets that launch a heavy striker against an SDS-Max chisel shank. Delivers up to 68 Joules of single-impact energy for breaking high-compressive-strength concrete."
+  },
+  "jigsaw": {
+    "voltage": 230.0,
+    "ampere": 3.1,
+    "Power": 720.0,
+    "technical_description": "Variable-speed orbital jigsaw equipped with a scotch-yoke drive mechanism that converts rotational motor energy into vertical reciprocating blade movement. Features adjustable pendulum action modes to optimize chip clearance in dense timber and sheet metal."
+  },
+  "led_light_bulb": {
+    "voltage": 120.0,
+    "ampere": 0.125,
+    "Power": 15.0,
+    "technical_description": "High-efficiency solid-state luminaire utilizing surface-mount device (SMD) LED arrays mounted on a metal-core PCB. Driven by an integrated switch-mode power supply (SMPS) constant-current topology to yield high luminous efficacy with minimal thermal dissipation."
+  },
+  "moisture_meter": {
+    "voltage": 9.0,
+    "ampere": 0.015,
+    "Power": 0.135,
+    "technical_description": "Dielectric capacitance/resistance material analyzer. Measures electrical impedance changes between stainless steel probe electrodes or non-destructive sensor pads to evaluate water mass fraction within structural timber and masonry substrates."
+  },
+  "nail_gun": {
+    "voltage": 18.0,
+    "ampere": 30.0,
+    "Power": 540.0,
+    "technical_description": "Cordless framing nailer utilizing an internal brushless motor to compress a sealed nitrogen gas spring mechanism. Upon trigger actuation, compressed nitrogen releases rapid kinetic energy through a driver blade to seat heavy collated fasteners directly into structural framing lumber."
+  },
+  "paint_spray_gun": {
+    "voltage": 120.0,
+    "ampere": 10.0,
+    "Power": 1200.0,
+    "technical_description": "High-Volume Low-Pressure (HVLP) paint spraying system driven by a multi-stage turbine power unit. Supplies controlled atomizing air volume to force coating liquids through a precision stainless steel fluid tip, yielding high transfer efficiency with minimal overspray bounce-back."
+  },
+  "palm_sander": {
+    "voltage": 120.0,
+    "ampere": 2.5,
+    "Power": 300.0,
+    "technical_description": "Orbital finishing sander equipped with an offset drive spindle mounted on counterbalanced bearing assemblies. Oscillates a flexible sanding pad in small eccentric orbits (1.5–2.5 mm diameter) at high frequencies (12,000 OPM) for fine surface preparation."
+  },
+  "power_socket": {
+    "voltage": 400.0,
+    "ampere": 32.0,
+    "Power": 12800.0,
+    "technical_description": "Industrial surface-mount receptacle built according to IEC 60309 standards. Utilizes heavy nickel-plated brass contacts housed within an IP67 impact-resistant polybutylene terephthalate shell to supply stable, weatherproof 3-phase industrial power drops."
+  },
+  "soldering_iron": {
+    "voltage": 24.0,
+    "ampere": 3.75,
+    "Power": 90.0,
+    "technical_description": "High-frequency induction-heated soldering station utilizing a composite tip assembly with an integrated K-type thermocouple feedback system. Delivers instantaneous thermal recovery to melt eutectic tin-lead or lead-free solder alloys without thermal drooping."
+  },
+  "stud_finder": {
+    "voltage": 9.0,
+    "ampere": 0.025,
+    "Power": 0.225,
+    "technical_description": "Sub-surface wall scanner combining capacitive sensors with impulse radar ultra-wideband (UWB) modules. Measures changes in relative permittivity behind drywalls to detect density shifts corresponding to wooden studs, metal joists, and energized AC wiring."
+  },
+  "voltage_tester_ai": {
+    "voltage": 3.0,
+    "ampere": 0.01,
+    "Power": 0.03,
+    "technical_description": "Smart non-contact voltage detector utilizing high-gain capacitive field coupling circuitry. Detects electrostatic field oscillations around live conductors, processing signal wave characteristics to classify voltage levels and signal potential hazards via optical and acoustic indicators."
+  }
+}
+
+
+
