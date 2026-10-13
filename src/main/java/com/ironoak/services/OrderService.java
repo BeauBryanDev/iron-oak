@@ -535,6 +535,19 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    /**
+     * Customer-facing order lookup. The public order number and email are the
+     * ownership proof; the database primary key is never used by Piper.
+     */
+    public OrderResponse getForCustomer(String orderNumber, String customerEmail) {
+
+        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(Locale.ROOT);
+        return orders.findWithItemsByOrderNumber(number)
+                .filter(o -> ownedBy(o, customerEmail))
+                .map(mapper::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", number));
+    }
+
     public OrderResponse get(Long id) {
 
         return orders.findWithItemsById(id)
@@ -731,9 +744,14 @@ public class OrderService {
             for (OrderItem item : order.getItems()) {
 
                 if (item.getItemType() == OrderItemType.PRODUCT) {
-                    toRestock.add(new Restock(OrderItemType.PRODUCT, item.getProduct().getId(), item.getQuantity()));
+                    toRestock.add(new Restock(OrderItemType.PRODUCT,
+                            item.getProduct().getId(),
+                            item.getQuantity()));
+
                 } else if (item.getItemType() == OrderItemType.END_MILL) {
-                    toRestock.add(new Restock(OrderItemType.END_MILL, item.getEndMill().getId(), item.getQuantity()));
+                    toRestock.add(new Restock(OrderItemType.END_MILL,
+                            item.getEndMill().getId(),
+                            item.getQuantity()));
                 }
             }
         }
@@ -744,6 +762,7 @@ public class OrderService {
         for (Restock line : toRestock) {
             if (line.type() == OrderItemType.END_MILL) {
                 endMills.incrementStock(line.id(), line.quantity());
+
             } else {
                 products.incrementStock(line.id(), line.quantity());
             }
@@ -780,25 +799,29 @@ public class OrderService {
             case PRODUCT -> {
                 Product product = products.findById(line.referenceId())
                         .filter(p -> Boolean.TRUE.equals(p.getIsActive()))
-                        .orElseThrow(() -> new ResourceNotFoundException("Product", line.referenceId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Product",
+                                line.referenceId()));
                 yield OrderItem.ofProduct(product, line.quantity());
             }
             case MACHINE -> {
                 MillingMachine machine = machines.findById(line.referenceId())
                         .filter(m -> Boolean.TRUE.equals(m.getIsActive()))
-                        .orElseThrow(() -> new ResourceNotFoundException("Milling machine", line.referenceId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Milling machine",
+                                line.referenceId()));
                 yield OrderItem.ofMachine(machine, line.quantity());
             }
             case END_MILL -> {
                 EndMill endMill = endMills.findById(line.referenceId())
                         .filter(e -> Boolean.TRUE.equals(e.getIsActive()))
-                        .orElseThrow(() -> new ResourceNotFoundException("End mill", line.referenceId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("End mill",
+                                line.referenceId()));
                 yield OrderItem.ofEndMill(endMill, line.quantity());
             }
             case SERVICE -> {
                 ServiceOffering service = serviceOfferings.findById(line.referenceId())
                         .filter(s -> Boolean.TRUE.equals(s.getIsActive()))
-                        .orElseThrow(() -> new ResourceNotFoundException("Service", line.referenceId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Service",
+                                line.referenceId()));
                 yield buildServiceItem(service, line);
             }
         };

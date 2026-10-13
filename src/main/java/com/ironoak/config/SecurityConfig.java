@@ -86,6 +86,7 @@ public class SecurityConfig {
 
                                                 // Piper: chat, image classification, and guest checkout.
                                                 .requestMatchers("/api/chat/**", "/api/vision/**").permitAll()
+                                                .requestMatchers(HttpMethod.POST, "/api/image").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/orders", "/api/complaints",
                                                                 "/api/bookings", "/api/bookings/*/reschedule",
                                                                 "/api/bookings/*/cancel",

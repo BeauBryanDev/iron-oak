@@ -38,11 +38,18 @@ public class WarrantyClaimService {
     private static final List<ClaimStatus> ACTIVE = List.of(ClaimStatus.OPEN, ClaimStatus.IN_REVIEW);
 
     private static final Map<ClaimStatus, Set<ClaimStatus>> TRANSITIONS = Map.of(
-            ClaimStatus.OPEN, Set.of(ClaimStatus.IN_REVIEW, ClaimStatus.REJECTED),
-            ClaimStatus.IN_REVIEW, Set.of(ClaimStatus.APPROVED, ClaimStatus.REJECTED),
-            ClaimStatus.APPROVED, Set.of(ClaimStatus.RESOLVED),
-            ClaimStatus.REJECTED, Set.of(),
-            ClaimStatus.RESOLVED, Set.of());
+            ClaimStatus.OPEN,
+            Set.of(ClaimStatus.IN_REVIEW,
+                    ClaimStatus.REJECTED),
+            ClaimStatus.IN_REVIEW,
+            Set.of(ClaimStatus.APPROVED,
+                    ClaimStatus.REJECTED),
+            ClaimStatus.APPROVED,
+            Set.of(ClaimStatus.RESOLVED),
+            ClaimStatus.REJECTED,
+            Set.of(),
+            ClaimStatus.RESOLVED,
+            Set.of());
 
     // Moving into these needs a note explaining the decision.
     private static final Set<ClaimStatus> NEEDS_NOTE = Set.of(ClaimStatus.APPROVED,
@@ -115,6 +122,50 @@ public class WarrantyClaimService {
                 order, item.getId(), request.description().trim());
 
         return mapper.toResponse(claims.saveAndFlush(claim));
+    }
+
+    /**
+     * Resolves the customer-facing order number and item name or code before
+     * reusing create(), which owns all warranty rules.
+     */
+    public WarrantyClaimResponse createForCustomerOrderNumber(String orderNumber,
+            String customerEmail,
+            String item,
+            String description) {
+
+        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(java.util.Locale.ROOT);
+        String selector = item == null ? "" : item.trim();
+
+        if (number.isBlank() || selector.isBlank() || description == null || description.isBlank()) {
+
+            throw new BusinessRuleException("order number, email, item, and description are required");
+        }
+
+        CustomerOrder order = orders.findWithItemsByOrderNumber(number)
+                .filter(o -> OrderService.ownedBy(o, customerEmail))
+                .orElseThrow(() -> new ResourceNotFoundException("Order", number));
+
+        List<OrderItem> codeMatches = order.getItems().stream()
+                .filter(i -> i.getItemCode().equalsIgnoreCase(selector))
+                .toList();
+        List<OrderItem> nameMatches = order.getItems().stream()
+                .filter(i -> i.getItemName().equalsIgnoreCase(selector))
+                .toList();
+        List<OrderItem> matches = codeMatches.isEmpty() ? nameMatches : codeMatches;
+
+        if (matches.isEmpty()) {
+            throw new ResourceNotFoundException("Order item", selector);
+        }
+        if (matches.size() > 1) {
+            throw new BusinessRuleException(
+                    "More than one order item matches this name; use the product SKU or machine model");
+        }
+
+        return create(
+                new CreateWarrantyClaimRequest(customerEmail,
+                        order.getId(),
+                        matches.get(0).getId(),
+                        description));
     }
 
     @Transactional(readOnly = true)
@@ -204,7 +255,7 @@ public class WarrantyClaimService {
         if (item.getItemType() == OrderItemType.PRODUCT) {
 
             return item.getProduct().getWarrantyMonths();
-        }
+        } // machoines != table from products db
         if (item.getItemType() == OrderItemType.MACHINE) {
 
             return item.getMillingMachine().getWarrantyMonths();
