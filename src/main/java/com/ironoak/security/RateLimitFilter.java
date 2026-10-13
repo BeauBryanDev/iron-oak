@@ -33,13 +33,27 @@ public class RateLimitFilter extends OncePerRequestFilter {
     private static final AntPathMatcher PATHS = new AntPathMatcher();
 
     private static final List<String> PUBLIC_WRITE_PATHS = List.of(
-            "/api/orders", "/api/complaints", "/api/bookings", "/api/bookings/*/reschedule",
-            "/api/bookings/*/cancel", "/api/warranty-claims", "/api/support-tickets", "/api/service-quotes",
-            "/api/vision/classify", "/api/shipping/quote", "/api/orders/*/checkout-session", "/api/chat/**");
+            "/api/orders",
+            "/api/complaints",
+            "/api/bookings",
+            "/api/bookings/*/reschedule",
+            "/api/bookings/*/cancel",
+            "/api/warranty-claims",
+            "/api/support-tickets",
+            "/api/service-quotes",
+            "/api/vision/classify",
+            "/api/image",
+            "/api/shipping/quote",
+            "/api/orders/*/checkout-session",
+            "/api/chat/**");
 
     private static final List<String> PUBLIC_LOOKUP_PATHS = List.of(
-            "/api/orders/*", "/api/bookings", "/api/bookings/*",
-            "/api/warranty-claims", "/api/warranty-claims/*", "/api/service-quotes/*");
+            "/api/orders/*",
+            "/api/bookings",
+            "/api/bookings/*",
+            "/api/warranty-claims",
+            "/api/warranty-claims/*",
+            "/api/service-quotes/*");
 
     private final ClientIpResolver clientIp;
     private final TokenBucketLimiter login;
@@ -74,7 +88,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
             if (!decision.allowed()) {
 
-                audit.warn("rate limit hit: {} {} from {}", request.getMethod(), request.getRequestURI(), ip);
+                audit.warn("rate limit hit: {} {} from {}",
+                        request.getMethod(),
+                        request.getRequestURI(), ip);
 
                 reject(response, decision.retryAfterSeconds());
                 return;

@@ -26,10 +26,12 @@ import java.util.Set;
  * Chats with Piper. A visitor starts a session and gets a signed session token
  * (ChatSessionTokens); each message then runs in three steps:
  *
- * 1. a short read: check the token and the limits, load the recent history;
- * 2. Piper's answer from the language model, outside any transaction, so a slow
- *    model never holds a database connection;
- * 3. a short write: the customer's message and Piper's answer are saved together.
+ * i. a short read: check the token and the limits, load the recent history;
+ * ii. Piper's answer from the language model, outside any transaction, so a
+ * slow
+ * model never holds a database connection;
+ * iii. a short write: the customer's message and Piper's answer are saved
+ * together.
  *
  * If the model fails, nothing is saved (503) and the customer can send the same
  * message again. Tool messages (role TOOL) are stored for the record but are
@@ -38,7 +40,10 @@ import java.util.Set;
 @Service
 public class ChatOrchestrationService {
 
-    /** Earlier messages sent to the model with each new one (cost and context limit). */
+    /**
+     * Earlier messages sent to the model with each new one (cost and context
+     * limit).
+     */
     public static final int HISTORY_MESSAGES = 20;
     /** Customer messages allowed in one session; after that, start a new chat. */
     public static final int MAX_USER_MESSAGES_PER_SESSION = 100;
@@ -65,11 +70,12 @@ public class ChatOrchestrationService {
         this.transactions = transactions;
     }
 
-    /** A new anonymous chat. The token in the response is the only way back into it. */
+    /**
+     * A new anonymous chat. The token in the response is the only way back into it.
+     */
     public ChatSessionResponse startSession() {
 
-        ChatSession session = transactions.execute(status ->
-                sessions.saveAndFlush(new ChatSession(null)));
+        ChatSession session = transactions.execute(status -> sessions.saveAndFlush(new ChatSession(null)));
 
         return new ChatSessionResponse(session.getId(),
                 tokens.issue(session.getId()),

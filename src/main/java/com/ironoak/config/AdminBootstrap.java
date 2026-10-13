@@ -17,11 +17,16 @@ import org.springframework.stereotype.Component;
 import java.util.Locale;
 
 /**
- * Creates the first production admin, once. Reads BOOTSTRAP_ADMIN_USERNAME, _EMAIL and
- * _PASSWORD (server .env, never Git) and acts only while admin_user is empty: with any admin
- * present it does nothing, so restarts can never add or overwrite an account. The password is
- * temporary (must be changed at first login) and a weak one stops the app at startup.
- * After the first login, change the password and delete the three lines from .env.
+ * Creates the first production admin, once. Reads BOOTSTRAP_ADMIN_USERNAME,
+ * _EMAIL and
+ * _PASSWORD (server .env, never Git) and acts only while admin_user is empty:
+ * with any admin
+ * present it does nothing, so restarts can never add or overwrite an account.
+ * The password is
+ * temporary (must be changed at first login) and a weak one stops the app at
+ * startup.
+ * After the first login, change the password and delete the three lines from
+ * .env.
  * The local profile uses DevAdminSeeder instead.
  */
 @Component
@@ -39,6 +44,7 @@ public class AdminBootstrap implements ApplicationRunner {
             PasswordEncoder passwordEncoder,
             AuditService audit,
             Environment environment) {
+
         this.adminUsers = adminUsers;
         this.passwordEncoder = passwordEncoder;
         this.audit = audit;
