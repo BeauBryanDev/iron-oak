@@ -63,6 +63,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 ex.isNotConfigured() ? ex.getMessage() : "The payment provider could not complete the request");
     }
 
+    @ExceptionHandler(AssistantUnavailableException.class)
+    public ProblemDetail assistantUnavailable(AssistantUnavailableException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
     @ExceptionHandler(WebhookSignatureException.class)
     public ProblemDetail badWebhookSignature(WebhookSignatureException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
