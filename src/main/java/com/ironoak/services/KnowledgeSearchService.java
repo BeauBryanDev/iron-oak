@@ -54,8 +54,7 @@ public class KnowledgeSearchService {
      * still return topK passages.
      */
     static final int DUPLICATE_HEADROOM = 4;
-
-    // field names written by scripts/upload_vectors.py (Spring AI's defaults)
+    // Then field names written by scripts/upload_vectors.py (Spring AI's defaults)
     private static final String CONTENT_FIELD = "content";
     private static final String METADATA_FIELD = "metadata";
     private static final String VECTOR_FIELD = "embedding";
