@@ -107,6 +107,13 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-starter-vector-store-milvus</artifactId>
         </dependency>
+        <!-- Temporary in-memory image references for Piper vision uploads -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+
         <!-- Vision - ONNX Runtime Java for the MobileNetV3-Large tool classifier -->
         <dependency>
             <groupId>com.microsoft.onnxruntime</groupId>
