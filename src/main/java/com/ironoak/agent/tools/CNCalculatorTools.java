@@ -44,6 +44,7 @@ public class CNCalculatorTools {
         requirePositive(cutting_speed, "cutting_speed");
         requirePositive(diameter_mm, "diameter_mm");
         requirePositive(feed_per_tooth, "feed_per_tooth");
+
         if (number_of_teeth < 1) {
             throw new BusinessRuleException("number_of_teeth must be at least 1");
         }
@@ -52,6 +53,7 @@ public class CNCalculatorTools {
         requirePositive(kc1_n_per_mm2, "kc1_n_per_mm2");
         requirePositive(mc, "mc");
         requirePositive(max_motor_power_kw, "max_motor_power_kw");
+
         if (machine_efficiency <= 0 || machine_efficiency > 1) {
             throw new BusinessRuleException("machine_efficiency must be greater than 0 and no greater than 1");
         }
