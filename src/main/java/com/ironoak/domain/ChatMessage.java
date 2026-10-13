@@ -69,6 +69,14 @@ public class ChatMessage {
         return toolName;
     }
 
+    public ChatSession getChatSession() {
+        return chatSession;
+    }
+
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
