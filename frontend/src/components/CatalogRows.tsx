@@ -4,7 +4,12 @@ import ProductCarousel from "./ProductCarousel";
 import { listCategories, listProducts } from "@/lib/api/catalog";
 import { slugify } from "@/lib/slug";
 
-const ROW_SIZE = 12;
+/**
+ * Each row is a scrolling carousel, so it holds its whole category. It used to stop at 12,
+ * which hid the products after the 12th alphabetically (Hand Tools has 27). The backend
+ * caps a page at 100.
+ */
+const ROW_SIZE = 100;
 
 /** The default catalog view: one carousel row per storefront category, loaded in parallel. */
 export default async function CatalogRows() {

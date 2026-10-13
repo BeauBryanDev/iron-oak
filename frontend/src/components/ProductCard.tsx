@@ -3,13 +3,13 @@ import { Heart } from "lucide-react";
 
 import AddToCartButton from "./AddToCartButton";
 import ProductImage from "./ProductImage";
-import { LOW_STOCK_THRESHOLD, formatWeight, money } from "@/lib/format";
+import { LOW_STOCK_THRESHOLD, formatWeight, money, productImageUrl } from "@/lib/format";
 import type { ProductResponse } from "@/lib/api/types";
 
 export default function ProductCard({ product }: { product: ProductResponse }) {
   return (
     <article className="flex flex-col border border-orange/30 bg-[#dbac60] text-black">
-      <div className="relative h-56 bg-white">
+      <div className="relative aspect-square overflow-hidden bg-white">
         <span
           className={`absolute left-3 top-3 px-3 py-1 text-xs font-black ${
             product.inStock ? "bg-orange text-black" : "bg-black text-cream"
@@ -23,9 +23,9 @@ export default function ProductCard({ product }: { product: ProductResponse }) {
         </button>
 
         <ProductImage
-          src={product.imageUrl}
+          src={productImageUrl(product)}
           alt={product.name}
-          className="h-full w-full object-contain p-5"
+          className="h-full w-full object-contain"
         />
       </div>
 
@@ -61,7 +61,7 @@ export default function ProductCard({ product }: { product: ProductResponse }) {
 
         <div className="mt-5 flex gap-2">
           <Link
-            href={`/product/${product.id}`}
+            href={`/product/${encodeURIComponent(product.sku)}`}
             className="flex-1 border border-black px-3 py-3 text-center text-sm font-black hover:bg-black hover:text-cream"
           >
             DETAILS
@@ -75,7 +75,7 @@ export default function ProductCard({ product }: { product: ProductResponse }) {
               name: product.name,
               code: product.sku,
               unitPrice: product.price,
-              imageUrl: product.imageUrl,
+              imageUrl: productImageUrl(product),
               maxQuantity: product.stockQuantity,
             }}
           />

@@ -56,17 +56,6 @@ export default function Header() {
 
         {/* SLOGAN */}
         <div className="hidden shrink-0 items-center gap-3 whitespace-nowrap px-6 min-[1360px]:flex">
-          <img
-            src="/assets/gears.svg"
-            alt=""
-            className="hidden h-9 w-9 shrink-0 min-[1700px]:block"
-          />
-
-          <img
-            src="/assets/harmer.svg"
-            alt=""
-            className="hidden h-9 w-9 shrink-0 min-[1700px]:block"
-          />
 
           <div>
             <div className="text-lg font-black text-orange">
@@ -77,7 +66,13 @@ export default function Header() {
               TOOLS. MATERIALS. PEOPLE.
             </div>
           </div>
+          <img
+            src="/assets/acorn.svg"
+            alt=""
+            className="hidden h-9 w-9 shrink-0 min-[1700px]:block"
+          />
         </div>
+
 
         {/* NAVIGATION */}
         <nav className="flex min-w-0 flex-1 justify-center gap-3 whitespace-nowrap min-[1500px]:gap-5 min-[1700px]:gap-8">
@@ -93,12 +88,20 @@ export default function Header() {
             Machines
           </Link>
 
+          <Link href="/end-mills" className="font-bold hover:text-orange">
+            End Mills
+          </Link>
+
           <Link href="/services" className="font-bold hover:text-orange">
             Services
           </Link>
 
           <Link href="/about" className="font-bold hover:text-orange">
             About Us
+          </Link>
+
+          <Link href="/contact" className="font-bold hover:text-orange">
+            Contact
           </Link>
         </nav>
 
@@ -126,12 +129,12 @@ export default function Header() {
             />
           </form>
 
-          <Link href="/orders" aria-label="Track an order" title="Track an order">
-            <UserRound className="h-6 w-6 hover:text-orange" />
+          <Link href="/admin/login" aria-label="Staff sign in" title="Staff sign in">
+            <UserRound className="h-8 w-8 shrink-0" />
           </Link>
 
-          <Link href="/admin/login" aria-label="Staff sign in" title="Staff sign in" className="shrink-0">
-            <img src="/assets/admin.svg" alt="" className="h-8 w-8 shrink-0" />
+          <Link href="/orders" aria-label="Track an order" className="shrink-0">
+            <img src="/assets/admin.svg" alt="" className="h-6 w-6 hover:text-orange" />
           </Link>
 
           <Link href="/cart" aria-label="Cart" className="relative">
@@ -143,6 +146,6 @@ export default function Header() {
           </Link>
         </div>
       </div>
-    </header>
+    </header >
   );
 }
