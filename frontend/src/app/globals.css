@@ -21,6 +21,8 @@ html {
 
 body {
   margin: 0;
+  /* a 6px gutter on each side so nothing touches the browser window's edge */
+  padding-inline: 6px;
   background: var(--iron-brown);
   color: var(--cream);
   font-family: Arial, Helvetica, sans-serif;
@@ -47,3 +49,37 @@ input {
 }
 
 
+
+
+/* ---- Piper chat rail ----------------------------------------------------
+   html[data-piper="closed"] is set by lib/piper/visibility.ts. While Piper is
+   open (the default) wide screens keep a right margin for the fixed rail; once
+   closed the rail disappears, the shop uses the full width, and a floating
+   bubble brings Piper back. */
+@media (min-width: 1280px) {
+  /* The rail is 20% of the window; the body's 6px gutters make the content box 12px
+     narrower, so add them back before taking 20% to keep the two exactly equal. */
+  html:not([data-piper="closed"]) .piper-offset {
+    margin-right: max(calc((100% + 12px) * 0.2), 320px);
+  }
+
+  html[data-piper="closed"] .piper-bubble {
+    display: flex;
+  }
+}
+
+html[data-piper="closed"] .piper-rail {
+  display: none;
+}
+
+/* Markdown returned by Piper. Customer messages remain plain text. */
+.piper-markdown p { margin: 0.35rem 0; }
+.piper-markdown p:first-child { margin-top: 0; }
+.piper-markdown p:last-child { margin-bottom: 0; }
+.piper-markdown ul { list-style: disc; margin: 0.5rem 0; padding-left: 1.25rem; }
+.piper-markdown ol { list-style: decimal; margin: 0.5rem 0; padding-left: 1.25rem; }
+.piper-markdown strong { font-weight: 800; color: var(--orange-light); }
+.piper-markdown code { border-radius: 0.25rem; background: rgba(23, 17, 10, 0.55); padding: 0.1rem 0.3rem; font-size: 0.9em; }
+.piper-markdown pre { overflow-x: auto; border-radius: 0.4rem; background: rgba(23, 17, 10, 0.7); padding: 0.75rem; }
+.piper-markdown pre code { background: transparent; padding: 0; }
+.piper-markdown a { color: var(--orange-light); text-decoration: underline; }

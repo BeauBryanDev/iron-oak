@@ -1,6 +1,15 @@
-import ProductGrid from "@/components/ProductGrid";
+import CatalogListing from "@/components/CatalogListing";
+import CatalogRows from "@/components/CatalogRows";
 
-export default function CatalogPage() {
+export default async function CatalogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; page?: string }>;
+}) {
+  const { q, page } = await searchParams;
+  const search = q?.trim() || undefined;
+  const pageNumber = Math.max(1, Number.parseInt(page ?? "1", 10) || 1);
+
   return (
     <div className="min-h-screen bg-[#241b0e] pt-10">
       <div className="px-8 pb-8">
@@ -9,7 +18,7 @@ export default function CatalogPage() {
         </p>
 
         <h1 className="industrial-title text-6xl">
-          HARDWARE CATALOG
+          {search ? `RESULTS FOR "${search.toUpperCase()}"` : "HARDWARE CATALOG"}
         </h1>
 
         <p className="mt-3 max-w-2xl text-cream/60">
@@ -18,7 +27,10 @@ export default function CatalogPage() {
         </p>
       </div>
 
-      <ProductGrid />
+      <div className="px-8 pb-16">
+        {/* search results are one paged grid; browsing is a carousel row per category */}
+        {search ? <CatalogListing basePath="/catalog" q={search} page={pageNumber} /> : <CatalogRows />}
+      </div>
     </div>
   );
 }

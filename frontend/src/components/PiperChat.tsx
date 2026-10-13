@@ -147,7 +147,9 @@ export default function Piper() {
         <div className="relative flex h-full flex-col">
           <div className="flex shrink-0 items-center gap-3 border-b border-orange/30 bg-[#17110a]/85 p-4 backdrop-blur-sm">
             <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full border-2 border-orange"><img src={AVATAR} alt="Piper" className="h-full w-full object-cover" /></div>
-            <div className="flex-1"><h2 className="text-xl font-black">Piper</h2><p className="text-xs text-cream/60">Your AI Hardware Assistant</p><div className="mt-1 text-xs text-orange">● {loading ? "Connecting" : "Online"}</div></div>
+            <div className="flex-1"><h2 className="text-xl font-black">Piper</h2><p className="text-xs text-cream/60">Your AI Hardware Assistant</p><div className="mt-1 text-xs text-orange">● {loading ? "Connecting" : "Online"}</div>
+            </div>
+            <img src="assets/OpenAI_icon.svg" class="h-11 w-11 shrink-0" />
             <button onClick={() => setPiperOpen(false)} aria-label="Close Piper chat" className="rounded p-1 text-orange transition hover:bg-orange/15 hover:text-orange-light"><X className="h-5 w-5" /></button>
           </div>
           <div className="relative flex flex-1 flex-col gap-5 overflow-y-auto p-4" onDragEnter={(event) => { preventDragDefaults(event); setIsDragging(true); }} onDragOver={preventDragDefaults} onDragLeave={preventDragDefaults} onDrop={dropImage}>

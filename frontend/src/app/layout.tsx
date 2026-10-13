@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { CartProvider } from "@/lib/cart/CartContext";
+import { PIPER_INIT_SCRIPT } from "@/lib/piper/visibility";
 
 export const metadata: Metadata = {
   title: "Iron & Oak Hardware Supply Co.",
@@ -18,7 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    // data-piper is set by the inline script before React hydrates, hence suppressHydrationWarning.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PIPER_INIT_SCRIPT }} />
+      </head>
       <body>
         <CartProvider>{children}</CartProvider>
       </body>

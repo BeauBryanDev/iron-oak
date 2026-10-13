@@ -5,56 +5,46 @@ import {
   Settings2,
   GraduationCap,
   ClipboardCheck,
+  type LucideIcon,
 } from "lucide-react";
 
+import ApiUnavailable from "@/components/ApiUnavailable";
 import ShopNowButton from "@/components/ShopNowButton";
+import { listServices } from "@/lib/api/catalog";
+import type { ServiceOfferingResponse } from "@/lib/api/types";
+import { money } from "@/lib/format";
 
-const services = [
-  {
-    icon: ClipboardCheck,
-    name: "PREVENTIVE MAINTENANCE",
-    description:
-      "Scheduled inspection, lubrication and wear checks that catch a failing spindle before it takes the job with it.",
-    pricing: "From $240 / visit",
-  },
-  {
-    icon: AlertTriangle,
-    name: "EMERGENCY REPAIR",
-    description:
-      "Breakdown callout with a qualified technician on site. Diagnosis, parts sourcing and repair in one visit where possible.",
-    pricing: "From $180 / hour",
-  },
-  {
-    icon: Wrench,
-    name: "SPINDLE & TOOLING SERVICE",
-    description:
-      "Spindle rebuild, bearing replacement, tool holder inspection and runout correction to factory tolerance.",
-    pricing: "Request a quote",
-  },
-  {
-    icon: Gauge,
-    name: "POWER CONSUMPTION AUDIT",
-    description:
-      "We log your machine under real cutting load and model its power draw, flagging the setups that quietly cost you money.",
-    pricing: "From $320 / machine",
-  },
-  {
-    icon: Settings2,
-    name: "INSTALLATION & CALIBRATION",
-    description:
-      "Delivery, levelling, alignment and first-article verification so a new machine cuts true from day one.",
-    pricing: "From $650",
-  },
-  {
-    icon: GraduationCap,
-    name: "OPERATOR TRAINING",
-    description:
-      "Hands-on sessions covering safe operation, workholding, feeds and speeds, and daily maintenance routine.",
-    pricing: "From $400 / day",
-  },
-];
+// Icons are presentation, so they live here keyed by the backend's service code.
+const ICONS: Record<string, LucideIcon> = {
+  PREVENTIVE_MAINTENANCE: ClipboardCheck,
+  EMERGENCY_REPAIR: AlertTriangle,
+  SPINDLE_TOOLING_SERVICE: Wrench,
+  POWER_CONSUMPTION_AUDIT: Gauge,
+  INSTALLATION_CALIBRATION: Settings2,
+  OPERATOR_TRAINING: GraduationCap,
+};
 
-export default function ServicesPage() {
+function pricingLabel(service: ServiceOfferingResponse): string {
+  const unit = service.priceUnit ? ` / ${service.priceUnit}` : "";
+  switch (service.pricingType) {
+    case "FIXED":
+      return service.fixedPrice !== null ? `From ${money(service.fixedPrice)}${unit}` : "Contact us";
+    case "HOURLY":
+      return service.hourlyRate !== null ? `From ${money(service.hourlyRate)}${unit || " / hour"}` : "Contact us";
+    case "QUOTE":
+      return "Request a quote";
+  }
+}
+
+export default async function ServicesPage() {
+  let services: ServiceOfferingResponse[] | null = null;
+  let failure: unknown;
+  try {
+    services = await listServices();
+  } catch (error) {
+    failure = error;
+  }
+
   return (
     <section className="min-h-screen bg-[#241b0e] px-8 py-16">
       <div className="mx-auto max-w-6xl">
@@ -73,29 +63,36 @@ export default function ServicesPage() {
           production floors — scheduled or on call.
         </p>
 
-        <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-12">
+          {services ? (
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+              {services.map((service) => {
+                const Icon = ICONS[service.code] ?? Wrench;
+                return (
+                  <article
+                    key={service.id}
+                    className="flex flex-col border border-orange/30 bg-[#17110a] p-6 transition-colors hover:border-orange"
+                  >
+                    <Icon className="h-10 w-10 text-orange" />
 
-          {services.map((service) => (
-            <article
-              key={service.name}
-              className="flex flex-col border border-orange/30 bg-[#17110a] p-6 transition-colors hover:border-orange"
-            >
-              <service.icon className="h-10 w-10 text-orange" />
+                    <h2 className="mt-5 text-lg font-black tracking-wide text-cream">
+                      {service.name.toUpperCase()}
+                    </h2>
 
-              <h2 className="mt-5 text-lg font-black tracking-wide text-cream">
-                {service.name}
-              </h2>
+                    <p className="mt-3 flex-1 text-sm leading-6 text-cream/70">
+                      {service.description}
+                    </p>
 
-              <p className="mt-3 flex-1 text-sm leading-6 text-cream/70">
-                {service.description}
-              </p>
-
-              <div className="mt-5 border-t border-orange/20 pt-4 text-sm font-black text-orange">
-                {service.pricing}
-              </div>
-            </article>
-          ))}
-
+                    <div className="mt-5 border-t border-orange/20 pt-4 text-sm font-black text-orange">
+                      {pricingLabel(service)}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <ApiUnavailable error={failure} what="services" />
+          )}
         </div>
 
         {/* CALLOUT */}
