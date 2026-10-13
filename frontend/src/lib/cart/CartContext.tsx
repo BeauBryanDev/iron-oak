@@ -8,7 +8,7 @@ import {
 } from "react";
 
 /** Services are not orderable from the cart: they need a service-area city and their own flow. */
-export type CartItemType = "PRODUCT" | "MACHINE";
+export type CartItemType = "PRODUCT" | "MACHINE" | "END_MILL";
 
 export interface CartItem {
   /** `${itemType}:${referenceId}` */
@@ -22,7 +22,10 @@ export interface CartItem {
   unitPrice: number;
   imageUrl: string | null;
   quantity: number;
-  /** stock on hand when added (products); null for machines, which are not stock-tracked */
+  /**
+   * stock on hand when added (products); null for machines (not stock-tracked) and end mills
+   * (the public API shows only inStock; the backend refuses an order larger than its stock)
+   */
   maxQuantity: number | null;
 }
 
@@ -68,7 +71,7 @@ function isCartItem(value: unknown): value is CartItem {
 
   return (
     typeof v.key === "string" &&
-    (v.itemType === "PRODUCT" || v.itemType === "MACHINE") &&
+    (v.itemType === "PRODUCT" || v.itemType === "MACHINE" || v.itemType === "END_MILL") &&
     typeof v.referenceId === "number" &&
     typeof v.name === "string" &&
     typeof v.code === "string" &&

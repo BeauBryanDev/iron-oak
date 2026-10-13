@@ -23,7 +23,8 @@ export class ApiError extends Error {
   }
 }
 
-type QueryValue = string | number | boolean | null | undefined;
+/** An array repeats the parameter (status=A&status=B), as Spring binds lists. */
+type QueryValue = string | number | boolean | null | undefined | ReadonlyArray<string | number>;
 
 export interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -47,7 +48,11 @@ function buildUrl(path: string,
 
     for (const [key, value] of Object.entries(query)) {
 
-      if (value !== undefined && value !== null && value !== "") {
+      if (Array.isArray(value)) {
+
+        value.forEach((item) => url.searchParams.append(key, String(item)));
+
+      } else if (value !== undefined && value !== null && value !== "") {
 
         url.searchParams.set(key, String(value));
       }

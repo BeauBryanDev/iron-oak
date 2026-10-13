@@ -35,6 +35,11 @@ export function getProduct(id: number): Promise<ProductResponse> {
   return request(`/api/products/${id}`);
 }
 
+/** Active product by its SKU (IO-CLAM-001); the storefront product URLs use this. */
+export function getProductBySku(sku: string): Promise<ProductResponse> {
+  return request(`/api/products/sku/${encodeURIComponent(sku)}`);
+}
+
 /** Active storefront category names. */
 export function listCategories(): Promise<string[]> {
   return request("/api/products/categories");

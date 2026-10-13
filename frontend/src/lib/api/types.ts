@@ -409,7 +409,30 @@ export interface ServiceQuoteResponse {
   updatedAt: string;
 }
 
-//  admin: end mills (/api/admin/end-mills) 
+//  admin: products (/api/admin/products)
+
+/** Staff view of a product (AdminProductResponse): includes inactive rows and the stock count. */
+export interface AdminProductResponse {
+  id: number;
+  sku: string;
+  name: string;
+  brand: string | null;
+  category: string;
+  description: string | null;
+  price: number;
+  stockQuantity: number;
+  warrantyMonths: number;
+  weightKg: number | null;
+  volumeM3: number | null;
+  imageUrl: string | null;
+  isActive: boolean;
+  toolCategoryId: number;
+  toolCategoryDisplayName: string;
+  visionName: string;
+  createdAt: string;
+}
+
+//  admin: end mills (/api/admin/end-mills)
 
 /** Staff view: adds stock, vision label (YOLOv11 class), active flag and timestamps. */
 export interface AdminEndMillResponse {
@@ -498,6 +521,28 @@ export interface PriceServiceQuoteRequest {
 /** POST /api/admin/service-quotes/{id}/decline: the note is shown to the customer. */
 export interface DeclineServiceQuoteRequest {
   note: string;
+}
+
+//  support tickets (public contact form, Piper escalations)
+
+/** POST /api/support-tickets. reason is the topic (max 200), summary the message. */
+export interface CreateSupportTicketRequest {
+  customerEmail?: string;
+  chatSessionId?: number;
+  reason: string;
+  summary: string;
+}
+
+/** customerName is null for guests who gave only an email, or nothing at all. */
+export interface SupportTicketResponse {
+  id: number;
+  status: TicketStatus;
+  customerName: string | null;
+  customerEmail: string | null;
+  chatSessionId: number | null;
+  reason: string;
+  summary: string;
+  createdAt: string;
 }
 
 export interface PaymentResponse {
