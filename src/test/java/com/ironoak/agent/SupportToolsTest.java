@@ -25,7 +25,7 @@ class SupportToolsTest {
                         && "Customer requests a refund for order IO-123".equals(request.summary())
                         && "jane@example.com".equals(request.customerEmail())
                         && request.chatSessionId() == null)))
-                .thenReturn(new SupportTicketResponse(91L, TicketStatus.OPEN, "Jane", "jane@example.com",
+                .thenReturn(new SupportTicketResponse(91L, "ST-20261014-ABCD2345", TicketStatus.OPEN, "Jane", "jane@example.com",
                         null, "Refund request", "Customer requests a refund for order IO-123",
                         OffsetDateTime.now()));
 
@@ -41,7 +41,7 @@ class SupportToolsTest {
         SupportTicketService tickets = mock(SupportTicketService.class);
         SupportTools tools = new SupportTools(tickets);
         when(tickets.create(argThat(request -> request.customerEmail() == null)))
-                .thenReturn(new SupportTicketResponse(92L, TicketStatus.OPEN, null, null, null,
+                .thenReturn(new SupportTicketResponse(92L, "ST-20261014-EFGH6789", TicketStatus.OPEN, null, null, null,
                         "Complaint", "Unresolved complaint", OffsetDateTime.now()));
 
         assertThat(tools.escalateToHuman("Complaint", "Unresolved complaint", null).ticketId())

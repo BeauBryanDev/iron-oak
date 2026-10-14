@@ -20,7 +20,7 @@ class WarrantyToolsTest {
         WarrantyClaimService claims = mock(WarrantyClaimService.class);
         WarrantyTools tools = new WarrantyTools(claims);
         WarrantyClaimResponse response = new WarrantyClaimResponse(
-                42L, ClaimStatus.OPEN, "Jane Doe", 7L, 11L, "Motor stopped", null,
+                42L, "WC-20261014-ABCD2345", ClaimStatus.OPEN, "Jane Doe", 7L, 11L, "Motor stopped", null,
                 OffsetDateTime.now(), OffsetDateTime.now(), null);
         when(claims.createForCustomerOrderNumber("io-20261012-abcd2345", "jane@example.com", "P-100", "Motor stopped"))
                 .thenReturn(response);
@@ -40,7 +40,7 @@ class WarrantyToolsTest {
         WarrantyTools tools = new WarrantyTools(claims);
         OffsetDateTime createdAt = OffsetDateTime.now();
         WarrantyClaimResponse response = new WarrantyClaimResponse(
-                42L, ClaimStatus.IN_REVIEW, "Jane Doe", 7L, 11L, "Motor stopped",
+                42L, "WC-20261014-ABCD2345", ClaimStatus.IN_REVIEW, "Jane Doe", 7L, 11L, "Motor stopped",
                 "Technician review pending", createdAt, createdAt, null);
         when(claims.get(42L, "jane@example.com")).thenReturn(response);
 
