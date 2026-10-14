@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
  */
 public record BookingResponse(
         Long id,
+        String bookingNumber,
         BookingStatus status,
         String serviceCode,
         String serviceName,

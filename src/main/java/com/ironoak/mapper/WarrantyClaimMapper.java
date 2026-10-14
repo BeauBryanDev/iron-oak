@@ -13,6 +13,7 @@ public class WarrantyClaimMapper {
     public WarrantyClaimResponse toResponse(WarrantyClaim claim) {
         return new WarrantyClaimResponse(
                 claim.getId(),
+                claim.getClaimNumber(),
                 claim.getStatus(),
                 claim.getCustomer().getName(),
                 claim.getOrder().getId(),

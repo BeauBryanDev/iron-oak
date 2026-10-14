@@ -24,6 +24,12 @@ public class WarrantyClaim {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Public reference (V14), WC-YYYYMMDD-XXXXXXXX. */
+    @Column(name = "claim_number", nullable = false, unique = true, length = 40, updatable = false)
+    @NotBlank
+    @Size(max = 40)
+    private String claimNumber;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     @NotNull
@@ -69,6 +75,7 @@ public class WarrantyClaim {
             CustomerOrder order,
             Long orderItemId,
             String description) {
+        this.claimNumber = ReferenceNumbers.generate(ReferenceNumbers.CLAIM_PREFIX);
         this.customer = customer;
         this.order = order;
         this.orderItemId = orderItemId;
@@ -91,6 +98,10 @@ public class WarrantyClaim {
 
     public Long getId() {
         return id;
+    }
+
+    public String getClaimNumber() {
+        return claimNumber;
     }
 
     public Customer getCustomer() {

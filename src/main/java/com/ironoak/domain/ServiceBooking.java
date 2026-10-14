@@ -22,6 +22,12 @@ public class ServiceBooking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Public reference (V14), SB-YYYYMMDD-XXXXXXXX. */
+    @Column(name = "booking_number", nullable = false, unique = true, length = 40, updatable = false)
+    @NotBlank
+    @Size(max = 40)
+    private String bookingNumber;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     @NotNull
@@ -87,6 +93,7 @@ public class ServiceBooking {
             String machineModel,
             String notes) {
 
+        this.bookingNumber = ReferenceNumbers.generate(ReferenceNumbers.BOOKING_PREFIX);
         this.customer = customer;
         this.serviceOffering = serviceOffering;
         this.locationAddress = locationAddress;
@@ -106,6 +113,10 @@ public class ServiceBooking {
 
     public Long getId() {
         return id;
+    }
+
+    public String getBookingNumber() {
+        return bookingNumber;
     }
 
     public Customer getCustomer() {

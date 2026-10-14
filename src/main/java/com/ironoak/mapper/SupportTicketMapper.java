@@ -13,6 +13,7 @@ public class SupportTicketMapper {
     public SupportTicketResponse toResponse(SupportTicket ticket) {
         return new SupportTicketResponse(
                 ticket.getId(),
+                ticket.getTicketNumber(),
                 ticket.getStatus(),
                 ticket.getCustomer() == null ? null : ticket.getCustomer().getName(),
                 ticket.getCustomerEmail(),

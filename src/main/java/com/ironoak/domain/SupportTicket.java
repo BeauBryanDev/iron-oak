@@ -18,6 +18,12 @@ public class SupportTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** Public reference (V14), ST-YYYYMMDD-XXXXXXXX. */
+    @Column(name = "ticket_number", nullable = false, unique = true, length = 40, updatable = false)
+    @NotBlank
+    @Size(max = 40)
+    private String ticketNumber;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -57,6 +63,7 @@ public class SupportTicket {
             ChatSession chatSession,
             String reason,
             String summary) {
+        this.ticketNumber = ReferenceNumbers.generate(ReferenceNumbers.TICKET_PREFIX);
         this.customer = customer;
         this.customerEmail = customerEmail;
         this.chatSession = chatSession;
@@ -66,6 +73,10 @@ public class SupportTicket {
 
     public Long getId() {
         return id;
+    }
+
+    public String getTicketNumber() {
+        return ticketNumber;
     }
 
     public Customer getCustomer() {

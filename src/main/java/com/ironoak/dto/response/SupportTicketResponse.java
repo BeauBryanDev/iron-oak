@@ -7,6 +7,7 @@ import java.time.OffsetDateTime;
 /** customerName is null for guests who gave only an email, or nothing at all. */
 public record SupportTicketResponse(
         Long id,
+        String ticketNumber,
         TicketStatus status,
         String customerName,
         String customerEmail,
