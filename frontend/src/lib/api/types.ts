@@ -326,6 +326,8 @@ export interface DashboardKPIResponse {
   webCheckoutOrders: number;
   piperOrders: number;
   completedRevenue: number;
+  /** every paid order (CONFIRMED, IN_PROGRESS, COMPLETED), from the moment the customer pays */
+  paidRevenue: number;
   pendingComplaints: number;
   requestedBookings: number;
   openWarrantyClaims: number;
@@ -356,6 +358,8 @@ export interface CreateBookingRequest {
  */
 export interface BookingResponse {
   id: number;
+  /** Public reference, SB-YYYYMMDD-XXXXXXXX (V14). */
+  bookingNumber: string;
   status: BookingStatus;
   serviceCode: string;
   serviceName: string;
@@ -536,6 +540,8 @@ export interface CreateSupportTicketRequest {
 /** customerName is null for guests who gave only an email, or nothing at all. */
 export interface SupportTicketResponse {
   id: number;
+  /** Public reference, ST-YYYYMMDD-XXXXXXXX (V14). */
+  ticketNumber: string;
   status: TicketStatus;
   customerName: string | null;
   customerEmail: string | null;
