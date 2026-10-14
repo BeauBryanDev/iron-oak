@@ -133,7 +133,7 @@ public class WarrantyClaimService {
             String item,
             String description) {
 
-        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(java.util.Locale.ROOT);
+        String number = OrderService.normalizeOrderNumber(orderNumber);
         String selector = item == null ? "" : item.trim();
 
         if (number.isBlank() || selector.isBlank() || description == null || description.isBlank()) {

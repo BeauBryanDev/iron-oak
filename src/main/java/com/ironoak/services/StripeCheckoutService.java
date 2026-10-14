@@ -104,7 +104,7 @@ public class StripeCheckoutService {
      */
     public CheckoutSessionResponse createSessionByNumber(String orderNumber) {
 
-        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(java.util.Locale.ROOT);
+        String number = OrderService.normalizeOrderNumber(orderNumber);
         Long orderId = orders.findIdByOrderNumber(number)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", number));
 

@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.support.TransactionTemplate;
 import java.time.OffsetDateTime;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.EnumSet;
 import com.ironoak.domain.Customer;
 import com.ironoak.domain.CustomerOrder;
@@ -77,6 +79,9 @@ import java.util.Set;
 public class OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+
+    /** IO + date + 8-character suffix, once spaces and dashes are removed. */
+    private static final Pattern COMPACT_ORDER_NUMBER = Pattern.compile("IO(\\d{8})([A-Z0-9]{8})");
 
     /**
      * Status changes staff may make by hand. Payment-driven moves go through the
@@ -240,7 +245,8 @@ public class OrderService {
 
         if (order.getStatus() == OrderStatus.PENDING_PAYMENT) {
 
-            order.setReservationExpiresAt(OffsetDateTime.now().plusMinutes(holdMinutes(channel, shippingQuote)));
+            order.setReservationExpiresAt(OffsetDateTime.now().plusMinutes(holdMinutes(channel,
+                    shippingQuote)));
         }
         items.forEach(order::addItem);
         // Items only, never shipping, and only above the threshold (TaxService).
@@ -501,7 +507,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public PublicOrderResponse getPublic(String orderNumber) {
 
-        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(Locale.ROOT);
+        String number = normalizeOrderNumber(orderNumber);
 
         return orders.findWithItemsByOrderNumber(number)
                 .map(mapper::toPublicResponse)
@@ -541,7 +547,7 @@ public class OrderService {
      */
     public OrderResponse getForCustomer(String orderNumber, String customerEmail) {
 
-        String number = orderNumber == null ? "" : orderNumber.trim().toUpperCase(Locale.ROOT);
+        String number = normalizeOrderNumber(orderNumber);
         return orders.findWithItemsByOrderNumber(number)
                 .filter(o -> ownedBy(o, customerEmail))
                 .map(mapper::toResponse)
@@ -773,6 +779,26 @@ public class OrderService {
      * True when the email is the one the order was placed under (order header
      * first, then the linked customer).
      */
+    /**
+     * Accepts the order number the way people type it: lower case, spaces, a
+     * leading '#', or without the dashes (io 20261014 7a4g4qqs,
+     * IO202610147A4G4QQS).
+     * Anything that is not an IO number is only trimmed and upper-cased.
+     */
+    public static String normalizeOrderNumber(String orderNumber) {
+
+        if (orderNumber == null) {
+            return "";
+        }
+        String upper = orderNumber.trim().toUpperCase(Locale.ROOT);
+        String compact = upper.replaceAll("[^A-Z0-9]", "");
+        Matcher parts = COMPACT_ORDER_NUMBER.matcher(compact);
+
+        return parts.matches()
+                ? "IO-" + parts.group(1) + "-" + parts.group(2)
+                : upper;
+    }
+
     public static boolean ownedBy(CustomerOrder order, String email) {
 
         String normalized = CustomerService.normalizeEmail(email);

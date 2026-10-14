@@ -1,5 +1,9 @@
 package com.ironoak.services;
 
+import java.util.List;
+
+import java.math.BigDecimal;
+
 import com.ironoak.domain.enums.BookingStatus;
 import com.ironoak.domain.enums.ClaimStatus;
 import com.ironoak.domain.enums.ComplaintStatus;
@@ -44,6 +48,22 @@ public class DashboardService {
         this.tickets = tickets;
     }
 
+    /** Statuses of an order whose customer has paid in full. */
+    private static final List<OrderStatus> PAID = List.of(OrderStatus.CONFIRMED,
+            OrderStatus.IN_PROGRESS,
+            OrderStatus.COMPLETED);
+
+    /** Money in from the moment a customer pays, delivered or not. */
+    private BigDecimal paidRevenue() {
+
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (OrderStatus status : PAID) {
+            total = total.add(orders.sumTotalByStatus(status));
+        }
+        return total;
+    }
+
     public DashboardKPIResponse kpis() {
 
         var top = orderItems.findTopSellingProducts(OrderStatus.COMPLETED,
@@ -62,6 +82,7 @@ public class DashboardService {
                 orders.countByChannel(OrderChannel.WEB_CHECKOUT),
                 orders.countByChannel(OrderChannel.PIPER),
                 orders.sumTotalByStatus(OrderStatus.COMPLETED),
+                paidRevenue(),
                 complaints.countByStatus(ComplaintStatus.PENDING),
                 bookings.countByStatus(BookingStatus.REQUESTED),
                 claims.countByStatus(ClaimStatus.OPEN) + claims.countByStatus(ClaimStatus.IN_REVIEW),

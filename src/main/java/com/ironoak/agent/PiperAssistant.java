@@ -11,6 +11,10 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Locale;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * The one call the chat makes to the language model: earlier turns plus the new
@@ -23,6 +27,12 @@ public class PiperAssistant {
     private static final Logger log = LoggerFactory.getLogger(PiperAssistant.class);
 
     private final ChatClient chatClient;
+
+    private static final DateTimeFormatter NOW_FORMAT = DateTimeFormatter.ofPattern(
+            "EEEE, yyyy-MM-dd HH:mm",
+            Locale.ENGLISH);
+
+    private static final ZoneId STORE_ZONE = ZoneId.of("America/Bogota");
 
     /** One earlier message of the conversation (USER or ASSISTANT). */
     public record Turn(MessageRole role, String content) {
@@ -47,7 +57,7 @@ public class PiperAssistant {
         try {
             answer = chatClient.prompt()
                     .messages(messages)
-                    .user(userMessage)
+                    .user(withCurrentTime(userMessage))
                     .call()
                     .content();
 
@@ -60,6 +70,16 @@ public class PiperAssistant {
             throw new AssistantUnavailableException();
         }
         return answer.strip();
+    }
+
+    /**
+     * The store's current time goes in front of this turn only; it is not stored,
+     * so earlier turns in the history never carry a stale time.
+     */
+    private static String withCurrentTime(String userMessage) {
+
+        String now = ZonedDateTime.now(STORE_ZONE).format(NOW_FORMAT);
+        return "[Current date and time in Bogota: " + now + "]\n\n" + userMessage;
     }
 
     private static Message toMessage(Turn turn) {
