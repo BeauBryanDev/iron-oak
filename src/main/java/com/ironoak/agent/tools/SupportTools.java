@@ -27,9 +27,11 @@ public class SupportTools {
         SupportTicketResponse ticket = tickets.create(
                 new CreateSupportTicketRequest(customer_email, null, reason, summary));
 
-        return new EscalationResult(ticket.id());
+        return new EscalationResult(ticket.id(), ticket.ticketNumber());
     }
 
-    public record EscalationResult(@JsonProperty("ticket_id") Long ticketId) {
+    public record EscalationResult(
+            @JsonProperty("ticket_id") Long ticketId,
+            @JsonProperty("ticket_number") String ticketNumber) {
     }
 }

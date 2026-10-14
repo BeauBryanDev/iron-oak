@@ -170,6 +170,7 @@ public class ServiceBookingTool {
 
     public record BookingResult(
             @JsonProperty("booking_id") Long bookingId,
+            @JsonProperty("booking_number") String bookingNumber,
             BookingStatus status,
             @JsonProperty("service_code") String serviceCode,
             @JsonProperty("service_name") String serviceName,
@@ -182,6 +183,7 @@ public class ServiceBookingTool {
         static BookingResult from(BookingResponse booking, PricingType pricing, boolean alreadyExisted) {
 
             return new BookingResult(booking.id(),
+                    booking.bookingNumber(),
                     booking.status(),
                     booking.serviceCode(),
                     booking.serviceName(),

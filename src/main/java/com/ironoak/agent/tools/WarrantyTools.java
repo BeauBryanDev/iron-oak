@@ -33,7 +33,9 @@ public class WarrantyTools {
                 WarrantyClaimResponse claim = claims.createForCustomerOrderNumber(order_number,
                                 email, item, description);
 
-                return new CreatedClaim(claim.id(), claim.status());
+                return new CreatedClaim(claim.id(),
+                                claim.claimNumber(),
+                                claim.status());
         }
 
         @Tool(name = "get_claim_status", description = "Get a customer's warranty claim status using the claim id and the email used for the claim. Ownership is verified by the backend and unauthorized claims return the generic not-found result.")
@@ -50,6 +52,7 @@ public class WarrantyTools {
 
         public record CreatedClaim(
                         @JsonProperty("claim_id") Long claimId,
+                        @JsonProperty("claim_number") String claimNumber,
                         ClaimStatus status) {
         }
 

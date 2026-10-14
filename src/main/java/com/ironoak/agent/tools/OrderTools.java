@@ -4,6 +4,9 @@ import com.ironoak.domain.enums.OrderChannel;
 import com.ironoak.domain.enums.OrderItemType;
 import com.ironoak.dto.request.CreateOrderRequest;
 import com.ironoak.dto.response.OrderResponse;
+import com.ironoak.dto.response.PublicOrderResponse;
+import com.ironoak.exceptions.ResourceNotFoundException;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.ironoak.services.CountryCodes;
 import com.ironoak.services.OrderService;
@@ -49,12 +52,41 @@ public class OrderTools {
                                 idempotency_key);
         }
 
-        @Tool(name = "get_order", description = "Retrieve a customer's order using the customer-facing order number and the email used for the order. Both values are required; the database primary-key id is not a customer lookup identifier.")
-        public OrderResponse getOrder(
-                        @ToolParam(description = "Customer-facing order number, for example IO-20261012-ABCD2345.") String order_number,
-                        @ToolParam(description = "Email address used when the order was created.") String email) {
+        @Tool(name = "get_order", description = "Look up an order by its customer-facing order number "
+                        + "(IO-YYYYMMDD-XXXXXXXX; spaces, lower case or missing dashes are fine). The number "
+                        + "alone returns the order's status, items, totals, whether it can be paid now and "
+                        + "its shipment (carrier, tracking, expected delivery), without personal details. "
+                        + "Add the email used for the order to also get the name, email, phone and delivery "
+                        + "address on file (contact_verified true). Never ask for the email just to give "
+                        + "the status; never use the database id.")
+        public OrderLookup getOrder(
+                        @ToolParam(description = "Customer-facing order number, for example "
+                                        + "IO-20261012-ABCD2345.") String order_number,
+                        @ToolParam(description = "Email used for the order; optional, only needed "
+                                        + "to show the contact and delivery details.", required = false) String email) {
 
-                return orders.getForCustomer(order_number, email);
+                if (email != null && !email.isBlank()) {
+                        try {
+                                return new OrderLookup(true,
+                                                null,
+                                                orders.getForCustomer(order_number, email));
+                        } catch (ResourceNotFoundException e) {
+                                // wrong email: fall back to the public view below
+                        }
+                }
+                return new OrderLookup(false,
+                                orders.getPublic(order_number),
+                                null);
+        }
+
+        /**
+         * Exactly one of order / full_order is set: full_order (with contact and
+         * address) only when the email matched the order.
+         */
+        public record OrderLookup(
+                        @JsonProperty("contact_verified") boolean contactVerified,
+                        PublicOrderResponse order,
+                        @JsonProperty("full_order") OrderResponse fullOrder) {
         }
 
         public record Customer(
