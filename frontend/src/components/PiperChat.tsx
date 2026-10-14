@@ -6,9 +6,10 @@ import ReactMarkdown from "react-markdown";
 
 import { request } from "@/lib/api/http";
 import { setPiperOpen } from "@/lib/piper/visibility";
+import { assetUrl } from "@/lib/assets";
 
 const AVATAR = "/assets/piper_avatar.svg";
-const BACKGROUND = "/chat_background.jpg";
+const BACKGROUND = assetUrl("/chat_background.jpg");
 
 type Role = "USER" | "ASSISTANT";
 interface ChatMessage { id: number | string; role: Role; content: string; }

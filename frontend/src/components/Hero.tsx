@@ -1,6 +1,7 @@
 import { ShieldCheck, Truck, Settings } from "lucide-react";
 
 import ShopNowButton from "./ShopNowButton";
+import { assetUrl } from "@/lib/assets";
 
 const trustBadges = [
   {
@@ -25,7 +26,7 @@ export default function Hero() {
     <section className="relative min-h-[520px] overflow-hidden border border-orange/30 lg:aspect-[1376/785]">
 
       <img
-        src="/iron_oak_hero.jpg"
+        src={assetUrl("/iron_oak_hero.jpg")}
         alt="Machinist working sparks off a milling machine in a workshop"
         className="absolute inset-0 h-full w-full object-cover brightness-110"
       />

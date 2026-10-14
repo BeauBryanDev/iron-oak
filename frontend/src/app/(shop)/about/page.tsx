@@ -16,6 +16,7 @@ import {
   UserCheck,
   Wrench,
 } from "lucide-react";
+import { assetUrl } from "@/lib/assets";
 
 export const metadata: Metadata = {
   title: "About us | Iron & Oak",
@@ -126,7 +127,7 @@ export default function AboutPage() {
 
           <div className="relative mx-auto w-full max-w-sm overflow-hidden border border-orange/30">
             <img
-              src="/worker_image.jpg"
+              src={assetUrl("/worker_image.jpg")}
               alt="Carpenter in a yellow hard hat and green overalls hammering at a workbench in a tool-lined workshop"
               className="h-full w-full object-cover"
             />

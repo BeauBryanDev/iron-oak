@@ -4,6 +4,7 @@ import ApiUnavailable from "@/components/ApiUnavailable";
 import EndMillCard from "@/components/EndMillCard";
 import { listEndMills } from "@/lib/api/catalog";
 import type { EndMillResponse } from "@/lib/api/types";
+import { assetUrl } from "@/lib/assets";
 
 export const metadata: Metadata = {
   title: "End mills | Iron & Oak",
@@ -50,7 +51,7 @@ export default async function EndMillsPage() {
           </div>
 
           <img
-            src="/productImages/end_mills_hero.webp"
+            src={assetUrl("/productImages/end_mills_hero.webp")}
             alt="End mill held in a CNC spindle collet above the workpiece"
             width={649}
             height={473}

@@ -1,3 +1,5 @@
+import { assetUrl } from "@/lib/assets";
+
 const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
 
 /** All backend prices are USD. */
@@ -16,7 +18,7 @@ export function formatWeight(weightKg: number | null | undefined): string | null
 /** At or below this many units a card says "Only N left". */
 export const LOW_STOCK_THRESHOLD = 5;
 
-export const PLACEHOLDER_IMAGE = "/productImages/no-image.svg";
+export const PLACEHOLDER_IMAGE = assetUrl("/productImages/no-image.svg");
 
 /** Milling machines have their own placeholder until real photos exist. */
 export const MACHINE_PLACEHOLDER_IMAGE = "/assets/millingMachine.svg";
@@ -28,9 +30,9 @@ export const MACHINE_PLACEHOLDER_IMAGE = "/assets/millingMachine.svg";
  */
 export function productImageUrl(product: { imageUrl: string | null; visionName: string }): string {
 
-  return product.imageUrl && product.imageUrl.trim()
+  return assetUrl(product.imageUrl && product.imageUrl.trim()
     ? product.imageUrl
-    : `/productImages/${product.visionName}.webp`;
+    : `/productImages/${product.visionName}.webp`);
 }
 
 /**
@@ -39,9 +41,9 @@ export function productImageUrl(product: { imageUrl: string | null; visionName: 
  */
 export function endMillImageUrl(endMill: { imageUrl: string | null; sku: string }): string {
 
-  return endMill.imageUrl && endMill.imageUrl.trim()
+  return assetUrl(endMill.imageUrl && endMill.imageUrl.trim()
     ? endMill.imageUrl
-    : `/productImages/${endMill.sku}.webp`;
+    : `/productImages/${endMill.sku}.webp`);
 }
 
 /** Items have no image until the backend's imageUrl is filled in; fall back to a placeholder. */

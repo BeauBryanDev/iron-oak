@@ -4,6 +4,7 @@ import { ChevronRight, ArrowRight } from "lucide-react";
 import ShopNowButton from "./ShopNowButton";
 import { listCategories } from "@/lib/api/catalog";
 import { slugify } from "@/lib/slug";
+import { assetUrl } from "@/lib/assets";
 
 async function loadCategories(): Promise<string[]> {
   try {
@@ -60,7 +61,7 @@ export default async function CategorySidebar() {
       <div className="relative mt-4 min-h-[380px] overflow-hidden border border-orange/30">
 
         <img
-          src="/worker_image.jpg"
+          src={assetUrl("/worker_image.jpg")}
           alt="Workshop bench stacked with timber"
           className="absolute inset-0 h-full w-full object-cover"
         />

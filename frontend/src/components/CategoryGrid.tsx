@@ -1,23 +1,24 @@
 import Link from "next/link";
 
 import { slugify } from "@/lib/slug";
+import { assetUrl } from "@/lib/assets";
 
 const categories = [
   {
     name: "POWER TOOLS",
-    image: "/productImages/category-power-tools.jpg",
+    image: assetUrl("/productImages/category-power-tools.jpg"),
   },
   {
     name: "HAND TOOLS",
-    image: "/productImages/category-hand-tools.jpg",
+    image: assetUrl("/productImages/category-hand-tools.jpg"),
   },
   {
     name: "BUILDING MATERIALS",
-    image: "/productImages/category-materials.jpg",
+    image: assetUrl("/productImages/category-materials.jpg"),
   },
   {
     name: "SAFETY EQUIPMENT",
-    image: "/productImages/category-safety.jpg",
+    image: assetUrl("/productImages/category-safety.jpg"),
   },
 ];
 
