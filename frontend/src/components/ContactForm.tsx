@@ -35,7 +35,7 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [ticketId, setTicketId] = useState<number | null>(null);
+  const [ticketNumber, setTicketNumber] = useState<string | null>(null);
 
   const valid = /^\S+@\S+\.\S+$/.test(email.trim()) && message.trim().length >= 10;
 
@@ -53,7 +53,7 @@ export default function ContactForm() {
         reason: topic,
         summary: reference + message.trim(),
       });
-      setTicketId(ticket.id);
+      setTicketNumber(ticket.ticketNumber);
     } catch (cause) {
       if (cause instanceof ApiError && cause.status === 429) {
         setError("Too many messages from this connection. Please wait a minute and try again.");
@@ -65,19 +65,19 @@ export default function ContactForm() {
     }
   }
 
-  if (ticketId !== null) {
+  if (ticketNumber !== null) {
     return (
       <div className="border border-orange/40 bg-iron p-8" role="status">
         <CheckCircle2 className="h-10 w-10 text-orange" />
         <h3 className="industrial-title mt-4 text-3xl">MESSAGE RECEIVED</h3>
         <p className="mt-3 text-cream/80">
-          Your case number is <b className="text-orange-light">#{ticketId}</b>. Customer Service will answer at{" "}
+          Your case number is <b className="text-orange-light">{ticketNumber}</b>. Customer Service will answer at{" "}
           <b>{email.trim()}</b> within 1 business day.
         </p>
         <button
           type="button"
           onClick={() => {
-            setTicketId(null);
+            setTicketNumber(null);
             setMessage("");
             setOrderNumber("");
           }}

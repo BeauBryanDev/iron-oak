@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ComponentType } from "react";
 import Link from "next/link";
 import {
   AlertTriangle,
+  BadgeDollarSign,
   Bot,
   CalendarCheck,
   CircleDollarSign,
@@ -373,16 +374,28 @@ export default function Dashboard() {
       {data?.kpis.error && <SectionError message={data.kpis.error} />}
 
       {/* headline numbers */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {kpis ? (
           <>
-            <KpiCard accent label="COMPLETED REVENUE" value={money(kpis.completedRevenue)} hint="Completed orders, shipping and taxes included" icon={CircleDollarSign} />
+            <KpiCard
+              accent
+              label="PAID REVENUE"
+              value={money(kpis.paidRevenue)}
+              hint="Every paid order, from the moment the customer pays"
+              icon={CircleDollarSign}
+            />
+            <KpiCard
+              label="COMPLETED REVENUE"
+              value={money(kpis.completedRevenue)}
+              hint="Delivered or finished orders, shipping and taxes included"
+              icon={BadgeDollarSign}
+            />
             <KpiCard label="TO FULFIL" value={integer.format(kpis.openOrders)} hint="Paid orders being prepared or shipped" icon={Truck} />
             <KpiCard label="AWAITING PAYMENT" value={integer.format(kpis.pendingPaymentOrders)} hint="Holding stock until paid or expired" icon={Hourglass} />
             <KpiCard label="COMPLETED ORDERS" value={integer.format(kpis.completedOrders)} hint="Delivered or finished" icon={PackageCheck} />
           </>
         ) : (
-          !data?.kpis.error && Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[134px]" />)
+          !data?.kpis.error && Array.from({ length: 5 }, (_, i) => <Skeleton key={i} className="h-[134px]" />)
         )}
       </div>
 
