@@ -527,6 +527,53 @@ export interface DeclineServiceQuoteRequest {
   note: string;
 }
 
+//  admin: customers and shipping routes
+
+/** GET /api/admin/customers (paged, newest first). Guest identities; there is no customer login. */
+export interface CustomerResponse {
+  id: number;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  createdAt: string;
+}
+
+/** POST and PUT /api/admin/customers. On PUT, an omitted email/phone/address is cleared. */
+export interface CustomerRequest {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  address?: string | null;
+}
+
+/** GET /api/admin/shipping/routes (all rows, by country then city). distanceKm is road km from the warehouse. */
+export interface ShippingRouteResponse {
+  id: number;
+  /** ISO code, e.g. CO */
+  country: string;
+  city: string;
+  distanceKm: number;
+  source: ShippingSource;
+  updatedAt: string;
+}
+
+/** PUT /api/admin/shipping/routes: adds or overrides a city's road distance (source MANUAL). */
+export interface ManualRouteRequest {
+  country: string;
+  city: string;
+  distanceKm: number;
+}
+
+/** POST /api/admin/shipping/routes/refresh: counts over the known cities, plus Google calls left today. */
+export interface RouteRefreshResult {
+  known: number;
+  alreadyStored: number;
+  fetched: number;
+  notFound: number;
+  googleCallsLeft: number;
+}
+
 //  support tickets (public contact form, Piper escalations)
 
 /** POST /api/support-tickets. reason is the topic (max 200), summary the message. */
