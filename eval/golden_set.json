@@ -1,0 +1,1870 @@
+{
+  "_schema": {
+    "version": 1,
+    "relevant": "Graded relevance by passage key 'source#chunk_index' (the de-duplication key of KnowledgeSearchService, so a twin copy in a second namespace is the same passage). grade 2 = answers the question, 1 = supports it.",
+    "evidence": "A retrieved chunk is also relevant (grade 1) when its normalised text contains every phrase here, so new chunks added by a later fix still count.",
+    "key_facts": "Each fact is a list of alternatives; a fact is found when any alternative occurs in the normalised text. Used for Answer Correctness (in Piper's answer) and Context Recall (in Piper's retrieved passages).",
+    "normalisation": "lower case, accents stripped, '¼' -> '1/4', thousands separators removed (24 000 / 24,000 -> 24000), 'N x M' -> 'NxM', whitespace collapsed.",
+    "expected_tools": "Every entry must be matched by at least one call whose tool is in 'names'. 'args' is checked against the call of names[0] only (an alternative tool is accepted for selection but its arguments are not scored).",
+    "args_matchers": "string = loose equals (lower case, accents and non-alphanumerics removed); number = equals; {contains}; {oneOf: [...]}; {includesAny: [...]} for list parameters; {present: true}; any matcher object may add allowMissing: true.",
+    "optional_tools": "Calls to these tools never count against exact-set match.",
+    "forbidden_tools": "Calling any of these is a violation. 'expect_no_tools': true forbids every tool.",
+    "placeholders": "{ORDER_NUMBER}, {ORDER_EMAIL} come from a web order the eval creates in its Testcontainers database; {FUTURE_DATE} is today + 7 days (yyyy-MM-dd, Bogota)."
+  },
+  "cases": [
+    {
+      "id": "rag-mach-01",
+      "category": "machine_models",
+      "question": "What is the maximum spindle speed of the AVIA VMC 650 HS V machining centre?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak",
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Machines-Models-for-Sales.md#14",
+          "grade": 2
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#13",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "vmc 650 hs",
+        "24000"
+      ],
+      "key_facts": [
+        [
+          "24000"
+        ]
+      ],
+      "reference_answer": "The AVIA VMC 650 HS V has a 24,000 rpm electrospindle (HSK63A taper, 16/30 kW)."
+    },
+    {
+      "id": "rag-mach-02",
+      "category": "machine_models",
+      "question": "How many tool positions does the tool changer of the AVIA VMC 1300 have, and what type of tool changer is it?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak",
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Machines-Models-for-Sales.md#11",
+          "grade": 2
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#10",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "swing arm atc (chain)",
+        "number of tool positions"
+      ],
+      "key_facts": [
+        [
+          "40"
+        ],
+        [
+          "chain"
+        ]
+      ],
+      "reference_answer": "The VMC 1300 has a swing-arm ATC driven by a chain with 40 tool positions (the VMC 650/800/1000 have a cam-type swing arm with 30)."
+    },
+    {
+      "id": "rag-mach-04",
+      "category": "machine_models",
+      "question": "How much do the AVIA VMC 650 and the AVIA VMC 1300 weigh?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak",
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Machines-Models-for-Sales.md#11",
+          "grade": 2
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#12",
+          "grade": 1
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#10",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "weight approx. kg 4400 4950 5300 9300"
+      ],
+      "key_facts": [
+        [
+          "4400"
+        ],
+        [
+          "9300"
+        ]
+      ],
+      "reference_answer": "About 4,400 kg for the VMC 650 and about 9,300 kg for the VMC 1300."
+    },
+    {
+      "id": "rag-mach-10",
+      "category": "machine_models",
+      "question": "What is the X-axis travel of the HB1620 horizontal boring mill?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak",
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Machines-Models-for-Sales.md#36",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "hb1620",
+        "118 (2997)"
+      ],
+      "key_facts": [
+        [
+          "2997",
+          "118 in"
+        ]
+      ],
+      "reference_answer": "The HB1620 has 118 in (2,997 mm) of X-axis travel."
+    },
+    {
+      "id": "rag-mach-12",
+      "category": "machine_models",
+      "question": "What are the spindle speed, table size and price of the VMC-650 machining centre that Iron & Oak sells?",
+      "expected_tools": [
+        {
+          "names": [
+            "list_machines",
+            "search_knowledge"
+          ],
+          "args": {
+            "model_code": {
+              "equals": "VMC-650",
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_knowledge"
+      ],
+      "relevant": [
+        {
+          "key": "Products_and_Service.md#10",
+          "grade": 2
+        },
+        {
+          "key": "CNC_Fundamentals.md#26",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "vmc-650",
+        "28500"
+      ],
+      "key_facts": [
+        [
+          "8000"
+        ],
+        [
+          "800x400"
+        ],
+        [
+          "28500"
+        ]
+      ],
+      "reference_answer": "Iron & Oak's VMC-650 runs 50 to 8,000 rpm, has an 800 x 400 mm table, 11 kW, and costs 28,500 USD with a 12-month warranty from commissioning."
+    },
+    {
+      "id": "rag-rule-01",
+      "category": "business_rules",
+      "question": "I am ordering 150 USD of tools to be delivered in Mexico. How much tax will I pay?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "forbidden_tools": [
+        "create_order"
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#4",
+          "grade": 2
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#2",
+          "grade": 2
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#3",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "mexico",
+        "26%"
+      ],
+      "key_facts": [
+        [
+          "26%",
+          "26 %",
+          "26 percent"
+        ],
+        [
+          "39"
+        ]
+      ],
+      "reference_answer": "Mexico's rate is 26%, and the items are above 100 USD, so tax is 39.00 USD on the 150.00 USD of items; shipping (64 USD by air) is not taxed."
+    },
+    {
+      "id": "rag-rule-02",
+      "category": "business_rules",
+      "question": "How much does shipping to Costa Rica cost?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#6",
+          "grade": 2
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#1",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "costa rica",
+        "48 usd"
+      ],
+      "key_facts": [
+        [
+          "48"
+        ]
+      ],
+      "reference_answer": "Tools and end mills go to Costa Rica by air at a fixed 48 USD per order; milling machine freight is quoted by staff."
+    },
+    {
+      "id": "rag-rule-03",
+      "category": "business_rules",
+      "question": "How long does a delivery to the United States take?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#10",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "by air",
+        "4 days in transit"
+      ],
+      "key_facts": [
+        [
+          "5 days",
+          "five days"
+        ]
+      ],
+      "reference_answer": "By air: 1 handling day + 4 days in transit, about 5 days from shipping (an estimate, not a carrier guarantee)."
+    },
+    {
+      "id": "rag-rule-04",
+      "category": "business_rules",
+      "question": "If I place an order on the website, how long do I have to pay before it expires?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#11",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "held for 6 hours"
+      ],
+      "key_facts": [
+        [
+          "6 hours",
+          "six hours"
+        ]
+      ],
+      "reference_answer": "Website orders hold the items for 6 hours; unpaid after that, the order expires and the items go back on sale."
+    },
+    {
+      "id": "rag-rule-05",
+      "category": "business_rules",
+      "question": "Can one of your technicians come to my workshop in Cali to service my mill?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge",
+            "list_services"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "list_services",
+        "search_knowledge"
+      ],
+      "forbidden_tools": [
+        "create_service_booking"
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#16",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "bogota and medellin"
+      ],
+      "key_facts": [
+        [
+          "bogota"
+        ],
+        [
+          "medellin"
+        ]
+      ],
+      "reference_answer": "No. Technicians work on site only in Bogotá and Medellín, Colombia; visits elsewhere are refused."
+    },
+    {
+      "id": "rag-rule-06",
+      "category": "business_rules",
+      "question": "What does an Emergency Repair visit cost?",
+      "expected_tools": [
+        {
+          "names": [
+            "list_services",
+            "search_knowledge"
+          ],
+          "args": {
+            "code": {
+              "equals": "EMERGENCY_REPAIR",
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_knowledge"
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#17",
+          "grade": 2
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#18",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "emergency repair",
+        "180 usd per hour"
+      ],
+      "key_facts": [
+        [
+          "180"
+        ]
+      ],
+      "reference_answer": "Emergency Repair is hourly: 180 USD per hour, estimated 2 to 6 hours, priced when staff confirm the booking."
+    },
+    {
+      "id": "rag-rule-07",
+      "category": "business_rules",
+      "question": "Do the end mills I buy from you come with a warranty?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#15",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "end mills have no warranty"
+      ],
+      "key_facts": [
+        [
+          "no warranty",
+          "not covered",
+          "do not have a warranty",
+          "don't have a warranty",
+          "do not come with a warranty",
+          "don't come with a warranty",
+          "not under warranty"
+        ]
+      ],
+      "reference_answer": "No. End mills are consumable cutting tools that wear with use, so they have no warranty and claims cannot be made on them."
+    },
+    {
+      "id": "rag-rule-08",
+      "category": "business_rules",
+      "question": "When does the warranty on a milling machine start, and how long does it last?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#46",
+          "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#5",
+          "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#27",
+          "grade": 1
+        },
+        {
+          "key": "Products_and_Service.md#10",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "commissioning date",
+        "12 months"
+      ],
+      "key_facts": [
+        [
+          "commissioning"
+        ],
+        [
+          "12 months",
+          "twelve months",
+          "12-month"
+        ]
+      ],
+      "reference_answer": "12 months from the Commissioning Date (when the commissioning checklist is signed), never more than 18 months from delivery."
+    },
+    {
+      "id": "rag-rule-09",
+      "category": "business_rules",
+      "question": "How is road shipping calculated for deliveries inside Colombia?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "iron_oak"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Iron_Oak_Business_Rules.md#7",
+          "grade": 2
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#5",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "0.215 usd per 100 km"
+      ],
+      "key_facts": [
+        [
+          "0.215"
+        ],
+        [
+          "2.50",
+          "2.5 usd"
+        ]
+      ],
+      "reference_answer": "0.215 USD per 100 km of road distance from Bogotá + 0.275 USD per kg + 17.50 USD per cubic metre + a 2.50 USD base fee."
+    },
+    {
+      "id": "rag-ops-01",
+      "category": "power_tool_safety",
+      "question": "What is the maximum gap allowed between the work rest of a bench grinder and the wheel?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "SPP-1910.241.md#45",
+          "grade": 2
+        },
+        {
+          "key": "Hand-and-portable-power-tools.md#28",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "work rests",
+        "1/8"
+      ],
+      "key_facts": [
+        [
+          "1/8",
+          "one-eighth",
+          "one eighth"
+        ]
+      ],
+      "reference_answer": "Work rests must be rigid, adjustable and kept no more than 1/8 inch from the wheel (tongue guards within 1/4 inch)."
+    },
+    {
+      "id": "rag-ops-02",
+      "category": "power_tool_safety",
+      "question": "What is the maximum air pressure allowed when using compressed air to clean?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "SPP-1910.241.md#10",
+          "grade": 2
+        },
+        {
+          "key": "SPP-1910.241.md#47",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "30 psi"
+      ],
+      "key_facts": [
+        [
+          "30 psi"
+        ]
+      ],
+      "reference_answer": "Below 30 psi at the nozzle, with an air blow gun that limits the pressure, and with eye protection."
+    },
+    {
+      "id": "rag-ops-03",
+      "category": "power_tool_safety",
+      "question": "Which hand-held power tools must have a constant-pressure switch that cuts the power when released?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Hand-and-power-tools.md#6",
+          "grade": 2
+        },
+        {
+          "key": "Hand-and-power-tools.md#7",
+          "grade": 1
+        },
+        {
+          "key": "Hand-and-portable-power-tools.md#24",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "constant",
+        "pressure switch"
+      ],
+      "key_facts": [
+        [
+          "drill"
+        ],
+        [
+          "chain saw",
+          "chainsaw"
+        ]
+      ],
+      "reference_answer": "Drills, tappers, fastener drivers, grinders with wheels over 2 inches, disc and belt sanders, reciprocating and saber saws, circular saws over 2 inches, chain saws and percussion tools without a secure accessory holder."
+    },
+    {
+      "id": "rag-ops-04",
+      "category": "home_diy",
+      "question": "How often should I test the GFCI outlets in my house?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "home_do_it_yourself"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products_by_category"
+      ],
+      "relevant": [
+        {
+          "key": "Home_Maintenance_For_Dummies.md#557",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#549",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "test gfcis monthly"
+      ],
+      "key_facts": [
+        [
+          "monthly",
+          "once a month",
+          "every month"
+        ]
+      ],
+      "reference_answer": "Monthly: press the Test button (the outlet should cut power), then Reset."
+    },
+    {
+      "id": "rag-ops-05",
+      "category": "home_diy",
+      "question": "How do I flush the sediment out of my water heater?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "home_do_it_yourself"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products_by_category"
+      ],
+      "relevant": [
+        {
+          "key": "Home_Maintenance_For_Dummies.md#213",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#223",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "drain valve",
+        "garden hose"
+      ],
+      "key_facts": [
+        [
+          "drain valve"
+        ],
+        [
+          "hose"
+        ]
+      ],
+      "reference_answer": "Turn off the power or gas, connect a garden hose to the drain valve at the bottom, run it outside, open the valve and let the cold-water supply flush the tank until the water runs clear."
+    },
+    {
+      "id": "rag-ops-06",
+      "category": "machine_operations",
+      "question": "What is Taylor's tool life equation?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Metal-Cutting-Notes.md#37",
+          "grade": 2
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#557",
+          "grade": 1
+        },
+        {
+          "key": "Metal-Cutting-Notes.md#39",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "taylor",
+        "tool life exponent"
+      ],
+      "key_facts": [
+        [
+          "vt^n",
+          "v t^n",
+          "vt^{n}",
+          "v t^{n}",
+          "vtn = c",
+          "vt n"
+        ]
+      ],
+      "reference_answer": "V T^n = C: cutting speed V times tool life T to the power n equals a constant C; n and C depend on the tool-work materials and cutting conditions."
+    },
+    {
+      "id": "rag-ops-07",
+      "category": "machine_operations",
+      "question": "On a CNC mill, where is the part zero stored and how does the operator find it?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "CNC_Fundamentals.md#33",
+          "grade": 2
+        },
+        {
+          "key": "CNC_Fundamentals.md#13",
+          "grade": 1
+        },
+        {
+          "key": "CNC_Fundamentals.md#11",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "work offset",
+        "g54"
+      ],
+      "key_facts": [
+        [
+          "g54"
+        ],
+        [
+          "edge finder",
+          "probe",
+          "dial indicator"
+        ]
+      ],
+      "reference_answer": "In a work offset (G54 to G59 and extended), found with an edge finder, a dial indicator or a touch probe; offsets should be double-checked because offset errors cause crashes."
+    },
+    {
+      "id": "rag-ops-08",
+      "category": "machine_operations",
+      "question": "In EMC2, what happens if HOME_SEARCH_VEL is set to zero?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "EMC2_User_Manual.md#53",
+          "grade": 2
+        },
+        {
+          "key": "EMC2_User_Manual.md#48",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "home_search_vel",
+        "home switch"
+      ],
+      "key_facts": [
+        [
+          "home switch"
+        ],
+        [
+          "current location",
+          "current position"
+        ]
+      ],
+      "reference_answer": "Zero (the default) tells EMC2 there is no home switch: the current location is taken as the home position."
+    },
+    {
+      "id": "rag-ops-09",
+      "category": "machine_maintenance",
+      "question": "What are the five non-destructive techniques used in predictive maintenance?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_maintenance"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Maintenance-Fundamentals-2nd-Ed.md#8",
+          "grade": 2
+        },
+        {
+          "key": "Maintenance-Fundamentals-2nd-Ed.md#5",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "vibration monitoring",
+        "thermography",
+        "tribology"
+      ],
+      "key_facts": [
+        [
+          "vibration"
+        ],
+        [
+          "thermography"
+        ],
+        [
+          "tribology"
+        ],
+        [
+          "visual"
+        ]
+      ],
+      "reference_answer": "Vibration monitoring, process parameter monitoring, thermography, tribology and visual inspection."
+    },
+    {
+      "id": "rag-ops-10",
+      "category": "machine_operations",
+      "question": "Why is climb milling risky on a machine with backlash?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "CNC_Fundamentals.md#6",
+          "grade": 2
+        },
+        {
+          "key": "CNC_Fundamentals.md#36",
+          "grade": 1
+        },
+        {
+          "key": "CNC_Fundamentals.md#25",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "climb",
+        "backlash"
+      ],
+      "key_facts": [
+        [
+          "backlash"
+        ],
+        [
+          "pull",
+          "pulls",
+          "drag",
+          "drags"
+        ]
+      ],
+      "reference_answer": "In climb milling the cutter rotates with the feed, so it can pull the table into the cut; without very low backlash the table jumps forward, so use it only with backlash elimination."
+    },
+    {
+      "id": "rag-ops-11",
+      "category": "power_tool_safety",
+      "question": "My electrical test needs a CAT II rated meter. Can I use a meter rated CAT III or CAT IV instead?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Electrical_Mesurement_Equipments.md#10",
+          "grade": 2
+        },
+        {
+          "key": "Electrical_Mesurement_Equipments.md#9",
+          "grade": 1
+        },
+        {
+          "key": "Electrical_Mesurement_Equipments.md#11",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "cat ii",
+        "cat iii",
+        "cat iv"
+      ],
+      "key_facts": [
+        [
+          "higher"
+        ]
+      ],
+      "reference_answer": "Yes. A meter must be rated at the required CAT level or higher, so CAT III or CAT IV equipment is safe for a CAT II test."
+    },
+    {
+      "id": "rag-diy-03",
+      "category": "home_diy",
+      "question": "How often should I replace the filter in my furnace?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "home_do_it_yourself"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products_by_category"
+      ],
+      "relevant": [
+        {
+          "key": "Home_Maintenance_For_Dummies.md#293",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#294",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#315",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "furnace filter every month"
+      ],
+      "key_facts": [
+        [
+          "every month",
+          "monthly",
+          "once a month"
+        ]
+      ],
+      "reference_answer": "Every month during the heating season, and every month year-round if the air conditioner shares the system."
+    },
+    {
+      "id": "rag-diy-04",
+      "category": "home_diy",
+      "question": "How can I check whether the flapper in my toilet tank is leaking?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "home_do_it_yourself"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products_by_category"
+      ],
+      "relevant": [
+        {
+          "key": "Home_Maintenance_For_Dummies.md#557",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#282",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "food coloring",
+        "flapper"
+      ],
+      "key_facts": [
+        [
+          "food coloring",
+          "food colouring",
+          "dye"
+        ],
+        [
+          "10 minutes",
+          "ten minutes"
+        ]
+      ],
+      "reference_answer": "Put a few drops of food coloring in the tank and wait 10 minutes without flushing; color in the bowl means the flapper leaks."
+    },
+    {
+      "id": "rag-diy-05",
+      "category": "home_diy",
+      "question": "How often should I change the batteries in my smoke detectors?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "home_do_it_yourself"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products_by_category"
+      ],
+      "relevant": [
+        {
+          "key": "Home_Maintenance_For_Dummies.md#61",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#77",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "replace the batteries at least once a year"
+      ],
+      "key_facts": [
+        [
+          "once a year",
+          "yearly",
+          "every year",
+          "annually"
+        ]
+      ],
+      "reference_answer": "At least once a year (or use 10-year battery units); vacuum and test the detectors regularly."
+    },
+    {
+      "id": "rag-pt-01",
+      "category": "power_tool_safety",
+      "question": "What is kickback on a power tool and how do I prevent it?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Hand-Power-tool-Safety.md#7",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "kickback",
+        "binds"
+      ],
+      "key_facts": [
+        [
+          "bind",
+          "binds",
+          "jam"
+        ],
+        [
+          "clamp"
+        ],
+        [
+          "full speed"
+        ]
+      ],
+      "reference_answer": "Kickback is when the blade or bit binds in the material and the motor drives the tool toward you. Clamp the work, let the tool reach full speed before cutting, keep both hands on it and change direction gradually."
+    },
+    {
+      "id": "rag-pt-02",
+      "category": "power_tool_safety",
+      "question": "My drill is double-insulated. Is it safe to use it in the rain?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Hand-Power-tool-Safety.md#6",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "double-insulated",
+        "water"
+      ],
+      "key_facts": [
+        [
+          "shock"
+        ],
+        [
+          "water"
+        ]
+      ],
+      "reference_answer": "No. Water that gets inside a double-insulated tool is as serious a shock hazard as with any electric tool; do not use electric tools in water or rain."
+    },
+    {
+      "id": "rag-pt-03",
+      "category": "power_tool_safety",
+      "question": "How must a pneumatic tool be attached to its air hose?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "power_tools"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "SPP-1910.241.md#47",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "secured to the hose or whip"
+      ],
+      "key_facts": [
+        [
+          "positive means",
+          "positive"
+        ],
+        [
+          "disconnect"
+        ]
+      ],
+      "reference_answer": "Secured to the hose or whip by some positive means so it cannot be accidentally disconnected; impact tools also need safety clips or retainers."
+    },
+    {
+      "id": "rag-ops-12",
+      "category": "machine_operations",
+      "question": "What causes chatter and a poor surface finish when milling?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "CNC_Fundamentals.md#48",
+          "grade": 2
+        }
+      ],
+      "evidence": [
+        "chatter and poor finish"
+      ],
+      "key_facts": [
+        [
+          "stickout",
+          "stick-out",
+          "overhang"
+        ],
+        [
+          "worn"
+        ],
+        [
+          "rigidity",
+          "rigid"
+        ]
+      ],
+      "reference_answer": "Excessive tool stickout, worn tools, insufficient workholding rigidity, wrong speeds and feeds, loose gibs or worn spindle bearings."
+    },
+    {
+      "id": "rag-ops-13",
+      "category": "machine_operations",
+      "question": "What is a built-up edge in metal cutting and why does it form?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "Metal-Cutting-Notes.md#6",
+          "grade": 2
+        },
+        {
+          "key": "Metal-Cutting-Notes.md#7",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "bue",
+        "adhesion"
+      ],
+      "key_facts": [
+        [
+          "adhesion",
+          "weld",
+          "bond"
+        ],
+        [
+          "ductile"
+        ]
+      ],
+      "reference_answer": "Chip material that bonds to the tool tip by adhesion, like welding, under high stress and temperature when cutting ductile metals such as steel; it grows, breaks off with the chip and forms again."
+    },
+    {
+      "id": "rag-ops-14",
+      "category": "machine_operations",
+      "question": "What does the G00 command do in a CNC program?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_knowledge"
+          ],
+          "args": {
+            "namespaces": {
+              "includesAny": [
+                "machine_operations"
+              ],
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "relevant": [
+        {
+          "key": "CNC-Programming-Handbook-3rd.md#81",
+          "grade": 2
+        },
+        {
+          "key": "CNC-Programming-Handbook-3rd.md#71",
+          "grade": 1
+        }
+      ],
+      "evidence": [
+        "g00",
+        "rapid motion"
+      ],
+      "key_facts": [
+        [
+          "rapid"
+        ]
+      ],
+      "reference_answer": "G00 selects rapid motion: the axes move at the machine's fixed maximum rate with no programmed feedrate (it can be reduced with the rapid override switch)."
+    },
+    {
+      "id": "tool-order-01",
+      "category": "tool_routing",
+      "question": "What's the status of my order {ORDER_NUMBER}?",
+      "expected_tools": [
+        {
+          "names": [
+            "get_order"
+          ],
+          "args": {
+            "order_number": "{ORDER_NUMBER}"
+          }
+        }
+      ],
+      "forbidden_tools": [
+        "search_knowledge",
+        "create_order"
+      ],
+      "reference_answer": "Piper reports the order status (awaiting payment), its items and total, and that it can be paid with the order number."
+    },
+    {
+      "id": "tool-order-02",
+      "category": "tool_routing",
+      "question": "Can you confirm the delivery address on order {ORDER_NUMBER}? My email is {ORDER_EMAIL}.",
+      "expected_tools": [
+        {
+          "names": [
+            "get_order"
+          ],
+          "args": {
+            "order_number": "{ORDER_NUMBER}",
+            "email": "{ORDER_EMAIL}"
+          }
+        }
+      ],
+      "forbidden_tools": [
+        "search_knowledge",
+        "create_order"
+      ],
+      "reference_answer": "Piper looks the order up with the number and email and reads back the delivery address on file."
+    },
+    {
+      "id": "tool-stock-01",
+      "category": "tool_routing",
+      "question": "Do you have angle grinders in stock right now?",
+      "expected_tools": [
+        {
+          "names": [
+            "lookup_product_stock",
+            "search_products",
+            "get_product_details"
+          ],
+          "args": {
+            "query": {
+              "contains": "grinder",
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_products",
+        "get_product_details"
+      ],
+      "forbidden_tools": [
+        "search_knowledge"
+      ],
+      "reference_answer": "Piper checks the stock of the angle grinder and gives the quantity from the database."
+    },
+    {
+      "id": "tool-price-01",
+      "category": "tool_routing",
+      "question": "How much does your air compressor cost?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_products",
+            "lookup_product_stock",
+            "get_product_details",
+            "search_products_by_category"
+          ],
+          "args": {
+            "query": {
+              "contains": "compressor",
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "get_product_details",
+        "lookup_product_stock"
+      ],
+      "forbidden_tools": [
+        "search_knowledge"
+      ],
+      "reference_answer": "The 50-liter oil-free air compressor (IO-AICO-001) costs 289.99 USD."
+    },
+    {
+      "id": "tool-mach-01",
+      "category": "tool_routing",
+      "question": "Which milling machines do you sell?",
+      "expected_tools": [
+        {
+          "names": [
+            "list_machines"
+          ]
+        }
+      ],
+      "optional_tools": [
+        "search_knowledge"
+      ],
+      "reference_answer": "Four: Benchtop Mill BM-200, Turret Mill TM-450, CNC Vertical Machining Centre VMC-650 and Horizontal Boring Mill HB-900, with prices from the catalog."
+    },
+    {
+      "id": "tool-mach-02",
+      "category": "tool_routing",
+      "question": "What's the price of the HB-900 boring mill?",
+      "expected_tools": [
+        {
+          "names": [
+            "list_machines"
+          ],
+          "args": {
+            "model_code": {
+              "equals": "HB-900",
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "forbidden_tools": [
+        "search_knowledge"
+      ],
+      "reference_answer": "The Horizontal Boring Mill HB-900 costs 42,000 USD (freight quoted by staff)."
+    },
+    {
+      "id": "tool-endmill-01",
+      "category": "tool_routing",
+      "question": "Do you sell a 2 mm ball nose end mill?",
+      "expected_tools": [
+        {
+          "names": [
+            "get_end_mills"
+          ],
+          "args": {
+            "flute_type": {
+              "contains": "ball",
+              "allowMissing": true
+            },
+            "diameter_mm": {
+              "equals": 2,
+              "allowMissing": true
+            }
+          }
+        }
+      ],
+      "forbidden_tools": [
+        "search_knowledge"
+      ],
+      "reference_answer": "Yes: Ball Nose End Mill 2mm (BN-002), 35.00 USD, 1.0 mm ball radius."
+    },
+    {
+      "id": "tool-health-01",
+      "category": "tool_routing",
+      "question": "Here are my CNC readings: air temperature 298.1 K, process temperature 308.6 K, rotational speed 1551 rpm, torque 42.8 Nm, tool wear 108 minutes, quality variant M. Is my machine at risk of failing?",
+      "expected_tools": [
+        {
+          "names": [
+            "diagnose_machine"
+          ],
+          "args": {
+            "air_temperature_k": 298.1,
+            "process_temperature_k": 308.6,
+            "rotational_speed_rpm": 1551,
+            "torque_nm": 42.8,
+            "tool_wear_min": 108,
+            "quality_variant": "M"
+          }
+        }
+      ],
+      "reference_answer": "Piper runs the machine-health model and reports the risk level and flagged failure modes as an estimate, offering a service visit if it fits."
+    },
+    {
+      "id": "tool-health-02",
+      "category": "tool_routing",
+      "question": "My CNC spindle is running hot at about 1500 rpm. Can you diagnose it?",
+      "expected_tools": [],
+      "optional_tools": [
+        "search_knowledge"
+      ],
+      "forbidden_tools": [
+        "diagnose_machine"
+      ],
+      "reference_answer": "Piper asks for the missing readings (air and process temperature in Kelvin, torque, tool wear, quality variant) instead of guessing them."
+    },
+    {
+      "id": "tool-cnc-01",
+      "category": "tool_routing",
+      "question": "Please calculate my milling parameters: cutting speed 200 m/min, 10 mm cutter, feed per tooth 0.05 mm, 4 teeth, depth of cut 5 mm, width of cut 3 mm, kc1 700 N/mm2, mc 0.25, motor power 11 kW, efficiency 0.85, helix angle 30 degrees, Taylor C 400 and Taylor n 0.25.",
+      "expected_tools": [
+        {
+          "names": [
+            "calculate_cnc_parameters"
+          ],
+          "args": {
+            "cutting_speed": 200,
+            "diameter_mm": 10,
+            "feed_per_tooth": 0.05,
+            "number_of_teeth": 4,
+            "depth_of_cut_mm": 5,
+            "width_of_cut_mm": 3,
+            "kc1_n_per_mm2": 700,
+            "mc": 0.25,
+            "max_motor_power_kw": 11,
+            "machine_efficiency": 0.85,
+            "helix_angle_degrees": 30,
+            "taylor_c": 400,
+            "taylor_n": 0.25
+          }
+        }
+      ],
+      "reference_answer": "Piper runs the CNC calculator and reports spindle speed, feed rate, material removal rate, power and tool life."
+    },
+    {
+      "id": "tool-booking-01",
+      "category": "tool_routing",
+      "history": [
+        {
+          "role": "USER",
+          "content": "I need a preventive maintenance visit for my VMC-650 at Calle 80 #45-10, Bogota, Colombia on {FUTURE_DATE} at 10:00. I'm Laura Gomez, laura.gomez@example.com."
+        },
+        {
+          "role": "ASSISTANT",
+          "content": "Here is the summary: Preventive Maintenance (PREVENTIVE_MAINTENANCE, 240 USD per visit) for Laura Gomez, laura.gomez@example.com, at Calle 80 #45-10, Bogota, Colombia, on {FUTURE_DATE} at 10:00, machine VMC-650. Staff will confirm a technician is available before the visit is final. Shall I book it?"
+        }
+      ],
+      "question": "Yes, please book it.",
+      "expected_tools": [
+        {
+          "names": [
+            "create_service_booking"
+          ],
+          "args": {
+            "service_code": "PREVENTIVE_MAINTENANCE",
+            "customer_email": "laura.gomez@example.com",
+            "city": "Bogota",
+            "country": {
+              "oneOf": [
+                "CO",
+                "Colombia"
+              ]
+            },
+            "scheduled_at": {
+              "contains": "{FUTURE_DATE}"
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "list_services"
+      ],
+      "reference_answer": "Piper creates the booking (REQUESTED), gives the booking reference, and says staff will confirm the date and then send an order number to pay."
+    },
+    {
+      "id": "tool-booking-02",
+      "category": "tool_routing",
+      "question": "Book an emergency repair at my shop in Cali, Colombia for tomorrow at 9 am. My name is Pedro Ruiz, pedro.ruiz@example.com.",
+      "expected_tools": [],
+      "optional_tools": [
+        "search_knowledge",
+        "list_services"
+      ],
+      "forbidden_tools": [
+        "create_service_booking"
+      ],
+      "reference_answer": "Piper explains technicians only work in Bogotá and Medellín and does not book the visit."
+    },
+    {
+      "id": "tool-support-01",
+      "category": "tool_routing",
+      "question": "I've been waiting three weeks for a refund on a broken drill and nobody answers my emails. I want to talk to a real person. My email is sam.lee@example.com.",
+      "expected_tools": [
+        {
+          "names": [
+            "escalate_to_human"
+          ],
+          "args": {
+            "reason": {
+              "present": true
+            }
+          }
+        }
+      ],
+      "reference_answer": "Piper escalates to a human, gives the ticket reference and says the team will contact sam.lee@example.com."
+    },
+    {
+      "id": "tool-advice-01",
+      "category": "tool_routing",
+      "question": "My kitchen faucet is leaking. What do I need to fix it?",
+      "expected_tools": [
+        {
+          "names": [
+            "search_products_by_category",
+            "search_products"
+          ],
+          "args": {
+            "category": "Plumbing"
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_knowledge",
+        "search_products"
+      ],
+      "reference_answer": "Piper gives short repair steps and recommends the few Plumbing products needed, with prices from the catalog."
+    },
+    {
+      "id": "tool-material-01",
+      "category": "tool_routing",
+      "question": "What are the machining properties of aluminum 6061-T6? I want to mill it.",
+      "expected_tools": [
+        {
+          "names": [
+            "get_material_properties"
+          ],
+          "args": {
+            "material_name": {
+              "contains": "6061"
+            }
+          }
+        }
+      ],
+      "optional_tools": [
+        "search_knowledge",
+        "get_end_mills"
+      ],
+      "reference_answer": "Piper reads the 6061-T6 entry from the material reference (hardness, recommended cutting speed and feed) and may suggest a suitable end mill."
+    },
+    {
+      "id": "tool-offtopic-01",
+      "category": "tool_routing",
+      "question": "Write me a poem about football.",
+      "expected_tools": [],
+      "expect_no_tools": true,
+      "reference_answer": "Piper politely declines and steers back to Iron & Oak products, services and machine support."
+    }
+  ]
+}
