@@ -278,4 +278,204 @@ This is now a Zilliz/Milvus permission issue—not Piper or OpenAI.
   References: Zilliz cluster roles, Milvus privileges.
 
 
+---------
+
+<Link href="/orders" aria-label= title="Track an order">
+            <UserRound className= />
+          </Link>
+          
+------------------
+java -version
+openjdk version "21.0.12.1" 2026-08-18
+OpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)
+OpenJDK 64-Bit Server VM (build 21.0.12.1+1-1-24.04.4-Ubuntu, mixed mode, sharing)
+
+---------------
+
+Vercel (the frontend)
+
+  The frontend reads only one setting, so it's short:
+  1. Import the repo: vercel.com → Add New → Project → choose your GitHub repo.
+  2. Root Directory: frontend. This one matters most: the repo also holds the
+     backend, and without it Vercel finds no Next.js app. Leave the framework
+     (Next.js) and the build settings at their defaults.
+  3. One environment variable (Production and Preview): NEXT_PUBLIC_API_URL =
+     https://api.ironoak.tensorgeek.com. It's built into the site, so after
+     changing it you have to redeploy.
+  4. Deploy. Vercel gives you a test address like
+     https://iron-oak-xxxx.vercel.app.
+  5. Domains: Settings → Domains → add ironoak.tensorgeek.com, then create the
+     DNS record Vercel shows (a CNAME ironoak → cname.vercel-dns.com). Vercel
+     handles that certificate itself.
+  6. Tell the backend about the site. In /opt/ironoak/.env on the EC2:
+  CORS_ALLOWED_ORIGINS=https://ironoak.tensorgeek.com,https://iron-oak-xxxx.verc
+  el.app
+  FRONTEND_BASE_URL=https://ironoak.tensorgeek.com
+     Then sudo systemctl restart ironoak-api. The .vercel.app entry is only for
+     testing; remove it once your domain works.
+
+  If the site loads but says it can't load the catalog, it's almost always CORS:
+  the site's exact address is missing from CORS_ALLOWED_ORIGINS. The browser
+  console will say "blocked by CORS policy".
+
+  The slow connection to Vercel you mentioned is on the network side; the
+  project needs nothing extra for Vercel.
+
+  Overall order
+
+  1. Install Java 21 and create the user and folders: DEPLOY.md step 1.
+  2. Get the jar from the CI artifact after your push, write /opt/ironoak/.env,
+     and start the service: steps 2–4.
+  3. Set up nginx and run certbot for api.ironoak.tensorgeek.com: step 5.
+  4. Vercel, as above: step 5b.
+  5. After the first start: change the admin password, run the 7-product SQL on
+     RDS, add the Stripe webhook, and do the smoke test: step 6.
+
+  I've added all of this to deploy/DEPLOY.md as section 5b.
+
+  One question still open: on RDS, does Iron & Oak get its own database (its own
+  DB_NAME)? On the first start Flyway creates 13 migrations' worth of tables.
+  If the RDS is shared with your other projects, those tables should go into a
+  database of their own, not one used by another project.
+
+
+
+vercel domains verify scryer.tensorgeek.com
+
+cd ~
+  git clone git@github.com:BeauBryanDev/iron-oak.git
+
+  On your laptop: send the two models that git doesn't carry
+
+  Run this from the repo root (~/Documents/iron-oak):
+  rsync -av --progress \
+      src/main/resources/models/end_mills_model.onnx \
+      src/main/resources/models/piper_machine_health_v1.onnx \
+      ubuntu@<ec2-host>:~/iron-oak/src/main/resources/models/
+
+  On the EC2: build and install the jar
+
+  cd ~/iron-oak
+  ls -la src/main/resources/models/*.onnx                  # must list 3 models
+  ./mvnw -B -DskipTests package
+  unzip -l target/iron-oak-backend-0.1.0.jar | grep onnx   # all 3 inside the
+  jar
+  sudo install -o ironoak -g ironoak -m 640 target/iron-oak-backend-0.1.0.jar
+  /opt/ironoak/iron-oak.jar
+
+  On the EC2: secrets
+
+  sudo install -o ironoak -g ironoak -m 600 /dev/null /opt/ironoak/.env
+  sudo nano /opt/ironoak/.env      # every key listed in DEPLOY.md step 3
+  Include CORS_ALLOWED_ORIGINS=https://ironoak.tensorgeek.com,https://iron-oak-o
+  mega.vercel.app, FRONTEND_BASE_URL=https://ironoak.tensorgeek.com, and the
+  three BOOTSTRAP_ADMIN_* lines for the first start.
+
+  On the EC2: start the service
+
+  sudo ss -ltnp | grep 8080        # must print nothing
+  sudo cp ~/iron-oak/deploy/ironoak-api.service /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl enable --now ironoak-api
+  journalctl -u ironoak-api -f     # wait for "Started"; Flyway runs V1–V13
+  curl -s http://127.0.0.1:8080/actuator/health/readiness
+
+  On the EC2: nginx and HTTPS
+
+  sudo cp ~/iron-oak/deploy/nginx/api.ironoak.tensorgeek.com
+  /etc/nginx/sites-available/
+  sudo ln -s /etc/nginx/sites-available/api.ironoak.tensorgeek.com
+  /etc/nginx/sites-enabled/
+  sudo nginx -t && sudo systemctl reload nginx
+  sudo certbot --nginx -d api.ironoak.tensorgeek.com
+  curl -s https://api.ironoak.tensorgeek.com/actuator/health/readiness
+
+  After the first start
+
+  1. Admin password: sign in at https://ironoak.tensorgeek.com/admin/login and
+     change it. Then delete the three BOOTSTRAP_ADMIN_* lines from .env and run
+     sudo systemctl restart ironoak-api.
+  2. The seven extra products:
+     psql "<RDS connection>" -v ON_ERROR_STOP=1 -f 
+     ~/iron-oak/scripts/sql/add_non_cnn_products.sql
+  3. Stripe webhook: add
+     https://api.ironoak.tensorgeek.com/api/payments/stripe/webhook, put its
+     whsec_ in .env, and restart.
+  4. Smoke test: open the shop, ask Piper one question, and place one test
+     order.
+
+
+[Unit]
+Description=Iron & Oak API (Spring Boot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/ironoak
+Environment=SPRING_PROFILES_ACTIVE=prod
+Environment=SERVER_ADDRESS=127.0.0.1
+Environment=SERVER_PORT=8080
+Environment=APP_SECURITY_TRUSTFORWARDEDFOR=true
+ExecStart=/usr/bin/java -Xms256m -Xmx1g -XX:+UseSerialGC
+-XX:+ExitOnOutOfMemoryError -Djava.io.tmpdir=/opt/ironoak/tmp -jar
+/opt/ironoak/target/iron-oak-backend-0.1.0.jar
+MemoryMax=2000M
+CPUQuota=300%
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=180
+SuccessExitStatus=143
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/ironoak/tmp
+
+[Install]
+WantedBy=multi-user.target
+  
+-----
+
+  SET ROLE ironman;
+  \i /opt/ironoak/scripts/sql/add_non_cnn_products.sql
+
+-----------
+
+aws s3api --profile agithar  create-bucket --bucket ironoak-assets-579858896610 --region us-east-1 --profile agithar aws s3api put-public-access-block --bucket ironoak-assets-579858896610  --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+
+
+{
+  "id": "we_1UQIyGGR6pdwj7oR2rOkNIHO",
+  "object": "webhook_endpoint",
+  "api_version": null,
+  "application": null,
+  "created": 1791948916,
+  "description": null,
+  "enabled_events": [
+    "checkout.session.completed",
+    "checkout.session.async_payment_succeeded",
+    "checkout.session.async_payment_failed",
+    "checkout.session.expired",
+    "charge.refunded"
+  ],
+  "livemode": false,
+  "metadata": {},
+  "secret": "whsec_ft7PW1ZOBYeWU7ITbLPf0cTNr2PM7jTE",
+  "status": "enabled",
+  "url": "https://api.ironoak.tensorgeek.com/api/payments/stripe/webhook"
+}
+
+Running in MAISON-ROAST · sandbox (acct_*********)
+This command will be executed on the account with the following details:
+> Mode: Test
+> Account Name: MAISON-ROAST
+{
+  "id": "we_*************",
+  "object": "webhook_endpoint",
+  "deleted": true
+}
+
+
 

@@ -6,6 +6,7 @@ import com.ironoak.dto.response.ProductResponse;
 import com.ironoak.dto.response.ServiceOfferingResponse;
 import com.ironoak.domain.enums.PricingType;
 import com.ironoak.exceptions.BusinessRuleException;
+import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.services.ProductService;
 import com.ironoak.services.ServiceCatalogService;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,5 +91,19 @@ class CatalogToolsTest {
                 .satisfies(item -> assertThat(item.hourlyRate()).isEqualByComparingTo("180.00"));
         verify(catalog).getMachine("BM-200");
         verify(catalog).getService("REPAIR");
+    }
+
+    @Test
+    void unknownMachineSendsPiperToTheKnowledgeBase() {
+        MillingMachineResponse machine = new MillingMachineResponse(1L, "BM-200", "Bench Mill",
+                "Machine", new BigDecimal("2.0"), 1000, 5000, 600, 300,
+                new BigDecimal("4250.00"), 24, null, null, null);
+        when(catalog.getMachine("HB1620")).thenThrow(new ResourceNotFoundException("Milling machine", "HB1620"));
+        when(catalog.listMachines()).thenReturn(List.of(machine));
+
+        assertThatThrownBy(() -> tools.listMachines("HB1620"))
+                .isInstanceOf(BusinessRuleException.class)
+                .hasMessageContaining("HB1620 is not one of the machines Iron & Oak sells (BM-200)")
+                .hasMessageContaining("search_knowledge");
     }
 }

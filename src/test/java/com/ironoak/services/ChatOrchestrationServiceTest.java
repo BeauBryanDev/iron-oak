@@ -92,14 +92,15 @@ class ChatOrchestrationServiceTest {
                 .thenReturn(List.of(
                         new ChatMessage(session, MessageRole.ASSISTANT, "Hola, soy Piper", null),
                         new ChatMessage(session, MessageRole.USER, "Hola", null)));
-        when(piper.reply(anyList(), eq("Do you sell end mills?")))
+        when(piper.reply(eq(SESSION_ID), anyList(), eq("Do you sell end mills?")))
                 .thenReturn("Yes, six solid carbide end mills.");
 
         ChatReplyResponse result = chat.send(tokens.issue(SESSION_ID), "  Do you sell end mills?  ");
 
-        verify(piper).reply(List.of(new Turn(MessageRole.USER, "Hola"),
-                        new Turn(MessageRole.ASSISTANT, "Hola, soy Piper")),
-                "Do you sell end mills?");
+        verify(piper).reply(eq(SESSION_ID),
+                eq(List.of(new Turn(MessageRole.USER, "Hola"),
+                        new Turn(MessageRole.ASSISTANT, "Hola, soy Piper"))),
+                eq("Do you sell end mills?"));
         assertThat(result.sessionId()).isEqualTo(SESSION_ID);
         assertThat(result.message().role()).isEqualTo(MessageRole.USER);
         assertThat(result.message().content()).isEqualTo("Do you sell end mills?");
@@ -109,7 +110,7 @@ class ChatOrchestrationServiceTest {
 
     @Test
     void savesNothingWhenPiperCannotAnswer() {
-        when(piper.reply(anyList(), anyString())).thenThrow(new AssistantUnavailableException());
+        when(piper.reply(anyLong(), anyList(), anyString())).thenThrow(new AssistantUnavailableException());
 
         assertThatThrownBy(() -> chat.send(tokens.issue(SESSION_ID), "hello"))
                 .isInstanceOf(AssistantUnavailableException.class);
@@ -123,6 +124,6 @@ class ChatOrchestrationServiceTest {
 
         assertThatThrownBy(() -> chat.send(tokens.issue(SESSION_ID), "one more"))
                 .isInstanceOf(BusinessRuleException.class);
-        verify(piper, never()).reply(anyList(), anyString());
+        verify(piper, never()).reply(anyLong(), anyList(), anyString());
     }
 }
