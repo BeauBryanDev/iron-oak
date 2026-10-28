@@ -9,7 +9,8 @@
     "args_matchers": "string = loose equals (lower case, accents and non-alphanumerics removed); number = equals; {contains}; {oneOf: [...]}; {includesAny: [...]} for list parameters; {present: true}; any matcher object may add allowMissing: true.",
     "optional_tools": "Calls to these tools never count against exact-set match.",
     "forbidden_tools": "Calling any of these is a violation. 'expect_no_tools': true forbids every tool.",
-    "placeholders": "{ORDER_NUMBER}, {ORDER_EMAIL} come from a web order the eval creates in its Testcontainers database; {FUTURE_DATE} is today + 7 days (yyyy-MM-dd, Bogota)."
+    "placeholders": "{ORDER_NUMBER}, {ORDER_EMAIL} come from a web order the eval creates in its Testcontainers database; {FUTURE_DATE} is today + 7 days (yyyy-MM-dd, Bogota).",
+    "labelling": "Labels were completed on 2026-10-28 by pooling (TREC style): every chunk in the baseline retriever top 10 and in Piper's own passages was judged; answer-bearing ones got grade 2, supporting ones grade 1. Repeat the pooling for chunks new runs surface."
   },
   "cases": [
     {
@@ -39,6 +40,14 @@
         },
         {
           "key": "Machines-Models-for-Sales.md#13",
+          "grade": 1
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#4",
+          "grade": 1
+        },
+        {
+          "key": "Machines-Models-for-Sales.md#7",
           "grade": 1
         }
       ],
@@ -309,6 +318,10 @@
         {
           "key": "Iron_Oak_Business_Rules.md#1",
           "grade": 1
+        },
+        {
+          "key": "Iron_Oak_Business_Rules.md#5",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -470,6 +483,10 @@
         {
           "key": "Iron_Oak_Business_Rules.md#18",
           "grade": 1
+        },
+        {
+          "key": "Products_and_Service.md#13",
+          "grade": 2
         }
       ],
       "evidence": [
@@ -506,6 +523,14 @@
         {
           "key": "Iron_Oak_Business_Rules.md#15",
           "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#169",
+          "grade": 1
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#188",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -558,6 +583,22 @@
         },
         {
           "key": "Products_and_Service.md#10",
+          "grade": 1
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#168",
+          "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#51",
+          "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#437",
+          "grade": 2
+        },
+        {
+          "key": "IRON_OAK_INNER_BOOK.md#164",
           "grade": 1
         }
       ],
@@ -689,6 +730,10 @@
         {
           "key": "SPP-1910.241.md#47",
           "grade": 2
+        },
+        {
+          "key": "Hand-and-portable-power-tools.md#32",
+          "grade": 2
         }
       ],
       "evidence": [
@@ -779,6 +824,10 @@
         {
           "key": "Home_Maintenance_For_Dummies.md#549",
           "grade": 1
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#462",
+          "grade": 2
         }
       ],
       "evidence": [
@@ -870,6 +919,10 @@
         {
           "key": "Metal-Cutting-Notes.md#39",
           "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#639",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -918,6 +971,10 @@
         },
         {
           "key": "CNC_Fundamentals.md#11",
+          "grade": 1
+        },
+        {
+          "key": "UCR-ME-SOP-Manual-Milling-Machines-v5.md#7",
           "grade": 1
         }
       ],
@@ -1007,6 +1064,14 @@
         },
         {
           "key": "Maintenance-Fundamentals-2nd-Ed.md#5",
+          "grade": 1
+        },
+        {
+          "key": "Maintenance-Fundamentals-2nd-Ed.md#6",
+          "grade": 1
+        },
+        {
+          "key": "Maintenance-Fundamentals-2nd-Ed.md#11",
           "grade": 1
         }
       ],
@@ -1160,6 +1225,10 @@
         {
           "key": "Home_Maintenance_For_Dummies.md#315",
           "grade": 1
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#555",
+          "grade": 2
         }
       ],
       "evidence": [
@@ -1204,6 +1273,10 @@
         {
           "key": "Home_Maintenance_For_Dummies.md#282",
           "grade": 1
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#243",
+          "grade": 2
         }
       ],
       "evidence": [
@@ -1253,6 +1326,18 @@
         {
           "key": "Home_Maintenance_For_Dummies.md#77",
           "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#453",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#452",
+          "grade": 2
+        },
+        {
+          "key": "Home_Maintenance_For_Dummies.md#463",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -1261,6 +1346,7 @@
       "key_facts": [
         [
           "once a year",
+          "once per year",
           "yearly",
           "every year",
           "annually"
@@ -1291,6 +1377,10 @@
         {
           "key": "Hand-Power-tool-Safety.md#7",
           "grade": 2
+        },
+        {
+          "key": "Ontario-hand-and-power-tools.md#46",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -1335,6 +1425,14 @@
         {
           "key": "Hand-Power-tool-Safety.md#6",
           "grade": 2
+        },
+        {
+          "key": "SPP-1910.241.md#43",
+          "grade": 1
+        },
+        {
+          "key": "Ontario-hand-and-power-tools.md#37",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -1373,6 +1471,14 @@
       "relevant": [
         {
           "key": "SPP-1910.241.md#47",
+          "grade": 2
+        },
+        {
+          "key": "Hand-and-portable-power-tools.md#31",
+          "grade": 2
+        },
+        {
+          "key": "Hand-and-power-tools.md#9",
           "grade": 2
         }
       ],
@@ -1413,6 +1519,14 @@
         {
           "key": "CNC_Fundamentals.md#48",
           "grade": 2
+        },
+        {
+          "key": "Metal-Cutting-Notes.md#53",
+          "grade": 1
+        },
+        {
+          "key": "Metal-Cutting-Notes.md#44",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -1461,6 +1575,38 @@
         {
           "key": "Metal-Cutting-Notes.md#7",
           "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#73",
+          "grade": 2
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#74",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#75",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#76",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#144",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#409",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#410",
+          "grade": 1
+        },
+        {
+          "key": "Metal_Cutting_4th_Edition.md#411",
+          "grade": 1
         }
       ],
       "evidence": [
@@ -1506,6 +1652,14 @@
         {
           "key": "CNC-Programming-Handbook-3rd.md#71",
           "grade": 1
+        },
+        {
+          "key": "EMC2_User_Manual.md#212",
+          "grade": 2
+        },
+        {
+          "key": "CNC_Fundamentals.md#11",
+          "grade": 2
         }
       ],
       "evidence": [

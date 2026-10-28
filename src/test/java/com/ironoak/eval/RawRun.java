@@ -14,6 +14,8 @@ record RawRun(
         String gitCommit,
         String chatModel,
         String embeddingModel,
+        /** "dense" or "hybrid (dense + BM25, RRF)"; null in runs made before hybrid search existed */
+        String retrieval,
         Double temperature,
         Integer seed,
         /** {ORDER_NUMBER} etc. as filled in for this run, so re-scoring loads the same golden set */

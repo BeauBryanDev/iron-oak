@@ -85,6 +85,7 @@ final class EvalScorer {
         run.put("git_commit", raw.gitCommit());
         run.put("chat_model", raw.chatModel());
         run.put("embedding_model", raw.embeddingModel());
+        run.put("retrieval", raw.retrieval() == null ? "dense" : raw.retrieval());
         run.put("temperature", raw.temperature());
         run.put("seed", raw.seed());
         run.put("judge_model", judge == null ? null : judge.model());

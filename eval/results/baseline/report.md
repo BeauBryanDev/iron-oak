@@ -14,17 +14,17 @@ Commit `0b340bd-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embe
 | Argument exact match | 1 | 42 |
 | Forbidden-tool violations | 0.000 | 50 |
 | Tool errors per case | 0.040 | 50 |
-| Retriever Hit@5 | 0.735 | 34 |
-| Retriever MRR | 0.618 | 34 |
-| Retriever NDCG@10 | 0.635 | 34 |
+| Retriever Hit@5 | 0.971 | 34 |
+| Retriever MRR | 0.848 | 34 |
+| Retriever NDCG@10 | 0.754 | 34 |
 | Agent searched the knowledge base | 0.853 | 34 |
 | Agent namespace choice correct | 1 | 29 |
-| Agent Hit@5 | 0.706 | 34 |
-| Context precision | 0.521 | 34 |
+| Agent Hit@5 | 0.853 | 34 |
+| Context precision | 0.684 | 34 |
 | Context recall (key facts in contexts) | 0.765 | 34 |
 | Answer correctness (key facts in answer) | 0.809 | 34 |
 | Cites a retrieved document | 0.828 | 29 |
-| Cites the gold document | 0.529 | 34 |
+| Cites the gold document | 0.706 | 34 |
 | Unsupported citations per case | 0.000 | 34 |
 | Faithfulness (judge) | – | 0 |
 | Answer relevancy (judge + embeddings) | – | 0 |
@@ -39,24 +39,24 @@ Retriever = the raw question against all namespaces (top 10). Agent = the passag
 
 | Path | K | Recall | Precision | Hit rate | NDCG |
 |---|---|---|---|---|---|
-| Retriever | 3 | 0.476 | 0.382 | 0.706 | 0.507 |
-| Retriever | 5 | 0.583 | 0.294 | 0.735 | 0.553 |
-| Retriever | 10 | 0.821 | 0.194 | 0.912 | 0.635 |
-| Agent | 3 | 0.476 | 0.373 | 0.706 | 0.466 |
-| Agent | 5 | 0.539 | 0.259 | 0.706 | 0.493 |
-| Agent | 10 | 0.539 | 0.129 | 0.706 | 0.493 |
+| Retriever | 3 | 0.545 | 0.549 | 0.971 | 0.631 |
+| Retriever | 5 | 0.706 | 0.453 | 0.971 | 0.685 |
+| Retriever | 10 | 0.889 | 0.291 | 1 | 0.754 |
+| Agent | 3 | 0.504 | 0.510 | 0.824 | 0.565 |
+| Agent | 5 | 0.607 | 0.382 | 0.853 | 0.597 |
+| Agent | 10 | 0.607 | 0.191 | 0.853 | 0.592 |
 
-MRR: retriever 0.618, agent 0.534.
+MRR: retriever 0.848, agent 0.723.
 
 ## Embeddings (retriever path)
 
 | Metric | Value |
 |---|---|
-| Relevant passage in top 10 | 0.912 |
-| Rank of first relevant passage (when found) | 2.774 |
-| Cosine of first relevant passage | 0.592 |
-| Cosine of best non-relevant passage | 0.584 |
-| Margin (relevant - best non-relevant) | 0.010 |
+| Relevant passage in top 10 | 1 |
+| Rank of first relevant passage (when found) | 1.441 |
+| Cosine of first relevant passage | 0.615 |
+| Cosine of best non-relevant passage | 0.562 |
+| Margin (relevant - best non-relevant) | 0.049 |
 
 ## Agent search behaviour
 
@@ -68,12 +68,12 @@ mean top_k: 4.862, mean searches per RAG case: 0.853
 
 | Category | Tool pass | Retriever Hit@5 | Retriever MRR | Agent Hit@5 | Context recall | Answer correctness | Faithfulness |
 |---|---|---|---|---|---|---|---|
-| business_rules | 1 | 0.667 | 0.622 | 0.667 | 0.667 | 0.778 | – |
-| home_diy | 1 | 0.600 | 0.383 | 0.800 | 0.900 | 0.900 | – |
+| business_rules | 1 | 0.889 | 0.833 | 0.778 | 0.667 | 0.778 | – |
+| home_diy | 1 | 1 | 0.767 | 1 | 0.900 | 0.900 | – |
 | machine_maintenance | 1 | 1 | 1 | 1 | 1 | 1 | – |
 | machine_models | 0.600 | 1 | 0.800 | 0.400 | 0.400 | 0.600 | – |
-| machine_operations | 1 | 0.714 | 0.735 | 0.714 | 0.857 | 0.857 | – |
-| power_tool_safety | 1 | 0.714 | 0.480 | 0.857 | 0.929 | 0.857 | – |
+| machine_operations | 1 | 1 | 0.929 | 1 | 0.857 | 0.857 | – |
+| power_tool_safety | 1 | 1 | 0.857 | 1 | 0.929 | 0.857 | – |
 | tool_routing | 1 | – | – | – | – | – | – |
 
 ## Cases
@@ -90,14 +90,14 @@ mean top_k: 4.862, mean searches per RAG case: 0.853
 | rag-rule-03 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-rule-04 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-rule-05 | list_services | 1 | 6 / – | 1 |
-| rag-rule-06 | list_services | 1 | – / – | 1 |
-| rag-rule-07 | search_knowledge | 1 | 10 / – | 0.000 |
+| rag-rule-06 | list_services | 1 | 1 / – | 1 |
+| rag-rule-07 | search_knowledge | 1 | 1 / 2 | 0.000 |
 | rag-rule-08 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-rule-09 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-ops-01 | search_knowledge | 1 | 1 / 1 | 1 |
-| rag-ops-02 | search_knowledge | 1 | 4 / 2 | 1 |
+| rag-ops-02 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-ops-03 | search_knowledge | 1 | 1 / 1 | 1 |
-| rag-ops-04 | search_knowledge | 1 | 3 / 3 | 1 |
+| rag-ops-04 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-ops-05 | search_knowledge, search_products_by_category | 1 | 1 / 1 | 1 |
 | rag-ops-06 | search_knowledge | 1 | 1 / 2 | 1 |
 | rag-ops-07 | search_knowledge | 1 | 1 / 1 | 1 |
@@ -105,15 +105,15 @@ mean top_k: 4.862, mean searches per RAG case: 0.853
 | rag-ops-09 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-ops-10 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-ops-11 | search_knowledge | 1 | 2 / 2 | 0.000 |
-| rag-diy-03 | search_knowledge, search_products_by_category | 1 | 3 / 3 | 1 |
-| rag-diy-04 | search_knowledge, search_products_by_category | 1 | 8 / – | 0.500 |
-| rag-diy-05 | search_knowledge, search_products_by_category | 1 | 8 / 3 | 1 |
-| rag-pt-01 | search_knowledge, search_products_by_category | 1 | – / 3 | 1 |
-| rag-pt-02 | search_knowledge | 1 | 9 / – | 1 |
+| rag-diy-03 | search_knowledge, search_products_by_category | 1 | 2 / 2 | 1 |
+| rag-diy-04 | search_knowledge, search_products_by_category | 1 | 3 / 4 | 0.500 |
+| rag-diy-05 | search_knowledge, search_products_by_category | 1 | 1 / 1 | 1 |
+| rag-pt-01 | search_knowledge, search_products_by_category | 1 | 1 / 1 | 1 |
+| rag-pt-02 | search_knowledge | 1 | 1 / 1 | 1 |
 | rag-pt-03 | search_knowledge | 1 | 2 / 2 | 1 |
 | rag-ops-12 | search_knowledge, search_products_by_category | 1 | 1 / 1 | 1 |
-| rag-ops-13 | search_knowledge | 1 | 7 / – | 0.000 |
-| rag-ops-14 | search_knowledge | 1 | – / – | 1 |
+| rag-ops-13 | search_knowledge | 1 | 1 / 1 | 0.000 |
+| rag-ops-14 | search_knowledge | 1 | 2 / 1 | 1 |
 | tool-order-01 | get_order | 1 |  |  |
 | tool-order-02 | get_order | 1 |  |  |
 | tool-stock-01 | search_products | 1 |  |  |
@@ -189,20 +189,8 @@ Cases with a tool failure, no relevant passage in Piper's contexts, or fewer tha
 **Tools:** [search_knowledge, search_products_by_category]  
 **A:** Lift the tank lid and add a few drops of food coloring to the tank water—don’t flush. Wait about 30 minutes, then check the toilet bowl. If colored water appears in the bowl, the flapper or flush valve is leaking and may need replacement. This dye test is described in *Home Maintenance For Dummies*, page 232.
 
-### rag-pt-02
-
-**Q:** My drill is double-insulated. Is it safe to use it in the rain?  
-**Tools:** [search_knowledge]  
-**A:** No. Double insulation reduces shock risk, but it doesn’t make the drill waterproof. Don’t use it in the rain or on wet surfaces; wait until the area and tool are dry. This follows *SPP 1910.241 Hand and Portable Power Tools* (p. 14).
-
 ### rag-ops-13
 
 **Q:** What is a built-up edge in metal cutting and why does it form?  
 **Tools:** [search_knowledge]  
 **A:** A **built-up edge (BUE)** is a layer of workpiece metal that sticks to and accumulates around the cutting edge and rake face. It can act like a temporary extension of the tool, changing its cutting geometry.  It forms when metal at the tool–chip interface **seizes or adheres to the tool** under high pressure and severe deformation. The stuck material becomes heavily strain-hardened; layers build u…
-
-### rag-ops-14
-
-**Q:** What does the G00 command do in a CNC program?  
-**Tools:** [search_knowledge]  
-**A:** G00 (often written G0) commands **rapid positioning**: the machine moves the specified axes to the target as quickly as its traverse rate allows, rather than at a cutting feed rate. It’s normally used when the tool is not cutting, so check that the path is clear of the workpiece and clamps.  According to the *EMC2 User Manual*, “G0: Rapid Linear Motion,” p. 150.

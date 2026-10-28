@@ -173,6 +173,7 @@ class PiperEvalTest {
                 EvalEnv.gitCommit(),
                 chatModel,
                 embeddingModel,
+                knowledge.hybridEnabled() ? "hybrid (dense + BM25, RRF)" : "dense",
                 temperature,
                 seed,
                 placeholders,

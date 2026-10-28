@@ -33,6 +33,8 @@ final class TextNormalizer {
         String value = text.replace("¼", "1/4").replace("½", "1/2");
         value = Normalizer.normalize(value, Normalizer.Form.NFKD);
         value = MARKS.matcher(value).replaceAll("").toLowerCase(Locale.ROOT);
+        // NFKD turns ⅛ into 1⁄8 with a fraction slash
+        value = value.replace('\u2044', '/');
 
         value = joinThousands(joinThousands(value, COMMA_THOUSANDS), SPACE_THOUSANDS);
         value = TIMES.matcher(value).replaceAll("$1x$2");

@@ -1,0 +1,5066 @@
+{
+  "run" : {
+    "label" : "fix1",
+    "started_at" : "2026-10-28T12:39:24.095030008-05:00",
+    "git_commit" : "4ec6274-dirty",
+    "chat_model" : "gpt-6-luna",
+    "embedding_model" : "text-embedding-3-small",
+    "temperature" : 0.0,
+    "seed" : 42,
+    "judge_model" : null,
+    "cases" : 50,
+    "rag_cases" : 34
+  },
+  "overall" : {
+    "run.latency_ms" : {
+      "mean" : 5883.02,
+      "n" : 50
+    },
+    "run.prompt_tokens" : {
+      "mean" : 13531.34,
+      "n" : 50
+    },
+    "run.completion_tokens" : {
+      "mean" : 146.86,
+      "n" : 50
+    },
+    "run.failed" : {
+      "mean" : 0.0,
+      "n" : 50
+    },
+    "tools.selection" : {
+      "mean" : 0.98,
+      "n" : 50
+    },
+    "tools.exact_set" : {
+      "mean" : 0.94,
+      "n" : 50
+    },
+    "tools.first_tool" : {
+      "mean" : 0.9362,
+      "n" : 47
+    },
+    "tools.forbidden_violation" : {
+      "mean" : 0.02,
+      "n" : 50
+    },
+    "tools.arg_accuracy" : {
+      "mean" : 1.0,
+      "n" : 43
+    },
+    "tools.arg_exact" : {
+      "mean" : 1.0,
+      "n" : 43
+    },
+    "tools.errors" : {
+      "mean" : 0.0,
+      "n" : 50
+    },
+    "tools.calls" : {
+      "mean" : 1.14,
+      "n" : 50
+    },
+    "tools.pass" : {
+      "mean" : 0.98,
+      "n" : 50
+    },
+    "agent_retrieval.recall@3" : {
+      "mean" : 0.5559,
+      "n" : 34
+    },
+    "agent_retrieval.precision@3" : {
+      "mean" : 0.5588,
+      "n" : 34
+    },
+    "agent_retrieval.hit@3" : {
+      "mean" : 0.8824,
+      "n" : 34
+    },
+    "agent_retrieval.ndcg@3" : {
+      "mean" : 0.6024,
+      "n" : 34
+    },
+    "agent_retrieval.recall@5" : {
+      "mean" : 0.6828,
+      "n" : 34
+    },
+    "agent_retrieval.precision@5" : {
+      "mean" : 0.4353,
+      "n" : 34
+    },
+    "agent_retrieval.hit@5" : {
+      "mean" : 0.9118,
+      "n" : 34
+    },
+    "agent_retrieval.ndcg@5" : {
+      "mean" : 0.6513,
+      "n" : 34
+    },
+    "agent_retrieval.recall@10" : {
+      "mean" : 0.6926,
+      "n" : 34
+    },
+    "agent_retrieval.precision@10" : {
+      "mean" : 0.2206,
+      "n" : 34
+    },
+    "agent_retrieval.hit@10" : {
+      "mean" : 0.9118,
+      "n" : 34
+    },
+    "agent_retrieval.ndcg@10" : {
+      "mean" : 0.6483,
+      "n" : 34
+    },
+    "agent_retrieval.mrr" : {
+      "mean" : 0.777,
+      "n" : 34
+    },
+    "agent_retrieval.searched" : {
+      "mean" : 0.9118,
+      "n" : 34
+    },
+    "agent_retrieval.search_calls" : {
+      "mean" : 0.9706,
+      "n" : 34
+    },
+    "agent_retrieval.contexts" : {
+      "mean" : 4.7941,
+      "n" : 34
+    },
+    "agent_retrieval.top_k" : {
+      "mean" : 5.0484,
+      "n" : 31
+    },
+    "agent_retrieval.namespace_ok" : {
+      "mean" : 1.0,
+      "n" : 31
+    },
+    "retriever.recall@3" : {
+      "mean" : 0.5451,
+      "n" : 34
+    },
+    "retriever.precision@3" : {
+      "mean" : 0.549,
+      "n" : 34
+    },
+    "retriever.hit@3" : {
+      "mean" : 0.9706,
+      "n" : 34
+    },
+    "retriever.ndcg@3" : {
+      "mean" : 0.6307,
+      "n" : 34
+    },
+    "retriever.recall@5" : {
+      "mean" : 0.7064,
+      "n" : 34
+    },
+    "retriever.precision@5" : {
+      "mean" : 0.4529,
+      "n" : 34
+    },
+    "retriever.hit@5" : {
+      "mean" : 0.9706,
+      "n" : 34
+    },
+    "retriever.ndcg@5" : {
+      "mean" : 0.6853,
+      "n" : 34
+    },
+    "retriever.recall@10" : {
+      "mean" : 0.8885,
+      "n" : 34
+    },
+    "retriever.precision@10" : {
+      "mean" : 0.2912,
+      "n" : 34
+    },
+    "retriever.hit@10" : {
+      "mean" : 1.0,
+      "n" : 34
+    },
+    "retriever.ndcg@10" : {
+      "mean" : 0.7536,
+      "n" : 34
+    },
+    "retriever.mrr" : {
+      "mean" : 0.848,
+      "n" : 34
+    },
+    "embedding.gold_in_top10" : {
+      "mean" : 1.0,
+      "n" : 34
+    },
+    "embedding.gold_rank" : {
+      "mean" : 1.4412,
+      "n" : 34
+    },
+    "embedding.gold_score" : {
+      "mean" : 0.6152,
+      "n" : 34
+    },
+    "embedding.best_other_score" : {
+      "mean" : 0.5616,
+      "n" : 33
+    },
+    "embedding.top1_score" : {
+      "mean" : 0.6237,
+      "n" : 34
+    },
+    "embedding.margin" : {
+      "mean" : 0.0487,
+      "n" : 33
+    },
+    "generation.context_precision" : {
+      "mean" : 0.7243,
+      "n" : 34
+    },
+    "generation.context_recall" : {
+      "mean" : 0.8529,
+      "n" : 34
+    },
+    "generation.answer_correctness" : {
+      "mean" : 0.9069,
+      "n" : 34
+    },
+    "generation.cites_retrieved" : {
+      "mean" : 0.9355,
+      "n" : 31
+    },
+    "generation.cites_gold_doc" : {
+      "mean" : 0.8529,
+      "n" : 34
+    },
+    "generation.unsupported_citations" : {
+      "mean" : 0.0,
+      "n" : 34
+    }
+  },
+  "by_category" : {
+    "business_rules" : {
+      "run.latency_ms" : {
+        "mean" : 5575.4444,
+        "n" : 9
+      },
+      "run.prompt_tokens" : {
+        "mean" : 12952.7778,
+        "n" : 9
+      },
+      "run.completion_tokens" : {
+        "mean" : 109.0,
+        "n" : 9
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 9
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "tools.exact_set" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 9
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 8
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 8
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 9
+      },
+      "tools.calls" : {
+        "mean" : 1.1111,
+        "n" : 9
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.4907,
+        "n" : 9
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.3704,
+        "n" : 9
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.5249,
+        "n" : 9
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.6204,
+        "n" : 9
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.2889,
+        "n" : 9
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.5591,
+        "n" : 9
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.6574,
+        "n" : 9
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.1556,
+        "n" : 9
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.5619,
+        "n" : 9
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 0.6296,
+        "n" : 9
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 0.8889,
+        "n" : 9
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 4.3333,
+        "n" : 9
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.2143,
+        "n" : 7
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.5278,
+        "n" : 9
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.4074,
+        "n" : 9
+      },
+      "retriever.hit@3" : {
+        "mean" : 0.8889,
+        "n" : 9
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.627,
+        "n" : 9
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.6944,
+        "n" : 9
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.3333,
+        "n" : 9
+      },
+      "retriever.hit@5" : {
+        "mean" : 0.8889,
+        "n" : 9
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.6509,
+        "n" : 9
+      },
+      "retriever.recall@10" : {
+        "mean" : 0.8843,
+        "n" : 9
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.2222,
+        "n" : 9
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.7345,
+        "n" : 9
+      },
+      "retriever.mrr" : {
+        "mean" : 0.8333,
+        "n" : 9
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 9
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.7778,
+        "n" : 9
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.5632,
+        "n" : 9
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.5208,
+        "n" : 9
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.5782,
+        "n" : 9
+      },
+      "embedding.margin" : {
+        "mean" : 0.0424,
+        "n" : 9
+      },
+      "generation.context_precision" : {
+        "mean" : 0.5948,
+        "n" : 9
+      },
+      "generation.context_recall" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "generation.answer_correctness" : {
+        "mean" : 0.8889,
+        "n" : 9
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 9
+      }
+    },
+    "home_diy" : {
+      "run.latency_ms" : {
+        "mean" : 6288.2,
+        "n" : 5
+      },
+      "run.prompt_tokens" : {
+        "mean" : 16551.6,
+        "n" : 5
+      },
+      "run.completion_tokens" : {
+        "mean" : 184.4,
+        "n" : 5
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.exact_set" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.calls" : {
+        "mean" : 1.4,
+        "n" : 5
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.4533,
+        "n" : 5
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.5333,
+        "n" : 5
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.6012,
+        "n" : 5
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.61,
+        "n" : 5
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.44,
+        "n" : 5
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.6444,
+        "n" : 5
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.61,
+        "n" : 5
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.22,
+        "n" : 5
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.6444,
+        "n" : 5
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 0.75,
+        "n" : 5
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 5.0,
+        "n" : 5
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.0,
+        "n" : 5
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.48,
+        "n" : 5
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.5333,
+        "n" : 5
+      },
+      "retriever.hit@3" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.6099,
+        "n" : 5
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.57,
+        "n" : 5
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.4,
+        "n" : 5
+      },
+      "retriever.hit@5" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.615,
+        "n" : 5
+      },
+      "retriever.recall@10" : {
+        "mean" : 0.8833,
+        "n" : 5
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.3,
+        "n" : 5
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.7272,
+        "n" : 5
+      },
+      "retriever.mrr" : {
+        "mean" : 0.7667,
+        "n" : 5
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.6,
+        "n" : 5
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.6235,
+        "n" : 5
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.5527,
+        "n" : 5
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.6349,
+        "n" : 5
+      },
+      "embedding.margin" : {
+        "mean" : 0.0707,
+        "n" : 5
+      },
+      "generation.context_precision" : {
+        "mean" : 0.7244,
+        "n" : 5
+      },
+      "generation.context_recall" : {
+        "mean" : 0.9,
+        "n" : 5
+      },
+      "generation.answer_correctness" : {
+        "mean" : 0.9,
+        "n" : 5
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 5
+      }
+    },
+    "machine_maintenance" : {
+      "run.latency_ms" : {
+        "mean" : 4782.0,
+        "n" : 1
+      },
+      "run.prompt_tokens" : {
+        "mean" : 13473.0,
+        "n" : 1
+      },
+      "run.completion_tokens" : {
+        "mean" : 118.0,
+        "n" : 1
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 1
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.exact_set" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 1
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 1
+      },
+      "tools.calls" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.5,
+        "n" : 1
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.6667,
+        "n" : 1
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.6052,
+        "n" : 1
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.75,
+        "n" : 1
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.6,
+        "n" : 1
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.6329,
+        "n" : 1
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.75,
+        "n" : 1
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.3,
+        "n" : 1
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.6329,
+        "n" : 1
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 5.0,
+        "n" : 1
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.0,
+        "n" : 1
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.5,
+        "n" : 1
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.6667,
+        "n" : 1
+      },
+      "retriever.hit@3" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.6052,
+        "n" : 1
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.75,
+        "n" : 1
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.6,
+        "n" : 1
+      },
+      "retriever.hit@5" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.6329,
+        "n" : 1
+      },
+      "retriever.recall@10" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.4,
+        "n" : 1
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.7059,
+        "n" : 1
+      },
+      "retriever.mrr" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.6483,
+        "n" : 1
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.6203,
+        "n" : 1
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.6483,
+        "n" : 1
+      },
+      "embedding.margin" : {
+        "mean" : 0.028,
+        "n" : 1
+      },
+      "generation.context_precision" : {
+        "mean" : 0.7556,
+        "n" : 1
+      },
+      "generation.context_recall" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "generation.answer_correctness" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 1
+      }
+    },
+    "machine_models" : {
+      "run.latency_ms" : {
+        "mean" : 5319.6,
+        "n" : 5
+      },
+      "run.prompt_tokens" : {
+        "mean" : 12642.4,
+        "n" : 5
+      },
+      "run.completion_tokens" : {
+        "mean" : 92.8,
+        "n" : 5
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.exact_set" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 5
+      },
+      "tools.calls" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.75,
+        "n" : 5
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.6,
+        "n" : 5
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.6371,
+        "n" : 5
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.44,
+        "n" : 5
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.6589,
+        "n" : 5
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.22,
+        "n" : 5
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.6589,
+        "n" : 5
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 0.7,
+        "n" : 5
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 4.0,
+        "n" : 5
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.0,
+        "n" : 4
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 4
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.75,
+        "n" : 5
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.6,
+        "n" : 5
+      },
+      "retriever.hit@3" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.7473,
+        "n" : 5
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.9,
+        "n" : 5
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.48,
+        "n" : 5
+      },
+      "retriever.hit@5" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.7904,
+        "n" : 5
+      },
+      "retriever.recall@10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.26,
+        "n" : 5
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.8087,
+        "n" : 5
+      },
+      "retriever.mrr" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.4,
+        "n" : 5
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.6299,
+        "n" : 5
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.5902,
+        "n" : 5
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.6353,
+        "n" : 5
+      },
+      "embedding.margin" : {
+        "mean" : 0.0397,
+        "n" : 5
+      },
+      "generation.context_precision" : {
+        "mean" : 0.6733,
+        "n" : 5
+      },
+      "generation.context_recall" : {
+        "mean" : 0.8,
+        "n" : 5
+      },
+      "generation.answer_correctness" : {
+        "mean" : 1.0,
+        "n" : 5
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 0.75,
+        "n" : 4
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 0.6,
+        "n" : 5
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 5
+      }
+    },
+    "machine_operations" : {
+      "run.latency_ms" : {
+        "mean" : 6554.7143,
+        "n" : 7
+      },
+      "run.prompt_tokens" : {
+        "mean" : 15114.2857,
+        "n" : 7
+      },
+      "run.completion_tokens" : {
+        "mean" : 193.0,
+        "n" : 7
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.exact_set" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.calls" : {
+        "mean" : 1.2857,
+        "n" : 7
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.3762,
+        "n" : 7
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.6667,
+        "n" : 7
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.6188,
+        "n" : 7
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.5476,
+        "n" : 7
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.5714,
+        "n" : 7
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.7177,
+        "n" : 7
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.5476,
+        "n" : 7
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.2857,
+        "n" : 7
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.6998,
+        "n" : 7
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 0.9286,
+        "n" : 7
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 1.1429,
+        "n" : 7
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 5.5714,
+        "n" : 7
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.0,
+        "n" : 7
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.3762,
+        "n" : 7
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.6667,
+        "n" : 7
+      },
+      "retriever.hit@3" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.6324,
+        "n" : 7
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.5952,
+        "n" : 7
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.6,
+        "n" : 7
+      },
+      "retriever.hit@5" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.7426,
+        "n" : 7
+      },
+      "retriever.recall@10" : {
+        "mean" : 0.8095,
+        "n" : 7
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.4143,
+        "n" : 7
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.8117,
+        "n" : 7
+      },
+      "retriever.mrr" : {
+        "mean" : 0.9286,
+        "n" : 7
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.1429,
+        "n" : 7
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.6863,
+        "n" : 7
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.6068,
+        "n" : 6
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.6864,
+        "n" : 7
+      },
+      "embedding.margin" : {
+        "mean" : 0.0639,
+        "n" : 6
+      },
+      "generation.context_precision" : {
+        "mean" : 0.8413,
+        "n" : 7
+      },
+      "generation.context_recall" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "generation.answer_correctness" : {
+        "mean" : 0.8095,
+        "n" : 7
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 7
+      }
+    },
+    "power_tool_safety" : {
+      "run.latency_ms" : {
+        "mean" : 7272.2857,
+        "n" : 7
+      },
+      "run.prompt_tokens" : {
+        "mean" : 14452.8571,
+        "n" : 7
+      },
+      "run.completion_tokens" : {
+        "mean" : 159.0,
+        "n" : 7
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.selection" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.exact_set" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "tools.first_tool" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 7
+      },
+      "tools.calls" : {
+        "mean" : 1.1429,
+        "n" : 7
+      },
+      "tools.pass" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.recall@3" : {
+        "mean" : 0.7619,
+        "n" : 7
+      },
+      "agent_retrieval.precision@3" : {
+        "mean" : 0.6667,
+        "n" : 7
+      },
+      "agent_retrieval.hit@3" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@3" : {
+        "mean" : 0.6616,
+        "n" : 7
+      },
+      "agent_retrieval.recall@5" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "agent_retrieval.precision@5" : {
+        "mean" : 0.4571,
+        "n" : 7
+      },
+      "agent_retrieval.hit@5" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@5" : {
+        "mean" : 0.7053,
+        "n" : 7
+      },
+      "agent_retrieval.recall@10" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "agent_retrieval.precision@10" : {
+        "mean" : 0.2286,
+        "n" : 7
+      },
+      "agent_retrieval.hit@10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.ndcg@10" : {
+        "mean" : 0.7053,
+        "n" : 7
+      },
+      "agent_retrieval.mrr" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "agent_retrieval.searched" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.search_calls" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "agent_retrieval.contexts" : {
+        "mean" : 5.0,
+        "n" : 7
+      },
+      "agent_retrieval.top_k" : {
+        "mean" : 5.0,
+        "n" : 7
+      },
+      "agent_retrieval.namespace_ok" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.recall@3" : {
+        "mean" : 0.6429,
+        "n" : 7
+      },
+      "retriever.precision@3" : {
+        "mean" : 0.5714,
+        "n" : 7
+      },
+      "retriever.hit@3" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@3" : {
+        "mean" : 0.569,
+        "n" : 7
+      },
+      "retriever.recall@5" : {
+        "mean" : 0.7857,
+        "n" : 7
+      },
+      "retriever.precision@5" : {
+        "mean" : 0.4571,
+        "n" : 7
+      },
+      "retriever.hit@5" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@5" : {
+        "mean" : 0.655,
+        "n" : 7
+      },
+      "retriever.recall@10" : {
+        "mean" : 0.881,
+        "n" : 7
+      },
+      "retriever.precision@10" : {
+        "mean" : 0.2571,
+        "n" : 7
+      },
+      "retriever.hit@10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "retriever.ndcg@10" : {
+        "mean" : 0.7064,
+        "n" : 7
+      },
+      "retriever.mrr" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "embedding.gold_in_top10" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "embedding.gold_rank" : {
+        "mean" : 1.2857,
+        "n" : 7
+      },
+      "embedding.gold_score" : {
+        "mean" : 0.5898,
+        "n" : 7
+      },
+      "embedding.best_other_score" : {
+        "mean" : 0.5526,
+        "n" : 7
+      },
+      "embedding.top1_score" : {
+        "mean" : 0.5996,
+        "n" : 7
+      },
+      "embedding.margin" : {
+        "mean" : 0.0372,
+        "n" : 7
+      },
+      "generation.context_precision" : {
+        "mean" : 0.8056,
+        "n" : 7
+      },
+      "generation.context_recall" : {
+        "mean" : 0.9286,
+        "n" : 7
+      },
+      "generation.answer_correctness" : {
+        "mean" : 0.9524,
+        "n" : 7
+      },
+      "generation.cites_retrieved" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "generation.cites_gold_doc" : {
+        "mean" : 0.8571,
+        "n" : 7
+      },
+      "generation.unsupported_citations" : {
+        "mean" : 0.0,
+        "n" : 7
+      }
+    },
+    "tool_routing" : {
+      "run.latency_ms" : {
+        "mean" : 5272.625,
+        "n" : 16
+      },
+      "run.prompt_tokens" : {
+        "mean" : 12098.6875,
+        "n" : 16
+      },
+      "run.completion_tokens" : {
+        "mean" : 149.625,
+        "n" : 16
+      },
+      "run.failed" : {
+        "mean" : 0.0,
+        "n" : 16
+      },
+      "tools.selection" : {
+        "mean" : 0.9375,
+        "n" : 16
+      },
+      "tools.exact_set" : {
+        "mean" : 0.9375,
+        "n" : 16
+      },
+      "tools.first_tool" : {
+        "mean" : 0.7692,
+        "n" : 13
+      },
+      "tools.forbidden_violation" : {
+        "mean" : 0.0625,
+        "n" : 16
+      },
+      "tools.arg_accuracy" : {
+        "mean" : 1.0,
+        "n" : 10
+      },
+      "tools.arg_exact" : {
+        "mean" : 1.0,
+        "n" : 10
+      },
+      "tools.errors" : {
+        "mean" : 0.0,
+        "n" : 16
+      },
+      "tools.calls" : {
+        "mean" : 1.0625,
+        "n" : 16
+      },
+      "tools.pass" : {
+        "mean" : 0.9375,
+        "n" : 16
+      }
+    }
+  },
+  "agent_search_top_k" : {
+    "5" : 35,
+    "8" : 1
+  },
+  "agent_search_namespaces" : {
+    "home_do_it_yourself" : 5,
+    "home_do_it_yourself+power_tools" : 1,
+    "iron_oak" : 8,
+    "iron_oak+machine_operations" : 5,
+    "machine_maintenance" : 1,
+    "machine_maintenance+machine_operations" : 1,
+    "machine_operations" : 8,
+    "power_tools" : 5,
+    "power_tools+home_do_it_yourself" : 1,
+    "power_tools+machine_maintenance+iron_oak" : 1
+  },
+  "cases" : [ {
+    "id" : "rag-mach-01",
+    "category" : "machine_models",
+    "rag" : true,
+    "question" : "What is the maximum spindle speed of the AVIA VMC 650 HS V machining centre?",
+    "answer" : "The AVIA VMC 650 HS V has a maximum spindle speed of **24,000 rpm**. Source: *AVIA Vertical Machining Centres: Machine Models for Sale*.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 8428.0,
+      "prompt_tokens" : 12674.0,
+      "completion_tokens" : 92.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.75,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.8,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9903929125301808,
+      "recall@10" : 1.0,
+      "precision@10" : 0.4,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9903929125301808,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.75,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.8,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9903929125301808,
+      "recall@10" : 1.0,
+      "precision@10" : 0.4,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9903929125301808,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7546663880348206,
+      "best_other_score" : 0.668734073638916,
+      "top1_score" : 0.7546663880348206,
+      "margin" : 0.08593231439590454
+    },
+    "generation" : {
+      "context_precision" : 0.95,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Machines-Models-for-Sales.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-mach-02",
+    "category" : "machine_models",
+    "rag" : true,
+    "question" : "How many tool positions does the tool changer of the AVIA VMC 1300 have, and what type of tool changer is it?",
+    "answer" : "The AVIA VMC 1300 has **40 tool positions** and a **swing-arm, chain-type automatic tool changer (ATC)**. Source: *AVIA Vertical Machining Centres: Machine Models for Sale*.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4264.0,
+      "prompt_tokens" : 13209.0,
+      "completion_tokens" : 104.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7967075809905068,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9153208804215327,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9153208804215327,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.52129602861432,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.7464530602268968,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7464530602268968,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.5777610540390015,
+      "best_other_score" : 0.5995109677314758,
+      "top1_score" : 0.5995109677314758,
+      "margin" : -0.021749913692474365
+    },
+    "generation" : {
+      "context_precision" : 0.9166666666666666,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Machines-Models-for-Sales.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-mach-04",
+    "category" : "machine_models",
+    "rag" : true,
+    "question" : "How much do the AVIA VMC 650 and the AVIA VMC 1300 weigh?",
+    "answer" : "The AVIA VMC 650 weighs approximately **4,400 kg**, and the AVIA VMC 1300 approximately **9,300 kg**. These are approximate machine weights, according to Iron & Oak’s AVIA machine specifications.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4783.0,
+      "prompt_tokens" : 13197.0,
+      "completion_tokens" : 106.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.757923746068198,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.757923746068198,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.757923746068198,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.757923746068198,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.757923746068198,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.757923746068198,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.4415428042411804,
+      "best_other_score" : 0.42636269330978394,
+      "top1_score" : 0.4415428042411804,
+      "margin" : 0.015180110931396484
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 0.0,
+      "cites_gold_doc" : 0.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-mach-10",
+    "category" : "machine_models",
+    "rag" : true,
+    "question" : "What is the X-axis travel of the HB1620 horizontal boring mill?",
+    "answer" : "The HB1620 has an X-axis travel of **118 in (2,997 mm)**. Source: *AVIA Vertical Machining Centres: Machine Models for Sale*, HB1620 specifications.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4647.0,
+      "prompt_tokens" : 12869.0,
+      "completion_tokens" : 93.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.6309297535714574,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6309297535714574,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6309297535714574,
+      "mrr" : 0.5,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.6309297535714574,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6309297535714574,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6309297535714574,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.5978853702545166,
+      "best_other_score" : 0.6030136942863464,
+      "top1_score" : 0.6030136942863464,
+      "margin" : -0.005128324031829834
+    },
+    "generation" : {
+      "context_precision" : 0.5,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Machines-Models-for-Sales.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 2.0
+  }, {
+    "id" : "rag-mach-12",
+    "category" : "machine_models",
+    "rag" : true,
+    "question" : "What are the spindle speed, table size and price of the VMC-650 machining centre that Iron & Oak sells?",
+    "answer" : "The VMC-650 has a spindle speed range of **50–8,000 rpm** and a table size of **800 × 400 mm**. Its listed price is **US$28,500**.",
+    "error" : null,
+    "tools_called" : [ "list_machines" ],
+    "run" : {
+      "latency_ms" : 4476.0,
+      "prompt_tokens" : 11263.0,
+      "completion_tokens" : 69.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "model_code" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.0,
+      "precision@3" : 0.0,
+      "hit@3" : 0.0,
+      "ndcg@3" : 0.0,
+      "recall@5" : 0.0,
+      "precision@5" : 0.0,
+      "hit@5" : 0.0,
+      "ndcg@5" : 0.0,
+      "recall@10" : 0.0,
+      "precision@10" : 0.0,
+      "hit@10" : 0.0,
+      "ndcg@10" : 0.0,
+      "mrr" : 0.0,
+      "searched" : 0.0,
+      "search_calls" : 0.0,
+      "contexts" : 0.0,
+      "top_k" : null,
+      "namespace_ok" : null
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.82623465712856,
+      "recall@5" : 0.5,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.82623465712856,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9180385079206222,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7777178883552551,
+      "best_other_score" : 0.653603196144104,
+      "top1_score" : 0.7777178883552551,
+      "margin" : 0.12411469221115112
+    },
+    "generation" : {
+      "context_precision" : 0.0,
+      "context_recall" : 0.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : null,
+      "cites_gold_doc" : 0.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : null
+  }, {
+    "id" : "rag-rule-01",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "I am ordering 150 USD of tools to be delivered in Mexico. How much tax will I pay?",
+    "answer" : "For a **$150 item subtotal delivered to Mexico**, Iron & Oak’s tax is **26%**, so the tax would be **$39.00**. Tax applies to the items, not shipping. The checkout will show the final shipping cost and total. (Iron Oak Business Rules, “Tax Rules.”)",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4867.0,
+      "prompt_tokens" : 12595.0,
+      "completion_tokens" : 113.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.9514426589871553,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9514426589871553,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9514426589871553,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.9514426589871553,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9514426589871553,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9514426589871553,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.49744734168052673,
+      "best_other_score" : 0.4460546672344208,
+      "top1_score" : 0.49744734168052673,
+      "margin" : 0.05139267444610596
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-rule-02",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "How much does shipping to Costa Rica cost?",
+    "answer" : "Shipping tools and end mills to Costa Rica is **$48 per order**, regardless of weight. Milling-machine freight is quoted separately by staff. Source: *Iron Oak Business Rules — Shipping Rules, section 3.2*.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5288.0,
+      "prompt_tokens" : 12535.0,
+      "completion_tokens" : 91.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.12103812696590094,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.506238329995568,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.506238329995568,
+      "mrr" : 0.3333333333333333,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.3631143808977028,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.5610188271306912,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.5610188271306912,
+      "mrr" : 0.3333333333333333
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 3.0,
+      "gold_score" : 0.4469500780105591,
+      "best_other_score" : 0.4966754913330078,
+      "top1_score" : 0.4966754913330078,
+      "margin" : -0.04972541332244873
+    },
+    "generation" : {
+      "context_precision" : 0.4777777777777777,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 3.0,
+    "gold_rank_agent" : 3.0
+  }, {
+    "id" : "rag-rule-03",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "How long does a delivery to the United States take?",
+    "answer" : "Delivery to the United States is estimated at about **5 days from the ship date**: 1 handling day plus 4 days in transit by air. In-stock standard orders typically ship within 2 business days after confirmation, so allow roughly **7 business days from order confirmation**. These are estimates, not guarantees. (Iron Oak Business Rules, “Shipping Rules”; Iron Oak Company Book, “Order Handling Time.”)",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5983.0,
+      "prompt_tokens" : 12002.0,
+      "completion_tokens" : 128.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5237259268760681,
+      "best_other_score" : 0.4118858575820923,
+      "top1_score" : 0.5237259268760681,
+      "margin" : 0.11184006929397583
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "IRON_OAK_INNER_BOOK.md", "Iron_Oak_Business_Rules.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-rule-04",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "If I place an order on the website, how long do I have to pay before it expires?",
+    "answer" : "Website orders expire if they aren’t paid within **6 hours**. The items are held for you during that time, then released back for sale. (Iron & Oak Business Rules, section 3.7)",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 7282.0,
+      "prompt_tokens" : 11941.0,
+      "completion_tokens" : 95.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5453385710716248,
+      "best_other_score" : 0.4458823800086975,
+      "top1_score" : 0.5453385710716248,
+      "margin" : 0.09945619106292725
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-rule-05",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "Can one of your technicians come to my workshop in Cali to service my mill?",
+    "answer" : "Sorry, our technicians only make on-site visits in Bogotá and Medellín, so we can’t send one to Cali. I can help you troubleshoot the mill remotely or check whether another support option is available.",
+    "error" : null,
+    "tools_called" : [ "list_services" ],
+    "run" : {
+      "latency_ms" : 3286.0,
+      "prompt_tokens" : 11627.0,
+      "completion_tokens" : 57.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.0,
+      "precision@3" : 0.0,
+      "hit@3" : 0.0,
+      "ndcg@3" : 0.0,
+      "recall@5" : 0.0,
+      "precision@5" : 0.0,
+      "hit@5" : 0.0,
+      "ndcg@5" : 0.0,
+      "recall@10" : 0.0,
+      "precision@10" : 0.0,
+      "hit@10" : 0.0,
+      "ndcg@10" : 0.0,
+      "mrr" : 0.0,
+      "searched" : 0.0,
+      "search_calls" : 0.0,
+      "contexts" : 0.0,
+      "top_k" : null,
+      "namespace_ok" : null
+    },
+    "retriever" : {
+      "recall@3" : 0.0,
+      "precision@3" : 0.0,
+      "hit@3" : 0.0,
+      "ndcg@3" : 0.0,
+      "recall@5" : 0.0,
+      "precision@5" : 0.0,
+      "hit@5" : 0.0,
+      "ndcg@5" : 0.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.3562071871080222,
+      "mrr" : 0.16666666666666666
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 6.0,
+      "gold_score" : 0.48641371726989746,
+      "best_other_score" : 0.5713691711425781,
+      "top1_score" : 0.5713691711425781,
+      "margin" : -0.08495545387268066
+    },
+    "generation" : {
+      "context_precision" : 0.0,
+      "context_recall" : 0.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : null,
+      "cites_gold_doc" : 0.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 6.0,
+    "gold_rank_agent" : null
+  }, {
+    "id" : "rag-rule-06",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "What does an Emergency Repair visit cost?",
+    "answer" : "Emergency Repair is **$180 per hour**, with an estimated **2–6 hours** of work. The final cost depends on the time required; parts may be additional.",
+    "error" : null,
+    "tools_called" : [ "list_services" ],
+    "run" : {
+      "latency_ms" : 3817.0,
+      "prompt_tokens" : 11611.0,
+      "completion_tokens" : 51.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "code" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.0,
+      "precision@3" : 0.0,
+      "hit@3" : 0.0,
+      "ndcg@3" : 0.0,
+      "recall@5" : 0.0,
+      "precision@5" : 0.0,
+      "hit@5" : 0.0,
+      "ndcg@5" : 0.0,
+      "recall@10" : 0.0,
+      "precision@10" : 0.0,
+      "hit@10" : 0.0,
+      "ndcg@10" : 0.0,
+      "mrr" : 0.0,
+      "searched" : 0.0,
+      "search_calls" : 0.0,
+      "contexts" : 0.0,
+      "top_k" : null,
+      "namespace_ok" : null
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.5562983930884396,
+      "recall@5" : 0.3333333333333333,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.5562983930884396,
+      "recall@10" : 0.3333333333333333,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.5562983930884396,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5760737657546997,
+      "best_other_score" : 0.5048943758010864,
+      "top1_score" : 0.5760737657546997,
+      "margin" : 0.07117938995361328
+    },
+    "generation" : {
+      "context_precision" : 0.0,
+      "context_recall" : 0.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : null,
+      "cites_gold_doc" : 0.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : null
+  }, {
+    "id" : "rag-rule-07",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "Do the end mills I buy from you come with a warranty?",
+    "answer" : "End mills are cutters, and our policy excludes cutters and other tooling from Iron & Oak’s warranty. A manufacturer’s warranty or applicable law may still provide coverage, and the product listing or your written quote may specify different terms. The Warranty Team makes the final decision on any claim.\n\nSource: *Iron Oak Company Book*, sections 18.9 and 20.5.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 9689.0,
+      "prompt_tokens" : 19638.0,
+      "completion_tokens" : 167.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.12103812696590094,
+      "recall@5" : 0.3333333333333333,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.12103812696590094,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.1974046825852476,
+      "mrr" : 0.3333333333333333,
+      "searched" : 1.0,
+      "search_calls" : 2.0,
+      "contexts" : 9.0,
+      "top_k" : 6.5,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.24207625393180188,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.3357241323301412,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.5456513232255849,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5780603885650635,
+      "best_other_score" : 0.5591913461685181,
+      "top1_score" : 0.5780603885650635,
+      "margin" : 0.01886904239654541
+    },
+    "generation" : {
+      "context_precision" : 0.29166666666666663,
+      "context_recall" : 1.0,
+      "answer_correctness" : 0.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "IRON_OAK_INNER_BOOK.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 3.0
+  }, {
+    "id" : "rag-rule-08",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "When does the warranty on a milling machine start, and how long does it last?",
+    "answer" : "A milling machine’s warranty starts on its **Commissioning Date** and lasts **12 months**, but never beyond **18 months after delivery**. If you commission it yourself without Iron & Oak and don’t return the signed commissioning checklist, the Commissioning Date is set to **60 calendar days after delivery**.\n\nSource: *Iron Oak Company Book*, sections 18.8 and 6.1.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4680.0,
+      "prompt_tokens" : 12036.0,
+      "completion_tokens" : 131.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7039180890341348,
+      "recall@5" : 0.25,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.5087403079104241,
+      "recall@10" : 0.25,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.45683504006321096,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7039180890341348,
+      "recall@5" : 0.25,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.5087403079104241,
+      "recall@10" : 0.625,
+      "precision@10" : 0.5,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6952368954726467,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6537564992904663,
+      "best_other_score" : 0.6184508800506592,
+      "top1_score" : 0.6537564992904663,
+      "margin" : 0.03530561923980713
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "IRON_OAK_INNER_BOOK.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-rule-09",
+    "category" : "business_rules",
+    "rag" : true,
+    "question" : "How is road shipping calculated for deliveries inside Colombia?",
+    "answer" : "For deliveries within Colombia, road shipping is calculated as:\n\n**US$0.215 per 100 km from Bogotá + US$0.275 per kg + US$17.50 per m³ of parcel volume + US$2.50 base fee.**\n\nAll tools and accessories in an order travel together as one parcel, with one base fee. Shipping to a Colombian city outside our listed routes may not be available unless staff have added a route.\n\nSource: *Iron Oak Business Rules*, section 3.3.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5287.0,
+      "prompt_tokens" : 12590.0,
+      "completion_tokens" : 148.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.82623465712856,
+      "recall@5" : 1.0,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9448479565595861,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9448479565595861,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.82623465712856,
+      "recall@5" : 1.0,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.9448479565595861,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9448479565595861,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7614733576774597,
+      "best_other_score" : 0.632932722568512,
+      "top1_score" : 0.7614733576774597,
+      "margin" : 0.12854063510894775
+    },
+    "generation" : {
+      "context_precision" : 0.75,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-01",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "What is the maximum gap allowed between the work rest of a bench grinder and the wheel?",
+    "answer" : "The work rest must be no more than **⅛ inch (3.2 mm)** from the grinding wheel. Recheck the gap as the wheel wears, and adjust it with the grinder switched off. — *Hand and Portable Power Tools*, p. 16.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4290.0,
+      "prompt_tokens" : 13504.0,
+      "completion_tokens" : 103.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6292827129364014,
+      "best_other_score" : 0.5708631873130798,
+      "top1_score" : 0.6292827129364014,
+      "margin" : 0.05841952562332153
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-02",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "What is the maximum air pressure allowed when using compressed air to clean?",
+    "answer" : "For compressed-air cleaning, use an air blow gun limited to **30 psi (about 207 kPa) static pressure at the nozzle outlet**. Use an effective chip guard and appropriate PPE, including eye protection. Don’t use compressed air to clean clothing or skin.\n\nSource: *Hand and Portable Power Tools*, p. 18.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4589.0,
+      "prompt_tokens" : 13294.0,
+      "completion_tokens" : 122.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7039180890341348,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.7039180890341348,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7039180890341348,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.4692787260227565,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6713860725233042,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6713860725233042,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5443187355995178,
+      "best_other_score" : 0.4798411726951599,
+      "top1_score" : 0.5443187355995178,
+      "margin" : 0.06447756290435791
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-03",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "Which hand-held power tools must have a constant-pressure switch that cuts the power when released?",
+    "answer" : "The constant-pressure switch must cut power when released on:\n\n- Hand-held drills, tappers, and fastener drivers.\n- Horizontal, vertical, and angle grinders with wheels **over 2 inches** in diameter.\n- Disc sanders with discs **over 2 inches**.\n- Belt sanders.\n- Reciprocating, saber, scroll, and jigsaws with blade shanks **over ¼ inch**.\n- Similar tools.\n\nA lock-on control is allowed for these tools only if the same finger or fingers can switch it off in one motion. Circular saws with blades over 2 inches, chain saws, and percussion tools without a positive accessory-holding means also require a release-to-stop control. *(Iron & Oak safety reference: “Hand and Portable Power Tools,” p. 13; “Hand and Power Tools,” p. 9.)*",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 6154.0,
+      "prompt_tokens" : 13054.0,
+      "completion_tokens" : 226.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 1.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 1.0,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 1.0,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.796251654624939,
+      "best_other_score" : 0.6182615756988525,
+      "top1_score" : 0.796251654624939,
+      "margin" : 0.17799007892608643
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-and-portable-power-tools.md", "Hand-and-power-tools.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-04",
+    "category" : "home_diy",
+    "rag" : true,
+    "question" : "How often should I test the GFCI outlets in my house?",
+    "answer" : "Test each GFCI outlet **once a month**. Press **TEST**—it should trip and cut power—then press **RESET** to restore power. If it doesn’t trip or won’t reset, stop relying on it and have an electrician inspect or replace it.  \n\nSource: *Home Maintenance For Dummies*, “Avoiding Shocks and Sparks,” p. 433.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4582.0,
+      "prompt_tokens" : 13194.0,
+      "completion_tokens" : 137.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.649014791936513,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.649014791936513,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.649014791936513,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.649014791936513,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.649014791936513,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8245073959682564,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5924798250198364,
+      "best_other_score" : 0.4901043176651001,
+      "top1_score" : 0.5924798250198364,
+      "margin" : 0.10237550735473633
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-05",
+    "category" : "home_diy",
+    "rag" : true,
+    "question" : "How do I flush the sediment out of my water heater?",
+    "answer" : "For a **tank-style water heater**:\n\n1. Turn off the heater’s energy source: switch off the breaker for an electric unit, or set a gas unit to **OFF** according to its manual. Let the water cool to reduce scald risk.\n2. Close the cold-water inlet valve.\n3. Attach a garden hose to the drain valve at the bottom and route it to a safe drain location. Hot water can cause burns—keep people and pets clear.\n4. Open a hot-water faucet in the house, then slowly open the drain valve. If flow stops, briefly open the cold-water inlet to stir and flush sediment; close it again as needed. Continue until the drained water runs clear.\n5. Close the drain valve, remove the hose, and reopen the cold-water inlet. Leave a hot faucet open until water flows steadily without air.\n6. **Only restore power to an electric heater once the tank is completely full**—running it dry can damage the heating elements. Then restore power or gas per the manufacturer’s instructions.\n\nDon’t force a stuck or leaking drain valve. If the heater is tankless, follow its manual instead; the flushing procedure is different. Source: *Home Maintenance For Dummies*, pp. 206–207.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_products_by_category" ],
+    "run" : {
+      "latency_ms" : 8746.0,
+      "prompt_tokens" : 22037.0,
+      "completion_tokens" : 339.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.82623465712856,
+      "recall@5" : 0.5,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.82623465712856,
+      "recall@10" : 0.5,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.82623465712856,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.82623465712856,
+      "recall@5" : 0.5,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.82623465712856,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9243382314975352,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6565609574317932,
+      "best_other_score" : 0.5777515769004822,
+      "top1_score" : 0.6565609574317932,
+      "margin" : 0.07880938053131104
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-06",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "What is Taylor's tool life equation?",
+    "answer" : "Taylor’s tool-life equation is:\n\n\\[\nV T^n = C\n\\]\n\nwhere:\n\n- \\(V\\) = cutting speed\n- \\(T\\) = tool life (cutting time to a defined wear limit)\n- \\(n\\) and \\(C\\) = constants for the tool, workpiece material, and cutting conditions\n\nIt can also be written as \\(V = C T^{-n}\\). The equation is an empirical approximation, most useful under consistent cutting conditions. Source: *Metal Cutting Notes*, “Taylor’s Tool Life Equation.”",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5569.0,
+      "prompt_tokens" : 13240.0,
+      "completion_tokens" : 161.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.4581993337160799,
+      "recall@5" : 0.25,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.4149391971601028,
+      "recall@10" : 0.25,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.4149391971601028,
+      "mrr" : 0.5,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7262287617954056,
+      "recall@5" : 0.25,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6576630675781056,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7928117038985886,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7262617349624634,
+      "best_other_score" : 0.6813268065452576,
+      "top1_score" : 0.7262617349624634,
+      "margin" : 0.04493492841720581
+    },
+    "generation" : {
+      "context_precision" : 0.5,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Metal-Cutting-Notes.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 2.0
+  }, {
+    "id" : "rag-ops-07",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "On a CNC mill, where is the part zero stored and how does the operator find it?",
+    "answer" : "Part zero is stored in the CNC control’s **work offset**, usually **G54** (or another offset such as G55–G59). It defines the workpiece origin relative to machine zero; it’s separate from tool-length offsets.\n\nTo find it, the operator locates the chosen datum on the part—commonly a corner or a hole—using an **edge finder, dial indicator, or touch probe**. They account for the tool or probe geometry, set the resulting X/Y/Z coordinates in the selected work offset, and verify the values before machining. Offset mistakes can cause crashes, so double-check them.\n\nSource: *CNC Fundamentals*, “Setting work and tool offsets (CNC).”",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5581.0,
+      "prompt_tokens" : 12333.0,
+      "completion_tokens" : 197.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8472668887613066,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8616869342799657,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8616869342799657,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8472668887613066,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8616869342799657,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8616869342799657,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.726019024848938,
+      "best_other_score" : 0.6594278216362,
+      "top1_score" : 0.726019024848938,
+      "margin" : 0.06659120321273804
+    },
+    "generation" : {
+      "context_precision" : 0.8055555555555555,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "CNC_Fundamentals.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-08",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "In EMC2, what happens if HOME_SEARCH_VEL is set to zero?",
+    "answer" : "In EMC2, `HOME_SEARCH_VEL = 0` tells it to assume there is **no home switch**. It skips the search and latch stages, sets the current position to `HOME_OFFSET`, then moves to `HOME` if those positions differ.\n\nSource: *EMC2 User Manual*, §5.4.3.1, p. 52.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5664.0,
+      "prompt_tokens" : 13493.0,
+      "completion_tokens" : 124.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.43552453212757636,
+      "recall@5" : 0.5,
+      "precision@5" : 1.0,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.7786585589565993,
+      "recall@10" : 0.5,
+      "precision@10" : 0.5,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7786585589565993,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.0,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.43552453212757636,
+      "recall@5" : 0.5,
+      "precision@5" : 1.0,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.7786585589565993,
+      "recall@10" : 1.0,
+      "precision@10" : 0.6,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.9632342557361675,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.681412398815155,
+      "best_other_score" : 0.5488273501396179,
+      "top1_score" : 0.681412398815155,
+      "margin" : 0.1325850486755371
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "EMC2_User_Manual.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-09",
+    "category" : "machine_maintenance",
+    "rag" : true,
+    "question" : "What are the five non-destructive techniques used in predictive maintenance?",
+    "answer" : "The five non-destructive techniques commonly used in predictive maintenance are:\n\n1. **Vibration monitoring**\n2. **Process parameter monitoring**\n3. **Thermography**\n4. **Tribology** (lubricant and wear-particle analysis)\n5. **Visual inspection**\n\nSource: *Maintenance Fundamentals, 2nd Edition*, p. 13.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4782.0,
+      "prompt_tokens" : 13473.0,
+      "completion_tokens" : 118.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.6051906348295047,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6328588242841113,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6328588242841113,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.6051906348295047,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6328588242841113,
+      "recall@10" : 1.0,
+      "precision@10" : 0.4,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7059324984594564,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6482986807823181,
+      "best_other_score" : 0.6202902793884277,
+      "top1_score" : 0.6482986807823181,
+      "margin" : 0.02800840139389038
+    },
+    "generation" : {
+      "context_precision" : 0.7555555555555555,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Maintenance-Fundamentals-2nd-Ed.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-10",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "Why is climb milling risky on a machine with backlash?",
+    "answer" : "In climb milling, the cutter’s force acts in the feed direction and can pull the table into the cut. With backlash, the screw may turn through its clearance before the table responds, so the cutter can suddenly take up that slack and lurch forward. That can cause a heavy bite, chatter, broken tooling, or a damaged workpiece.\n\nUse conventional milling on a machine with noticeable backlash. Climb milling is appropriate only when backlash is properly eliminated or controlled; follow the machine’s manual and keep the work securely clamped. Iron & Oak’s *CNC Fundamentals* recommends climb milling only on machines with proper backlash elimination.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_products_by_category" ],
+    "run" : {
+      "latency_ms" : 8333.0,
+      "prompt_tokens" : 20027.0,
+      "completion_tokens" : 202.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 0.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ "search_products_by_category" ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8789618730340989,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8789618730340989,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8789618730340989,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8789618730340989,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8789618730340989,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8789618730340989,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6099734306335449,
+      "best_other_score" : 0.5159744024276733,
+      "top1_score" : 0.6099734306335449,
+      "margin" : 0.09399902820587158
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "CNC_Fundamentals.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-11",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "My electrical test needs a CAT II rated meter. Can I use a meter rated CAT III or CAT IV instead?",
+    "answer" : "Yes. A properly rated CAT III or CAT IV meter can be used for a CAT II test, provided its **voltage rating** also meets or exceeds the test requirements. Check the meter **and test leads** for the correct CAT and voltage ratings, inspect them for damage, and follow the meter’s instructions. A higher CAT rating doesn’t mean you can exceed the meter’s voltage limits.\n\nSource: *Electrical Measurement Equipments*, pp. 6–7.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5656.0,
+      "prompt_tokens" : 13282.0,
+      "completion_tokens" : 159.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.5792374606819809,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.68349402851663,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.68349402851663,
+      "mrr" : 0.5,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.5792374606819809,
+      "recall@5" : 1.0,
+      "precision@5" : 0.8,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.7771419069149693,
+      "recall@10" : 1.0,
+      "precision@10" : 0.4,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7771419069149693,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.5661346316337585,
+      "best_other_score" : 0.6159178018569946,
+      "top1_score" : 0.6159178018569946,
+      "margin" : -0.049783170223236084
+    },
+    "generation" : {
+      "context_precision" : 0.6388888888888888,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 0.0,
+      "cites_gold_doc" : 0.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 2.0
+  }, {
+    "id" : "rag-diy-03",
+    "category" : "home_diy",
+    "rag" : true,
+    "question" : "How often should I replace the filter in my furnace?",
+    "answer" : "Check it monthly and replace it when it’s dirty; basic fiberglass filters often need changing monthly, especially during heavy use. If your furnace also runs the AC, check it year-round. Follow the filter or furnace manufacturer’s schedule, since filter type and household dust, pets, and allergies can affect how quickly it clogs.\n\nUse the correct size and make sure the airflow arrow points toward the blower. Source: *Home Maintenance For Dummies*, pp. 285–286.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5312.0,
+      "prompt_tokens" : 13240.0,
+      "completion_tokens" : 150.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.5307212739772436,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6673071725340496,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6673071725340496,
+      "mrr" : 0.5,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.5307212739772436,
+      "recall@5" : 0.75,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6673071725340496,
+      "recall@10" : 0.75,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6673071725340496,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.6251895427703857,
+      "best_other_score" : 0.6572884321212769,
+      "top1_score" : 0.6572884321212769,
+      "margin" : -0.03209888935089111
+    },
+    "generation" : {
+      "context_precision" : 0.5888888888888889,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 2.0
+  }, {
+    "id" : "rag-diy-04",
+    "category" : "home_diy",
+    "rag" : true,
+    "question" : "How can I check whether the flapper in my toilet tank is leaking?",
+    "answer" : "Open the tank lid and add a few drops of food coloring to the tank water—don’t flush. Wait about 30 minutes. If color appears in the bowl, water is leaking past the flapper (flush valve). The test is described in *Home Maintenance For Dummies*, “Toilet Training 101,” p. 232.\n\nIf the bowl stays clear, the leak may be elsewhere, such as the fill valve or an external connection.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_products_by_category" ],
+    "run" : {
+      "latency_ms" : 7591.0,
+      "prompt_tokens" : 21678.0,
+      "completion_tokens" : 165.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.0,
+      "precision@3" : 0.0,
+      "hit@3" : 0.0,
+      "ndcg@3" : 0.0,
+      "recall@5" : 0.3333333333333333,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.23958467719708867,
+      "recall@10" : 0.3333333333333333,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.23958467719708867,
+      "mrr" : 0.25,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.2781491965442198,
+      "recall@5" : 0.3333333333333333,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.2781491965442198,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.33664673122146765,
+      "mrr" : 0.3333333333333333
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 3.0,
+      "gold_score" : 0.5270179510116577,
+      "best_other_score" : 0.5518754720687866,
+      "top1_score" : 0.5518754720687866,
+      "margin" : -0.024857521057128906
+    },
+    "generation" : {
+      "context_precision" : 0.25,
+      "context_recall" : 0.5,
+      "answer_correctness" : 0.5,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 3.0,
+    "gold_rank_agent" : 4.0
+  }, {
+    "id" : "rag-diy-05",
+    "category" : "home_diy",
+    "rag" : true,
+    "question" : "How often should I change the batteries in my smoke detectors?",
+    "answer" : "For standard smoke detectors, replace the batteries **at least once a year**, or follow the manufacturer’s schedule. Detectors with sealed 10-year batteries generally don’t need battery changes—replace the whole detector when its service life ends. Test alarms monthly, and replace the detector itself after 10 years. (Source: *Home Maintenance For Dummies*, pp. 424, 426.)",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5210.0,
+      "prompt_tokens" : 12609.0,
+      "completion_tokens" : 131.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 1.0,
+      "recall@5" : 0.8,
+      "precision@5" : 0.8,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8399303495618896,
+      "recall@10" : 0.8,
+      "precision@10" : 0.4,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8399303495618896,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.4,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.7653606369886218,
+      "recall@5" : 0.6,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6540952403163659,
+      "recall@10" : 1.0,
+      "precision@10" : 0.5,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.88322802425836,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7161450982093811,
+      "best_other_score" : 0.4867292642593384,
+      "top1_score" : 0.7161450982093811,
+      "margin" : 0.22941583395004272
+    },
+    "generation" : {
+      "context_precision" : 0.95,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-pt-01",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "What is kickback on a power tool and how do I prevent it?",
+    "answer" : "**Kickback** happens when a blade or bit binds, pinches, or jams in the material and the tool suddenly jerks back toward you. It can happen very quickly and cause serious injury.\n\nTo reduce the risk:\n- Clamp the work securely so it can’t shift or pinch the blade/bit.\n- Use the correct, undamaged accessory and follow the tool’s manual.\n- Let the tool reach operating speed before cutting or drilling; guide it steadily and avoid forcing it.\n- Keep both hands on the tool where the design allows, maintain firm footing, and keep guards in place.\n- Wear eye protection and keep others clear of the work area.\n\nFor saws, also avoid restarting or re-entering a cut with the blade pinched. Guidance: *Hand and Power Tool Safety* (p. 8) and *Ontario Hand and Power Tools* (p. 11).",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_products_by_category" ],
+    "run" : {
+      "latency_ms" : 18829.0,
+      "prompt_tokens" : 21794.0,
+      "completion_tokens" : 250.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 0.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ "search_products_by_category" ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 1.0,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.6885288809404667,
+      "recall@5" : 1.0,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6885288809404667,
+      "recall@10" : 1.0,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6885288809404667,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.5,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.2754115523761867,
+      "recall@5" : 0.5,
+      "precision@5" : 0.2,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.2754115523761867,
+      "recall@10" : 0.5,
+      "precision@10" : 0.1,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.2754115523761867,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.5332508683204651,
+      "best_other_score" : 0.5132721066474915,
+      "top1_score" : 0.5332508683204651,
+      "margin" : 0.019978761672973633
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 1.0,
+      "answer_correctness" : 0.6666666666666666,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-Power-tool-Safety.md", "Hand-and-power-tools.md", "Ontario-hand-and-power-tools.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-pt-02",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "My drill is double-insulated. Is it safe to use it in the rain?",
+    "answer" : "No. Double insulation reduces shock risk, but it does **not** make a drill waterproof. Don’t use it in rain or on wet surfaces; keep the drill, cord, plug, and your hands dry. If it gets wet, unplug it safely and have it checked before using it again.\n\nIron & Oak’s *SPP 1910.241 Hand and Portable Power Tools*, p. 14, specifically says not to operate double-insulated tools on wet surfaces.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 6945.0,
+      "prompt_tokens" : 13249.0,
+      "completion_tokens" : 145.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.3631143808977028,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.3631143808977028,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.3631143808977028,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.3631143808977028,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.3631143808977028,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.5817310219120323,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.4718988537788391,
+      "best_other_score" : 0.46429765224456787,
+      "top1_score" : 0.4718988537788391,
+      "margin" : 0.00760120153427124
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 0.5,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-and-portable-power-tools.md", "SPP-1910.241.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-pt-03",
+    "category" : "power_tool_safety",
+    "rag" : true,
+    "question" : "How must a pneumatic tool be attached to its air hose?",
+    "answer" : "Secure the pneumatic tool to the hose with a **positive locking device** so it can’t disconnect accidentally. Check that the coupling is properly engaged before turning on the air. For impact tools, also keep the attachment’s safety clip or retainer installed.  \n\nSource: *Hand and Portable Power Tools*, page 16.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4443.0,
+      "prompt_tokens" : 12993.0,
+      "completion_tokens" : 108.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.2960819109658652,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.49818925746641285,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.49818925746641285,
+      "mrr" : 0.5,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3333333333333333,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.2960819109658652,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.49818925746641285,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6394562303262418,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.5874148607254028,
+      "best_other_score" : 0.6060447692871094,
+      "top1_score" : 0.6060447692871094,
+      "margin" : -0.018629908561706543
+    },
+    "generation" : {
+      "context_precision" : 0.5,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 2.0
+  }, {
+    "id" : "rag-ops-12",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "What causes chatter and a poor surface finish when milling?",
+    "answer" : "Chatter and a poor surface finish usually come from vibration or unstable cutting conditions. Common causes include:\n\n- **Too much tool stickout** or a flexible tool/holder.\n- **Loose or inadequate workholding**, or a workpiece that flexes.\n- **Worn or damaged cutter**, spindle bearings, or loose machine gibs.\n- **Unsuitable speeds and feeds**—too aggressive can cause vibration; too slow a feed can make the tool rub instead of cut.\n- **Runout or poor seating** from chips or dirt on the spindle taper or holder.\n\nStart by checking the cutter and setup, securing the work, and minimizing tool overhang. Then adjust speed, feed, or depth of cut gradually, following the cutter and machine guidance. Stop if vibration is severe; don’t reach near a moving cutter.\n\nSource: *CNC Fundamentals*, “Common faults and their usual causes” and “Tool selection and installation”; *UCR Standard Operating Procedures for Manual Milling Machines*, “Using a vice.”",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 9191.0,
+      "prompt_tokens" : 21111.0,
+      "completion_tokens" : 313.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8472668887613066,
+      "recall@5" : 0.6666666666666666,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.8472668887613066,
+      "recall@10" : 0.6666666666666666,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.8472668887613066,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 2.0,
+      "contexts" : 9.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.6666666666666666,
+      "precision@3" : 0.6666666666666666,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.8472668887613066,
+      "recall@5" : 1.0,
+      "precision@5" : 0.6,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.940914767159646,
+      "recall@10" : 1.0,
+      "precision@10" : 0.3,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.940914767159646,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.6153679490089417,
+      "best_other_score" : 0.5690415501594543,
+      "top1_score" : 0.6153679490089417,
+      "margin" : 0.046326398849487305
+    },
+    "generation" : {
+      "context_precision" : 0.8333333333333333,
+      "context_recall" : 1.0,
+      "answer_correctness" : 0.6666666666666666,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "CNC_Fundamentals.md", "UCR-ME-SOP-Manual-Milling-Machines-v5.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-13",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "What is a built-up edge in metal cutting and why does it form?",
+    "answer" : "A **built-up edge (BUE)** is a temporary lump of workpiece metal that sticks to the cutting edge and rake face of a tool. It can act like an extension of the tool, but it continually grows and breaks away.\n\nIt forms when metal at the tool–chip interface **seizes or adheres to the tool** under high pressure and severe deformation. Work material accumulates in layers and becomes heavily strain-hardened. BUE is common when machining alloys—often at intermediate cutting speeds; the speed range depends on the material and feed.\n\nAs pieces break off, they can leave a rough or inconsistent surface and make tool wear less predictable. *Metal Cutting, 4th Edition* (Trent and Wright), §3.8, pp. 59–64.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 6153.0,
+      "prompt_tokens" : 13289.0,
+      "completion_tokens" : 212.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.3,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.3951442658987155,
+      "recall@5" : 0.5,
+      "precision@5" : 1.0,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6134648581575842,
+      "recall@10" : 0.5,
+      "precision@10" : 0.5,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.4880983724984589,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.3,
+      "precision@3" : 1.0,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.3951442658987155,
+      "recall@5" : 0.5,
+      "precision@5" : 1.0,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6134648581575842,
+      "recall@10" : 1.0,
+      "precision@10" : 1.0,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.7778671768025933,
+      "mrr" : 1.0
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 1.0,
+      "gold_score" : 0.7793519496917725,
+      "best_other_score" : null,
+      "top1_score" : 0.7793519496917725,
+      "margin" : null
+    },
+    "generation" : {
+      "context_precision" : 1.0,
+      "context_recall" : 0.0,
+      "answer_correctness" : 0.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "Metal_Cutting_4th_Edition.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 1.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "rag-ops-14",
+    "category" : "machine_operations",
+    "rag" : true,
+    "question" : "What does the G00 command do in a CNC program?",
+    "answer" : "**G00 (or G0)** commands rapid positioning: the machine moves the specified axes to the target as quickly as its traverse rate allows. It’s intended for non-cutting moves, not machining at a controlled feed rate. Check that the tool has a clear path—rapid moves can cause a collision if the programmed position or clearance is wrong.\n\nSource: *EMC2 User Manual*, “G0: Rapid Linear Motion,” p. 150.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 5392.0,
+      "prompt_tokens" : 12307.0,
+      "completion_tokens" : 142.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "namespaces" : true
+      } ]
+    },
+    "agent_retrieval" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.4692787260227565,
+      "recall@5" : 0.5,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.6290102109696928,
+      "recall@10" : 0.5,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.6290102109696928,
+      "mrr" : 1.0,
+      "searched" : 1.0,
+      "search_calls" : 1.0,
+      "contexts" : 5.0,
+      "top_k" : 5.0,
+      "namespace_ok" : 1.0
+    },
+    "retriever" : {
+      "recall@3" : 0.25,
+      "precision@3" : 0.3333333333333333,
+      "hit@3" : 1.0,
+      "ndcg@3" : 0.2960819109658652,
+      "recall@5" : 0.5,
+      "precision@5" : 0.4,
+      "hit@5" : 1.0,
+      "ndcg@5" : 0.4667450558872084,
+      "recall@10" : 0.5,
+      "precision@10" : 0.2,
+      "hit@10" : 1.0,
+      "ndcg@10" : 0.4667450558872084,
+      "mrr" : 0.5
+    },
+    "embedding" : {
+      "gold_in_top10" : 1.0,
+      "gold_rank" : 2.0,
+      "gold_score" : 0.6653779149055481,
+      "best_other_score" : 0.6661580801010132,
+      "top1_score" : 0.6661580801010132,
+      "margin" : -7.801651954650879E-4
+    },
+    "generation" : {
+      "context_precision" : 0.75,
+      "context_recall" : 1.0,
+      "answer_correctness" : 1.0,
+      "cites_retrieved" : 1.0,
+      "cites_gold_doc" : 1.0,
+      "unsupported_citations" : 0.0,
+      "cited_docs" : [ "EMC2_User_Manual.md" ]
+    },
+    "judge" : {
+      "status" : "pending judge"
+    },
+    "gold_rank_retriever" : 2.0,
+    "gold_rank_agent" : 1.0
+  }, {
+    "id" : "tool-order-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "What's the status of my order IO-20261028-V5JECMXJ?",
+    "answer" : "Your order **IO-20261028-V5JECMXJ** is **pending payment**. It contains one air compressor. The total is **$347.62 USD**, including shipping and taxes. You can pay through the checkout link for your order; the stock reservation expires on **October 29, 2026**.\n\nShipping is quoted, but the order hasn’t shipped yet, so there’s no tracking information.",
+    "error" : null,
+    "tools_called" : [ "get_order" ],
+    "run" : {
+      "latency_ms" : 3666.0,
+      "prompt_tokens" : 11346.0,
+      "completion_tokens" : 118.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "order_number" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-order-02",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Can you confirm the delivery address on order IO-20261028-V5JECMXJ? My email is eval.buyer@example.com.",
+    "answer" : "The delivery address on order **IO-20261028-V5JECMXJ** is **Calle 1 # 2-3, Bogotá, Colombia**.",
+    "error" : null,
+    "tools_called" : [ "get_order" ],
+    "run" : {
+      "latency_ms" : 3152.0,
+      "prompt_tokens" : 11477.0,
+      "completion_tokens" : 74.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "order_number" : true,
+        "email" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-stock-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Do you have angle grinders in stock right now?",
+    "answer" : "Yes—**ANGLE GRINDER** is in stock: **38 available**, priced at **$54.99**.",
+    "error" : null,
+    "tools_called" : [ "search_products" ],
+    "run" : {
+      "latency_ms" : 3498.0,
+      "prompt_tokens" : 11197.0,
+      "completion_tokens" : 54.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    }
+  }, {
+    "id" : "tool-price-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "How much does your air compressor cost?",
+    "answer" : "The air compressor is **$289.99**. It’s currently listed with 13 in stock.",
+    "error" : null,
+    "tools_called" : [ "search_products" ],
+    "run" : {
+      "latency_ms" : 2801.0,
+      "prompt_tokens" : 11234.0,
+      "completion_tokens" : 46.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "query" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-mach-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Which milling machines do you sell?",
+    "answer" : "We sell four milling machines:\n\n- **BM-200 Benchtop Mill** — compact mill for prototyping and light production; 1.5 kW, 100–3,000 RPM. **$4,250**\n- **TM-450 Turret Mill** — versatile workshop mill; 3.7 kW, 60–4,200 RPM. **$11,800**\n- **VMC-650 CNC Vertical Machining Centre** — 3-axis CNC with automatic tool changer; 11 kW, 50–8,000 RPM. **$28,500**\n- **HB-900 Horizontal Boring Mill** — heavy-duty machine for large workpieces and deep cuts; 15 kW, 20–1,600 RPM. **$42,000**\n\nAll include a **12-month warranty**. Prices are in USD.",
+    "error" : null,
+    "tools_called" : [ "list_machines" ],
+    "run" : {
+      "latency_ms" : 4761.0,
+      "prompt_tokens" : 11481.0,
+      "completion_tokens" : 195.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    }
+  }, {
+    "id" : "tool-mach-02",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "What's the price of the HB-900 boring mill?",
+    "answer" : "The HB-900 horizontal boring mill is listed at **$42,000**. The catalog also lists 15 kW power, spindle speeds of 20–1,600 rpm, and a 1,000 × 900 mm table. Source: *Iron Oak Products and Services*.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 4640.0,
+      "prompt_tokens" : 12249.0,
+      "completion_tokens" : 107.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 0.0,
+      "exact_set" : 0.0,
+      "first_tool" : 0.0,
+      "forbidden_violation" : 1.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 0.0,
+      "extra_tools" : [ "search_knowledge" ],
+      "arg_detail" : [ ]
+    }
+  }, {
+    "id" : "tool-endmill-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Do you sell a 2 mm ball nose end mill?",
+    "answer" : "Yes—we have the **2 mm Ball Nose End Mill (BN-002)** in stock for **$35**. It’s solid carbide, right-hand cut, with a 50 mm overall length.",
+    "error" : null,
+    "tools_called" : [ "get_end_mills" ],
+    "run" : {
+      "latency_ms" : 3642.0,
+      "prompt_tokens" : 11262.0,
+      "completion_tokens" : 76.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "flute_type" : true,
+        "diameter_mm" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-health-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Here are my CNC readings: air temperature 298.1 K, process temperature 308.6 K, rotational speed 1551 rpm, torque 42.8 Nm, tool wear 108 minutes, quality variant M. Is my machine at risk of failing?",
+    "answer" : "Based on these readings, the model estimates **low risk**: it did not flag machine failure or any of the four failure modes. This is an estimate, not a guarantee—keep following your normal inspections and maintenance schedule.",
+    "error" : null,
+    "tools_called" : [ "diagnose_machine" ],
+    "run" : {
+      "latency_ms" : 3988.0,
+      "prompt_tokens" : 11511.0,
+      "completion_tokens" : 108.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "air_temperature_k" : true,
+        "process_temperature_k" : true,
+        "rotational_speed_rpm" : true,
+        "torque_nm" : true,
+        "tool_wear_min" : true,
+        "quality_variant" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-health-02",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "My CNC spindle is running hot at about 1500 rpm. Can you diagnose it?",
+    "answer" : "I can help narrow it down, but **1500 rpm alone isn’t enough to diagnose it**. The usual causes include inadequate lubrication, a cooling-system problem, bearings that are too tight or worn, or sustained spindle overload. *(Iron Oak knowledge base: “CNC Fundamentals,” sections 9.9 and 6.2.)*\n\nIf the spindle is getting unusually hot, **stop it and let it cool**; don’t keep running it to test. Check the machine’s specified lubrication and cooling systems, and note any alarms, unusual noise, or vibration. Don’t adjust or service the spindle while it’s running.\n\nTo assess it further, please share:\n- Machine make and model\n- Spindle temperature and how long it takes to reach it\n- Whether it’s running unloaded or cutting (and the material/tool, if cutting)\n- Any alarms, noise, vibration, or cooling/lubrication issues\n\nThe diagnostic estimate also needs **air temperature (K), process temperature (K), spindle speed (RPM), torque (Nm), tool wear (minutes), and quality variant (L/M/H)**. If you don’t have those readings, a technician can inspect it; the knowledge base recommends temperature, vibration, load, and alarm-history monitoring.",
+    "error" : null,
+    "tools_called" : [ "search_knowledge" ],
+    "run" : {
+      "latency_ms" : 7776.0,
+      "prompt_tokens" : 12232.0,
+      "completion_tokens" : 308.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : null,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    }
+  }, {
+    "id" : "tool-cnc-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Please calculate my milling parameters: cutting speed 200 m/min, 10 mm cutter, feed per tooth 0.05 mm, 4 teeth, depth of cut 5 mm, width of cut 3 mm, kc1 700 N/mm2, mc 0.25, motor power 11 kW, efficiency 0.85, helix angle 30 degrees, Taylor C 400 and Taylor n 0.25.",
+    "answer" : "Estimated milling parameters:\n\n- **Spindle speed:** 6,366 rpm\n- **Feed rate:** 1,273 mm/min\n- **Material removal rate:** 19.1 cm³/min\n- **Average chip thickness:** 0.0274 mm\n- **Tangential force:** 235.62 N\n- **Axial force:** 136.04 N\n- **Cutting power:** 0.55 kW\n- **Required motor power:** 0.64 kW (**5.86%** of the 11 kW motor)\n- **Spindle torque:** 0.82 N·m\n- **Estimated tool life:** 16 minutes\n- **Motor status:** SAFE, within the stated motor range.\n\nThese are engineering estimates; actual results depend on the cutter, material, setup rigidity, and cutting conditions.",
+    "error" : null,
+    "tools_called" : [ "calculate_cnc_parameters" ],
+    "run" : {
+      "latency_ms" : 5136.0,
+      "prompt_tokens" : 11525.0,
+      "completion_tokens" : 288.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "cutting_speed" : true,
+        "diameter_mm" : true,
+        "feed_per_tooth" : true,
+        "number_of_teeth" : true,
+        "depth_of_cut_mm" : true,
+        "width_of_cut_mm" : true,
+        "kc1_n_per_mm2" : true,
+        "mc" : true,
+        "max_motor_power_kw" : true,
+        "machine_efficiency" : true,
+        "helix_angle_degrees" : true,
+        "taylor_c" : true,
+        "taylor_n" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-booking-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Yes, please book it.",
+    "answer" : "Your preventive maintenance visit is requested for **November 4, 2026 at 10:00 a.m.** at Calle 80 #45-10, Bogotá, for your VMC-650. Iron & Oak staff will check technician availability and confirm the visit; it isn’t confirmed yet.\n\n**Booking ID:** 1  \nPlease keep the booking ID and the email you used (laura.gomez@example.com) to check on it.",
+    "error" : null,
+    "tools_called" : [ "list_services", "create_service_booking" ],
+    "run" : {
+      "latency_ms" : 7787.0,
+      "prompt_tokens" : 17568.0,
+      "completion_tokens" : 216.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 0.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "service_code" : true,
+        "customer_email" : true,
+        "city" : true,
+        "country" : true,
+        "scheduled_at" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-booking-02",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Book an emergency repair at my shop in Cali, Colombia for tomorrow at 9 am. My name is Pedro Ruiz, pedro.ruiz@example.com.",
+    "answer" : "Sorry, technician visits are available only in Bogotá and Medellín, so we can’t book an on-site repair in Cali. The Emergency Repair service is billed hourly at **$180/hour**, with a **2-hour minimum**; the final cost depends on the work.\n\nI can ask our team about other options for your shop in Cali. Would you like me to open a support ticket?",
+    "error" : null,
+    "tools_called" : [ "list_services" ],
+    "run" : {
+      "latency_ms" : 3854.0,
+      "prompt_tokens" : 11657.0,
+      "completion_tokens" : 94.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : null,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    }
+  }, {
+    "id" : "tool-support-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "I've been waiting three weeks for a refund on a broken drill and nobody answers my emails. I want to talk to a real person. My email is sam.lee@example.com.",
+    "answer" : "I’m sorry you’ve had to wait and haven’t received a reply. I’ve opened a support ticket for a staff member to review your refund request: **ST-20261028-48BTHZVC**.\n\nYou can also contact Customer Service at **contact@tensorgeek.com** or **+57 601 656 8364** (Monday–Friday, 8:00–18:00; Saturday, 9:00–13:00 Bogotá time). A support ticket doesn’t issue the refund itself.",
+    "error" : null,
+    "tools_called" : [ "escalate_to_human" ],
+    "run" : {
+      "latency_ms" : 4299.0,
+      "prompt_tokens" : 11280.0,
+      "completion_tokens" : 193.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "reason" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-advice-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "My kitchen faucet is leaking. What do I need to fix it?",
+    "answer" : "First, identify where the water is coming from: the spout, around the handle, under the sink, or at a supply-line connection. If it’s under the sink, turn off the faucet’s shutoff valve(s) before working. For a drip from the spout or a leak at the handle, the usual fix is replacing the faucet’s cartridge or seals—but the part depends on the faucet’s make and model. A leak at a hose or fitting may need a new supply line or a carefully tightened connection.\n\nUseful basics: an adjustable wrench, screwdriver, towel, and the correct replacement part. Don’t force stuck shutoff valves or overtighten fittings; call a plumber if a valve or pipe itself is leaking.\n\nIron & Oak’s catalog doesn’t show faucet cartridges or supply lines, so check the faucet manufacturer for the matching part. The repair guidance I found doesn’t cover faucet-specific disassembly (Home Maintenance For Dummies). Where exactly is your faucet leaking?",
+    "error" : null,
+    "tools_called" : [ "search_knowledge", "search_products_by_category" ],
+    "run" : {
+      "latency_ms" : 18114.0,
+      "prompt_tokens" : 20787.0,
+      "completion_tokens" : 283.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 0.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 2.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "category" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-material-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "What are the machining properties of aluminum 6061-T6? I want to mill it.",
+    "answer" : "For **aluminum 6061-T6**, Iron & Oak’s machining reference lists:\n\n- **Specific cutting force (kc1):** 700 N/mm²  \n- **Cutting-force exponent (mc):** 0.17  \n- **Reference cutting speed (Vc):** 200 m/min  \n- **Brinell hardness:** 95 HB  \n- **Density:** 2.7 g/cm³  \n- **Thermal conductivity:** 167 W/(m·K)\n\nThese are reference values; the suitable speed and feed also depend on your cutter, machine, and cut. Share the cutter diameter, number of teeth, and intended depth and width of cut, and I can estimate milling parameters. Source: Iron & Oak material reference, “aluminum_6061_t6.”",
+    "error" : null,
+    "tools_called" : [ "get_material_properties" ],
+    "run" : {
+      "latency_ms" : 5314.0,
+      "prompt_tokens" : 11220.0,
+      "completion_tokens" : 190.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : 1.0,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : 1.0,
+      "arg_exact" : 1.0,
+      "errors" : 0.0,
+      "calls" : 1.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ {
+        "material_name" : true
+      } ]
+    }
+  }, {
+    "id" : "tool-offtopic-01",
+    "category" : "tool_routing",
+    "rag" : false,
+    "question" : "Write me a poem about football.",
+    "answer" : "I’m here to help with Iron & Oak tools, hardware, and machine support, so I can’t write a football poem. I can help you find a tool or answer a hardware question, though.",
+    "error" : null,
+    "tools_called" : [ ],
+    "run" : {
+      "latency_ms" : 1934.0,
+      "prompt_tokens" : 5553.0,
+      "completion_tokens" : 44.0,
+      "failed" : 0.0
+    },
+    "tools" : {
+      "selection" : 1.0,
+      "exact_set" : 1.0,
+      "first_tool" : null,
+      "forbidden_violation" : 0.0,
+      "arg_accuracy" : null,
+      "arg_exact" : null,
+      "errors" : 0.0,
+      "calls" : 0.0,
+      "pass" : 1.0,
+      "extra_tools" : [ ],
+      "arg_detail" : [ ]
+    }
+  } ]
+}
