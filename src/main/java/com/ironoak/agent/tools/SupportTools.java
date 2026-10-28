@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ironoak.dto.request.CreateSupportTicketRequest;
 import com.ironoak.dto.response.SupportTicketResponse;
 import com.ironoak.services.SupportTicketService;
+import com.ironoak.agent.PiperAssistant;
+import org.springframework.ai.chat.model.ToolContext;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Component;
@@ -18,16 +20,36 @@ public class SupportTools {
         this.tickets = tickets;
     }
 
-    @Tool(name = "escalate_to_human", description = "Create an OPEN human-support ticket for a complaint, refund request, or issue Piper cannot resolve. This only creates an escalation; it does not issue a refund, change a payment, or delete a record. Ask for customer confirmation before calling. Include the customer email when available so support can identify the customer. After success, provide contact@tensorgeek.com when relevant.")
+    @Tool(name = "escalate_to_human", description = "Open a human-support ticket for a complaint, refund request or issue you cannot resolve (it never refunds, changes payments or deletes records). Confirm with the customer first. Include their email if given and the order number when the ticket is about an order. Give the customer the returned ticket_number.")
     public EscalationResult escalateToHuman(
-            @ToolParam(description = "Short reason for the escalation, for example complaint, refund request, or unresolved technical issue.") String reason,
-            @ToolParam(description = "Concise summary of the customer's request and the relevant context for the human support team.") String summary,
-            @ToolParam(description = "Optional customer email address. Include it when the customer has provided one.", required = false) String customer_email) {
+            @ToolParam(description = "Short reason for the escalation, for example complaint, "
+                    + "refund request, or unresolved technical issue.") String reason,
+            @ToolParam(description = "Concise summary of the customer's request and the relevant "
+                    + "context for the human support team.") String summary,
+            @ToolParam(description = "Customer email address, only when the customer has "
+                    + "provided one.", required = false) String customer_email,
+            @ToolParam(description = "Order number (IO-...) when the ticket is about an order.",
+                    required = false) String order_number,
+            ToolContext toolContext) {
 
-        SupportTicketResponse ticket = tickets.create(
-                new CreateSupportTicketRequest(customer_email, null, reason, summary));
+        CreateSupportTicketRequest request = new CreateSupportTicketRequest(
+                customer_email,
+                chatSessionId(toolContext),
+                reason,
+                summary);
+        SupportTicketResponse ticket = tickets.createFromChat(request, order_number);
 
         return new EscalationResult(ticket.id(), ticket.ticketNumber());
+    }
+
+    /** The chat this call belongs to, put in the ToolContext by PiperAssistant. */
+    private static Long chatSessionId(ToolContext toolContext) {
+
+        if (toolContext == null || toolContext.getContext() == null) {
+            return null;
+        }
+        Object id = toolContext.getContext().get(PiperAssistant.CHAT_SESSION_ID);
+        return id instanceof Long sessionId ? sessionId : null;
     }
 
     public record EscalationResult(

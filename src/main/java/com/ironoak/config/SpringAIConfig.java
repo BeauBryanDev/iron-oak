@@ -16,6 +16,8 @@ import com.ironoak.agent.tools.VisionTools;
 import com.ironoak.agent.tools.WarrantyTools;
 import com.ironoak.agent.tools.KnowledgeTools;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,10 +25,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringAIConfig {
 
+    /**
+     * Every tool Piper can call, in one provider, so the chat client and the agent
+     * eval (src/test/.../eval) use exactly the same list.
+     */
     @Bean
-    public ChatClient piperChatClient(
-            ChatClient.Builder builder,
-            com.ironoak.agent.PiperAgentConfig promptConfig,
+    public ToolCallbackProvider piperTools(
             CatalogTools catalogTools,
             CNCalculatorTools cnCalculatorTools,
             OrderTools orderTools,
@@ -43,22 +47,33 @@ public class SpringAIConfig {
             PowerToolInfoTool powerToolInfoTool,
             SupportTools supportTools) {
 
+        return MethodToolCallbackProvider.builder()
+                .toolObjects(catalogTools,
+                        cnCalculatorTools,
+                        orderTools,
+                        endMillTools,
+                        bookingTools,
+                        serviceBookingTool,
+                        warrantyTools,
+                        stockProductLookupTool,
+                        searchProductsByCategoryTool,
+                        visionTools,
+                        machineHealthTools,
+                        metalPropertiesTools,
+                        powerToolInfoTool,
+                        knowledgeTools,
+                        supportTools)
+                .build();
+    }
+
+    @Bean
+    public ChatClient piperChatClient(
+            ChatClient.Builder builder,
+            com.ironoak.agent.PiperAgentConfig promptConfig,
+            ToolCallbackProvider piperTools) {
+
         return builder.defaultSystem(promptConfig.systemPrompt())
-                .defaultTools(catalogTools)
-                .defaultTools(cnCalculatorTools)
-                .defaultTools(orderTools)
-                .defaultTools(endMillTools)
-                .defaultTools(bookingTools)
-                .defaultTools(serviceBookingTool)
-                .defaultTools(warrantyTools)
-                .defaultTools(stockProductLookupTool)
-                .defaultTools(searchProductsByCategoryTool)
-                .defaultTools(visionTools)
-                .defaultTools(machineHealthTools)
-                .defaultTools(metalPropertiesTools)
-                .defaultTools(powerToolInfoTool)
-                .defaultTools(knowledgeTools)
-                .defaultTools(supportTools)
+                .defaultToolCallbacks(piperTools)
                 .build();
     }
 }

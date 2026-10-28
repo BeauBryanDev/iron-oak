@@ -12,21 +12,21 @@ import java.util.Map;
 @Component
 public class CNCalculatorTools {
 
-    @Tool(name = "calculate_cnc_parameters", description = "Calculate a CNC milling engineering report from the customer's supplied cutting parameters. All inputs are required and must use these units: cutting_speed in metres per minute (m/min), diameter in millimetres (mm), feed_per_tooth in millimetres per tooth (mm/tooth), depth_of_cut and width_of_cut in millimetres, kc1 in N/mm², mc dimensionless, max_motor_power_kw in kW, machine_efficiency as a decimal from 0 to 1, helix_angle_degrees in degrees, Taylor C in m/min, and Taylor n dimensionless. Returns spindle speed (RPM), feed rate (mm/min), material removal rate (cm³/min), chip thickness (mm), tangential and axial force (N), cutting power (kW), spindle torque (N·m), estimated Taylor tool life (minutes), required motor power, motor load percentage, and a SAFE or DANGER OF MOTOR OVERLOAD status. These are engineering estimates based on the supplied inputs, not guarantees. Do not invent missing material or machine values; ask the customer for missing inputs. Explain assumptions, units, and motor-load warnings clearly, and recommend qualified machining review before applying aggressive parameters.")
+    @Tool(name = "calculate_cnc_parameters", description = "Milling engineering report from the customer's cutting parameters (all 13 required, units as in each parameter). Returns spindle speed, feed rate, material removal rate, chip thickness, forces, cutting power, torque, Taylor tool life, motor load and a SAFE or DANGER OF MOTOR OVERLOAD status. Ask for missing inputs instead of inventing them (get_material_properties gives kc1, mc and vc). Present results as engineering estimates and flag motor-overload warnings.")
     public Map<String, Object> calculateCncParameters(
-            @ToolParam(description = "Cutting speed Vc in metres per minute (m/min), must be greater than 0.") double cutting_speed,
-            @ToolParam(description = "Cutter diameter in millimetres (mm), must be greater than 0.") double diameter_mm,
-            @ToolParam(description = "Feed per tooth fz in millimetres per tooth (mm/tooth), must be greater than 0.") double feed_per_tooth,
-            @ToolParam(description = "Number of cutter teeth, a positive integer.") int number_of_teeth,
-            @ToolParam(description = "Axial depth of cut ap in millimetres (mm), must be greater than 0.") double depth_of_cut_mm,
-            @ToolParam(description = "Radial width of cut ae in millimetres (mm), must be greater than 0.") double width_of_cut_mm,
-            @ToolParam(description = "Specific cutting-force coefficient kc1 in N/mm², must be greater than 0.") double kc1_n_per_mm2,
-            @ToolParam(description = "Specific cutting-force exponent mc, must be greater than 0.") double mc,
-            @ToolParam(description = "Maximum machine motor power in kilowatts (kW), must be greater than 0.") double max_motor_power_kw,
-            @ToolParam(description = "Machine efficiency as a decimal, for example 0.85 for 85 percent; must be greater than 0 and no greater than 1.") double machine_efficiency,
-            @ToolParam(description = "Cutter helix angle in degrees; must be finite and between 0 and less than 90 degrees.") double helix_angle_degrees,
-            @ToolParam(description = "Taylor tool-life constant C in m/min, must be greater than 0.") double taylor_c,
-            @ToolParam(description = "Taylor tool-life exponent n, must be greater than 0.") double taylor_n) {
+            @ToolParam(description = "Cutting speed Vc, m/min, > 0.") double cutting_speed,
+            @ToolParam(description = "Cutter diameter, mm, > 0.") double diameter_mm,
+            @ToolParam(description = "Feed per tooth fz, mm/tooth, > 0.") double feed_per_tooth,
+            @ToolParam(description = "Number of teeth, > 0.") int number_of_teeth,
+            @ToolParam(description = "Axial depth of cut ap, mm, > 0.") double depth_of_cut_mm,
+            @ToolParam(description = "Radial width of cut ae, mm, > 0.") double width_of_cut_mm,
+            @ToolParam(description = "Specific cutting force kc1, N/mm², > 0.") double kc1_n_per_mm2,
+            @ToolParam(description = "Cutting-force exponent mc, > 0.") double mc,
+            @ToolParam(description = "Machine motor power, kW, > 0.") double max_motor_power_kw,
+            @ToolParam(description = "Machine efficiency as a decimal, 0 < e <= 1 (0.85 = 85%).") double machine_efficiency,
+            @ToolParam(description = "Helix angle, degrees, 0 to < 90.") double helix_angle_degrees,
+            @ToolParam(description = "Taylor constant C, m/min, > 0.") double taylor_c,
+            @ToolParam(description = "Taylor exponent n, > 0.") double taylor_n) {
 
         validateFinite(cutting_speed, "cutting_speed");
         validateFinite(diameter_mm, "diameter_mm");

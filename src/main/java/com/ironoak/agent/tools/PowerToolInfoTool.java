@@ -19,7 +19,7 @@ public class PowerToolInfoTool {
         this.powerTools = powerTools;
     }
 
-    @Tool(name = "get_power_tool_info", description = "Search the detailed Iron Oak power-tool reference for electrical properties and technical descriptions. Search by product name or normalized key, such as electric drill, angle grinder, generator, heat gun, jigsaw, or voltage tester. Return only values from the reference: voltage, amperage, power in watts, and the deep technical description. Do not invent specifications, safety ratings, availability, price, or performance details. If a broad search returns multiple products, present the matches and ask the customer to select the exact tool.")
+    @Tool(name = "get_power_tool_info", description = "Look up a power tool's electrical data (voltage, amperage, watts) and technical description in Iron Oak's reference, by name (e.g. electric drill, angle grinder, generator). Use only returned values; if several tools match, ask which one.")
     public List<PowerToolInfo> getPowerToolInfo(
             @ToolParam(description = "Power-tool name or search text, such as electric drill, angle grinder, or generator.") String product_name) {
 

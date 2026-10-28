@@ -50,8 +50,9 @@ public class KnowledgeSearchService {
 
     /**
      * Two books are stored in two namespaces (VMC650 manual, AVIA machines
-     * catalog). Asking for a few extra hits leaves room to drop those twins and
-     * still return topK passages.
+     * catalog), so a search over both can return every passage twice. Fetching
+     * twice topK plus a few leaves room to drop those twins and still return
+     * topK passages (with a flat headroom of 4, 10 asked often gave 7 or 8).
      */
     static final int DUPLICATE_HEADROOM = 4;
     // Then field names written by scripts/upload_vectors.py (Spring AI's defaults)
@@ -79,6 +80,19 @@ public class KnowledgeSearchService {
             List<KnowledgeNamespace> namespaces,
             int topK) {
 
+        return searchDocuments(query, namespaces, topK).stream()
+                .map(KnowledgeHitResponse::from)
+                .toList();
+    }
+
+    /**
+     * The same search, as Spring AI documents that keep the chunk id, score and
+     * full metadata (source, chunk_index); the agent eval ranks these.
+     */
+    public List<Document> searchDocuments(String query,
+            List<KnowledgeNamespace> namespaces,
+            int topK) {
+
         MilvusServiceClient client = milvus.getIfAvailable();
 
         if (client == null) {
@@ -90,7 +104,7 @@ public class KnowledgeSearchService {
                 .withMetricType(MetricType.COSINE)
                 .withVectorFieldName(VECTOR_FIELD)
                 .withFloatVectors(List.of(toList(embeddings.embed(query))))
-                .withTopK(topK + DUPLICATE_HEADROOM)
+                .withTopK(topK * 2 + DUPLICATE_HEADROOM)
                 .withExpr(namespaceFilter(namespaces))
                 .withOutFields(List.of(CONTENT_FIELD, METADATA_FIELD))
                 .withParams("{}")
@@ -114,9 +128,7 @@ public class KnowledgeSearchService {
                     .score((double) row.getScore())
                     .build());
         }
-        return withoutDuplicates(hits, topK).stream()
-                .map(KnowledgeHitResponse::from)
-                .toList();
+        return withoutDuplicates(hits, topK);
     }
 
     /**

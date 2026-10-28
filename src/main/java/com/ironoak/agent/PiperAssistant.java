@@ -11,6 +11,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Locale;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -34,6 +35,12 @@ public class PiperAssistant {
 
     private static final ZoneId STORE_ZONE = ZoneId.of("America/Bogota");
 
+    /**
+     * ToolContext key with the current chat_session id. Tools read it on the
+     * server; it is never part of the prompt.
+     */
+    public static final String CHAT_SESSION_ID = "chatSessionId";
+
     /** One earlier message of the conversation (USER or ASSISTANT). */
     public record Turn(MessageRole role, String content) {
     }
@@ -47,7 +54,9 @@ public class PiperAssistant {
      * Piper's reply. Throws AssistantUnavailableException (503) when the model
      * cannot be reached or returns nothing.
      */
-    public String reply(List<Turn> history, String userMessage) {
+    public String reply(Long chatSessionId,
+            List<Turn> history,
+            String userMessage) {
 
         List<Message> messages = history.stream()
                 .map(PiperAssistant::toMessage)
@@ -58,6 +67,7 @@ public class PiperAssistant {
             answer = chatClient.prompt()
                     .messages(messages)
                     .user(withCurrentTime(userMessage))
+                    .toolContext(Map.of(CHAT_SESSION_ID, chatSessionId))
                     .call()
                     .content();
 
@@ -74,9 +84,10 @@ public class PiperAssistant {
 
     /**
      * The store's current time goes in front of this turn only; it is not stored,
-     * so earlier turns in the history never carry a stale time.
+     * so earlier turns in the history never carry a stale time. Public so the
+     * agent eval sends exactly what the chat sends.
      */
-    private static String withCurrentTime(String userMessage) {
+    public static String withCurrentTime(String userMessage) {
 
         String now = ZonedDateTime.now(STORE_ZONE).format(NOW_FORMAT);
         return "[Current date and time in Bogota: " + now + "]\n\n" + userMessage;

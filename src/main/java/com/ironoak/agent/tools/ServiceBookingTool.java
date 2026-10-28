@@ -53,17 +53,7 @@ public class ServiceBookingTool {
         this.validator = validator;
     }
 
-    @Tool(name = "create_service_booking", description = "Book an Iron Oak technician visit, only after the "
-            + "customer has confirmed your summary of every detail. Technicians work ONLY in Bogota and "
-            + "Medellin, Colombia: for any other city say so and do not call this tool. Get the service code "
-            + "from list_services. The visit must be in the future. The booking is created as REQUESTED, "
-            + "which is NOT a confirmed visit: Iron Oak staff check that a technician is available on that "
-            + "date and then confirm it; at confirmation the price is set (FIXED services at their listed "
-            + "price, HOURLY services from the estimated hours, QUOTE services priced by staff) and the "
-            + "customer receives an order number to pay online. Never promise the date or a final price. "
-            + "Tell the customer their booking_id and to keep the email they used: with both they can check "
-            + "or cancel it, and a date change before confirmation goes through Iron Oak staff. Calling again "
-            + "with the same email, service and time returns the existing booking instead of a second one.")
+    @Tool(name = "create_service_booking", description = "Book a technician visit after the customer confirmed your summary. Technicians work ONLY in Bogota and Medellin, Colombia: anywhere else, say so and do not call this. service_code comes from list_services; the visit must be in the future. The booking starts REQUESTED: staff check technician availability, then confirm it, set the price and send an order number to pay online, so never promise the date or a final price. Give the customer the booking_id and remind them to keep the email they used. Repeating the same email, service and time returns the existing booking.")
     public BookingResult createServiceBooking(
             @ToolParam(description = "Service code from list_services, e.g. PREVENTIVE_MAINTENANCE.")
             String service_code,

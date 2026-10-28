@@ -134,7 +134,9 @@ public class ChatOrchestrationService {
                 ? text
                 : text + "\n\n[Attached temporary image reference: " + imageId
                         + ". Use identify_tool_from_image only if the customer asks about the tool in this image.]";
-        String answer = piper.reply(context.history(), modelText);
+        String answer = piper.reply(context.sessionId(),
+                context.history(),
+                modelText);
 
         // 3. write: both messages, or neither
         return transactions.execute(status -> {

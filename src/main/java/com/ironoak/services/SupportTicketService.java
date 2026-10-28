@@ -12,6 +12,8 @@ import com.ironoak.exceptions.BusinessRuleException;
 import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.mapper.SupportTicketMapper;
 import com.ironoak.repository.ChatSessionRepository;
+import com.ironoak.repository.CustomerOrderRepository;
+import com.ironoak.domain.CustomerOrder;
 import com.ironoak.repository.SupportTicketRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,16 +40,42 @@ public class SupportTicketService {
         private final ChatSessionRepository chatSessions;
         private final CustomerService customers;
         private final SupportTicketMapper mapper;
+        private final CustomerOrderRepository orders;
 
         public SupportTicketService(SupportTicketRepository tickets,
                         ChatSessionRepository chatSessions,
                         CustomerService customers,
-                        SupportTicketMapper mapper) {
+                        SupportTicketMapper mapper,
+                        CustomerOrderRepository orders) {
 
                 this.tickets = tickets;
                 this.chatSessions = chatSessions;
                 this.customers = customers;
                 this.mapper = mapper;
+                this.orders = orders;
+        }
+
+        /**
+         * Piper's escalation. When the customer gave no email but the ticket is about
+         * an order, the order's email (and so its customer) goes on the ticket. The
+         * email stays on the server; Piper never sees it.
+         */
+        public SupportTicketResponse createFromChat(CreateSupportTicketRequest request,
+                        String orderNumber) {
+
+                if (request.customerEmail() != null && !request.customerEmail().isBlank()) {
+                        return create(request);
+                }
+                String orderEmail = orderNumber == null || orderNumber.isBlank()
+                                ? null
+                                : orders.findWithItemsByOrderNumber(OrderService.normalizeOrderNumber(orderNumber))
+                                                .map(CustomerOrder::getCustomerEmail)
+                                                .orElse(null);
+
+                return create(new CreateSupportTicketRequest(orderEmail,
+                                request.chatSessionId(),
+                                request.reason(),
+                                request.summary()));
         }
 
         /**

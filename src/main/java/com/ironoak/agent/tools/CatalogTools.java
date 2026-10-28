@@ -6,6 +6,7 @@ import com.ironoak.dto.response.MillingMachineResponse;
 import com.ironoak.dto.response.ProductResponse;
 import com.ironoak.dto.response.ServiceOfferingResponse;
 import com.ironoak.exceptions.BusinessRuleException;
+import com.ironoak.exceptions.ResourceNotFoundException;
 import com.ironoak.services.ProductService;
 import com.ironoak.services.ServiceCatalogService;
 import org.springframework.ai.tool.annotation.Tool;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Read-only catalog tools exposed to Piper. */
 @Component
@@ -31,10 +33,10 @@ public class CatalogTools {
         this.catalog = catalog;
     }
 
-    @Tool(name = "search_products", description = "Search active Iron Oak products. Put what the customer wants in query, in English, as plain words (for example 'air compressor', 'cordless drill', 'safety gloves'); words are matched against product names, categories and synonyms, so do not add category or vision_name unless you are sure of the exact value. Each result has reference_id: use it as reference_id with item_type PRODUCT in create_order. Stock and prices come from the catalog; never infer them. If nothing is found, retry with fewer or more general words before telling the customer. The limit defaults to 5 and cannot exceed 10.")
+    @Tool(name = "search_products", description = "Search active Iron Oak products by plain English words (e.g. 'air compressor', 'cordless drill'), matched against names, categories and synonyms. Results carry price, stock and reference_id (item_type PRODUCT in create_order). If nothing is found, retry with fewer or more general words.")
     public List<ProductSearchResult> searchProducts(
-            @ToolParam(required = false, description = "Optional text matching SKU, name, brand, or category.") String query,
-            @ToolParam(required = false, description = "Optional storefront category, one of: Hand Tools, Power Tools, Electrical, Plumbing, Paint & Finishes, Safety Equipment, Outdoor & Garden, Workshop & Storage, Building Materials, Fasteners & Hardware. Leave empty unless the customer named a category.") String category,
+            @ToolParam(required = false, description = "Words to match: SKU, name, brand or category.") String query,
+            @ToolParam(required = false, description = "Exact storefront category; leave empty unless the customer named one.") String category,
             @ToolParam(required = false, description = "Only the exact model label returned by identify_tool_from_image (for example wrench_ai). Never guess it; leave empty otherwise.") String vision_name,
             @ToolParam(required = false, description = "Number of results, default 5, maximum 10.") Integer limit) {
 
@@ -57,15 +59,23 @@ public class CatalogTools {
         return ProductDetailsResult.from(products.getBySku(requiredText(sku, "sku")));
     }
 
-    @Tool(name = "list_machines", description = "List active milling machines, optionally narrowed to an exact model code. Return catalog specifications, price and reference_id (use it with item_type MACHINE in create_order; machine shipping is quoted later by staff); machine inventory is not ordinary product stock.")
+    @Tool(name = "list_machines", description = "List the milling machines Iron & Oak itself sells (a short list of its own model codes such as VMC-650), with specs, price and reference_id for create_order (item_type MACHINE; freight is quoted by staff). Models from other makers' catalogs (AVIA VMC, VARIO, X-5, WELE HB1212/HB1416/HB1620 and similar) are not here: look those up with search_knowledge.")
     public List<MachineResult> listMachines(
-            @ToolParam(required = false, description = "Optional exact milling-machine model code.") String model_code) {
+            @ToolParam(required = false, description = "Optional exact model code of one of Iron & Oak's own machines.") String model_code) {
 
-        List<MillingMachineResponse> machines = hasText(model_code)
-                ? List.of(catalog.getMachine(model_code.trim()))
-                : catalog.listMachines();
-
-        return machines.stream().map(MachineResult::from).toList();
+        if (!hasText(model_code)) {
+            return catalog.listMachines().stream().map(MachineResult::from).toList();
+        }
+        try {
+            return List.of(MachineResult.from(catalog.getMachine(model_code.trim())));
+        } catch (ResourceNotFoundException e) {
+            // tells the model where to look next instead of a bare "not found"
+            String own = catalog.listMachines().stream()
+                    .map(MillingMachineResponse::modelCode)
+                    .collect(Collectors.joining(", "));
+            throw new BusinessRuleException(model_code.trim() + " is not one of the machines Iron & Oak sells ("
+                    + own + "). For other models call search_knowledge with namespaces iron_oak and machine_operations.");
+        }
     }
 
     @Tool(name = "list_services", description = "List active Iron Oak technical services, optionally narrowed to an exact service code. Explain FIXED, HOURLY, and QUOTE pricing from the returned fields; never invent a quote price. reference_id is the id to use with item_type SERVICE in create_order (HOURLY services also need estimatedHours; QUOTE services cannot be ordered).")

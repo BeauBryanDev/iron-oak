@@ -29,18 +29,7 @@ public class SearchProductsByCategoryTool {
         this.products = products;
     }
 
-    @Tool(name = "search_products_by_category", description = "List the active Iron Oak products of one "
-            + "storefront category, with price and stock. Use it to recommend products after giving advice: "
-            + "once you have explained a repair or job (often from search_knowledge), pick the category that "
-            + "fits and suggest the few products the customer actually needs for it, with their price. "
-            + "Typical matches: faucets, pipes, leaks, valves, drains -> Plumbing; wiring, sockets, testing "
-            + "circuits, lighting -> Electrical; painting, sealing, caulking -> Paint & Finishes; drilling, "
-            + "cutting, grinding, sanding -> Power Tools; general repairs, measuring, fixing -> Hand Tools; "
-            + "screws, nails, nuts, chains -> Fasteners & Hardware; concrete, plaster, masonry -> Building "
-            + "Materials; protection for any job -> Safety Equipment; yard and garden work -> Outdoor & "
-            + "Garden; storage, ladders, workshop gear -> Workshop & Storage. Each result has reference_id "
-            + "for create_order (item_type PRODUCT). Prices and stock come from the database; never invent "
-            + "them, and do not recommend products the tool did not return.")
+    @Tool(name = "search_products_by_category", description = "List the active products of one storefront category with price, stock and reference_id (item_type PRODUCT). Use it after how-to or repair advice to suggest the few products the job needs: faucets, pipes, leaks -> Plumbing; wiring, sockets, testing -> Electrical; painting, sealing -> Paint & Finishes; drilling, cutting, grinding -> Power Tools; general repairs, measuring -> Hand Tools; screws, nails, chains -> Fasteners & Hardware; concrete, masonry -> Building Materials; protection -> Safety Equipment; yard work -> Outdoor & Garden; storage, ladders -> Workshop & Storage. Recommend only returned products.")
     public List<CategoryProduct> searchProductsByCategory(
             @ToolParam(description = "Storefront category, one of: Hand Tools, Power Tools, Electrical, "
                     + "Plumbing, Paint & Finishes, Safety Equipment, Outdoor & Garden, Workshop & Storage, "

@@ -17,14 +17,14 @@ public class MachineHealthTools {
         this.health = health;
     }
 
-    @Tool(name = "diagnose_machine", description = "Estimate CNC machine-health risk from exactly six customer-provided inputs: air temperature in Kelvin, process temperature in Kelvin, rotational speed in RPM, torque in Nm, tool wear in minutes, and product quality variant L, M, or H. Do not call this tool until all six values are supplied; never guess or invent a missing measurement. The backend derives the model's engineered features, validates ranges, scales inputs, and runs the piper_machine_health_v1 MLP.\n\nInterpretation for the customer: every probability is a model estimate from 0.0 to 1.0 (multiply by 100 for a percentage), not a guarantee or physical measurement. Each output includes its tuned threshold and flagged=true when the probability reaches that threshold. Explain the overall riskLevel: LOW means no failure output crossed its threshold, ELEVATED means one failure mode crossed its threshold, and HIGH means the general machine-failure output or at least two failure modes crossed thresholds. Explain flagged failure modes by name: TWF is tool-wear failure, HDF is heat-dissipation failure, PWF is power failure, and OSF is overstrain failure. Mention machineFailure separately when flagged. If recommendedService is present, offer that service, but describe the diagnosis as a model-based estimate and recommend qualified technician inspection; do not claim that failure is certain.")
+    @Tool(name = "diagnose_machine", description = "Estimate CNC machine-health risk with the piper_machine_health_v1 model from six customer readings: air and process temperature (K), speed (RPM), torque (Nm), tool wear (min) and quality variant L/M/H. Call only when all six are given; never guess one. Probabilities are 0-1 estimates, each with its threshold and flagged. riskLevel: LOW = nothing flagged, ELEVATED = one failure mode, HIGH = machine failure or two or more modes. Modes: TWF tool wear, HDF heat dissipation, PWF power, OSF overstrain. Offer recommendedService when present and describe the result as a model estimate that a technician should confirm.")
     public MachineHealthResponse diagnoseMachine(
-            @ToolParam(description = "Air temperature in Kelvin. Required range: 250 to 350 K. Do not convert or guess a missing value.") Double air_temperature_k,
-            @ToolParam(description = "Process temperature in Kelvin. Required range: 250 to 400 K. Do not convert or guess a missing value.") Double process_temperature_k,
-            @ToolParam(description = "Rotational speed in revolutions per minute (RPM). Required range: 1 to 10000 RPM.") Double rotational_speed_rpm,
-            @ToolParam(description = "Torque in Newton-metres (Nm). Required range: 0 to 500 Nm.") Double torque_nm,
-            @ToolParam(description = "Tool wear in minutes. Required range: 0 to 1000 minutes.") Double tool_wear_min,
-            @ToolParam(description = "Product quality variant used by the trained model. Required enum value: L, M, or H.") MachineHealthRequest.QualityVariant quality_variant) {
+            @ToolParam(description = "Air temperature, K, 250-350.") Double air_temperature_k,
+            @ToolParam(description = "Process temperature, K, 250-400.") Double process_temperature_k,
+            @ToolParam(description = "Rotational speed, RPM, 1-10000.") Double rotational_speed_rpm,
+            @ToolParam(description = "Torque, Nm, 0-500.") Double torque_nm,
+            @ToolParam(description = "Tool wear, minutes, 0-1000.") Double tool_wear_min,
+            @ToolParam(description = "Quality variant: L, M or H.") MachineHealthRequest.QualityVariant quality_variant) {
 
         if (air_temperature_k == null || process_temperature_k == null ||
                 rotational_speed_rpm == null || torque_nm == null ||
