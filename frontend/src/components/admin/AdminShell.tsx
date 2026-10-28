@@ -47,8 +47,8 @@ const NAV: { section: string; items: NavItem[] }[] = [
     section: "SALES",
     items: [
       { label: "Orders", href: "/admin/orders", icon: ClipboardList, ready: true },
-      { label: "Customers", href: "/admin/customers", icon: Users, ready: false },
-      { label: "Shipping routes", href: "/admin/shipping", icon: Route, ready: false },
+      { label: "Customers", href: "/admin/customers", icon: Users, ready: true },
+      { label: "Shipping routes", href: "/admin/shipping", icon: Route, ready: true },
     ],
   },
   {
