@@ -64,7 +64,8 @@ Piper is measured end to end against a 50-case golden set (34 knowledge question
 tool-routing cases), using the real chat model, the production vector store and a copy of the
 database. Two rounds of improvements followed: smarter tool routing and fuller search results,
 then hybrid search (vector plus BM25 keyword search in Milvus). Over those rounds, answer
-correctness rose from 0.81 to **0.93**, recall of the right passages in the top 5 from 0.61
+correctness rose from 0.81 to **0.93** (**0.94-0.97** when Claude Haiku 5.5 judges the
+answers independently), recall of the right passages in the top 5 from 0.61
 to **0.72**, and tool calls with the right tool and exact arguments from 0.96 to **0.98**.
 Piper never cited a source it had not read. Full tables and method:
 [eval/PIPER_EVAL_REPORT.md](eval/PIPER_EVAL_REPORT.md).

@@ -371,7 +371,12 @@ final class EvalScorer {
             m.put("status", judge == null ? "pending judge" : "no answer");
             return m;
         }
-        HaikuJudge.Verdict verdict = judge.judge(rc.question(), rc.answer(), contexts, gc.referenceAnswer(), gc.keyFacts());
+        HaikuJudge.Verdict verdict = judge.judge(
+                rc.question(),
+                rc.answer(),
+                groundingContexts(rc, contexts),
+                gc.referenceAnswer(),
+                gc.keyFacts());
         m.put("status", "judged");
         m.put("faithfulness", verdict.claims().isEmpty() ? null
                 : verdict.claims().stream().filter(b -> b).count() / (double) verdict.claims().size());
@@ -381,6 +386,30 @@ final class EvalScorer {
         m.put("answer_relevancy", judge.answerRelevancy(rc.question(), verdict.questions()));
         m.put("claims", (double) verdict.claims().size());
         return m;
+    }
+
+    /**
+     * What the judge checks claims against: the knowledge passages plus the output of every other
+     * tool Piper called (catalog, services, machines), since answers built on those are grounded too.
+     */
+    private static List<Passage> groundingContexts(RawCase rc, List<Passage> contexts) {
+
+        List<Passage> all = new ArrayList<>(contexts);
+        for (RawRun.ToolCall call : rc.toolCalls()) {
+            if ("search_knowledge".equals(call.name()) || call.output() == null) {
+                continue;
+            }
+            all.add(new Passage(
+                    "tool:" + call.name(),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    0.0,
+                    "Tool result from " + call.name() + ":\n" + call.output()));
+        }
+        return all;
     }
 
     // helpers

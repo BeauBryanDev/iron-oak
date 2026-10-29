@@ -1,6 +1,6 @@
 # Piper eval: fix2
 
-Commit `547dd50-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embeddings `text-embedding-3-small`, retrieval hybrid (dense + BM25, RRF), judge `pending`. 50 cases (34 RAG), started 2026-10-28T21:23:04.053738290-05:00.
+Commit `547dd50-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embeddings `text-embedding-3-small`, retrieval hybrid (dense + BM25, RRF), judge `claude-haiku-5-5`. 50 cases (34 RAG), started 2026-10-28T21:23:04.053738290-05:00.
 
 ## Summary
 
@@ -26,9 +26,9 @@ Commit `547dd50-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embe
 | Cites a retrieved document | 0.871 | 31 |
 | Cites the gold document | 0.794 | 34 |
 | Unsupported citations per case | 0.000 | 34 |
-| Faithfulness (judge) | – | 0 |
-| Answer relevancy (judge + embeddings) | – | 0 |
-| Answer correctness (judge) | – | 0 |
+| Faithfulness (judge) | 0.784 | 34 |
+| Answer relevancy (judge + embeddings) | 0.777 | 34 |
+| Answer correctness (judge) | 0.941 | 34 |
 | Mean latency (ms) | 5500.540 | 50 |
 | Mean prompt tokens | 14281.900 | 50 |
 | Mean completion tokens | 146.540 | 50 |
@@ -70,12 +70,12 @@ mean top_k: 5.048, mean searches per RAG case: 0.941
 
 | Category | Tool pass | Retriever Hit@5 | Retriever MRR | Agent Hit@5 | Context recall | Answer correctness | Faithfulness |
 |---|---|---|---|---|---|---|---|
-| business_rules | 1 | 0.889 | 0.815 | 0.667 | 0.778 | 0.889 | – |
-| home_diy | 1 | 0.800 | 0.733 | 1 | 0.900 | 0.900 | – |
-| machine_maintenance | 1 | 1 | 0.500 | 1 | 1 | 1 | – |
-| machine_models | 1 | 1 | 0.733 | 0.800 | 0.800 | 1 | – |
-| machine_operations | 1 | 1 | 1 | 1 | 0.929 | 0.857 | – |
-| power_tool_safety | 1 | 1 | 0.814 | 1 | 1 | 1 | – |
+| business_rules | 1 | 0.889 | 0.815 | 0.667 | 0.778 | 0.889 | 0.748 |
+| home_diy | 1 | 0.800 | 0.733 | 1 | 0.900 | 0.900 | 0.693 |
+| machine_maintenance | 1 | 1 | 0.500 | 1 | 1 | 1 | 0.857 |
+| machine_models | 1 | 1 | 0.733 | 0.800 | 0.800 | 1 | 0.880 |
+| machine_operations | 1 | 1 | 1 | 1 | 0.929 | 0.857 | 0.846 |
+| power_tool_safety | 1 | 1 | 0.814 | 1 | 1 | 1 | 0.755 |
 | tool_routing | 0.938 | – | – | – | – | – | – |
 
 ## Cases

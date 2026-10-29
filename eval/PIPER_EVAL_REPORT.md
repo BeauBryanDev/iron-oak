@@ -11,6 +11,7 @@ production database; the raw transcripts, per-case scores and auto-generated rep
 | | Baseline | Fix 1 | Fix 2 | Change |
 |---|---|---|---|---|
 | **Answer correctness** (key facts in Piper's answer) | 0.809 | 0.907 | **0.927** | **+14.6 pts** |
+| **Judged answer correctness** (Claude Haiku 5.5 as judge) | 0.853 | **0.971** | 0.941 | **+8.8 pts** |
 | **Context recall** (key facts in the passages Piper read) | 0.765 | 0.853 | **0.882** | **+11.8 pts** |
 | **Agent Recall@5** | 0.607 | 0.683 | **0.721** | **+11.4 pts** |
 | **Agent NDCG@10** | 0.592 | 0.648 | **0.702** | **+11.0 pts** |
@@ -21,8 +22,9 @@ production database; the raw transcripts, per-case scores and auto-generated rep
 | Failed runs | **0** | **0** | **0** | 50/50 completed every round |
 
 Piper now gets **93 % of the key facts right** across 34 knowledge questions drawn from manuals,
-safety regulations, machine catalogs and the store's own business rules, and it chooses the correct
-tool with the correct arguments in **98 % of all 50 cases**.
+safety regulations, machine catalogs and the store's own business rules (**94-97 %** when an
+independent LLM judge reads the answers for meaning), and it chooses the correct tool with the
+correct arguments in **98 % of all 50 cases**.
 
 ## What was evaluated
 
@@ -48,7 +50,8 @@ Piper tool set as registered in production.
 **Metrics**: tool selection, argument accuracy, forbidden calls; Recall / Precision / Hit / NDCG at
 3, 5 and 10 plus MRR, both for the raw retriever (the question against all namespaces, top 10) and
 for the passages Piper's own `search_knowledge` calls returned; context precision and recall;
-fact-based answer correctness; citation checks. All are deterministic.
+fact-based answer correctness; citation checks. All of these are deterministic. On top of them,
+Claude Haiku 5.5 acts as an independent judge (see [LLM judge](#llm-judge)).
 
 ## The three rounds
 
@@ -95,6 +98,42 @@ only read, never changed.
 
 Machine-model questions went from 3 of 5 right to **5 of 5**, and power-tool safety reached a
 **perfect score** after hybrid search.
+
+## LLM judge
+
+A second model from a different provider, **Claude Haiku 5.5**, reads every RAG answer next to what
+Piper read (the knowledge passages plus the results of its catalog, machine and service tools) and
+returns three scores:
+- **Judged correctness**: the share of key facts the answer states, judged by meaning, so a fact
+  given in other words or units still counts.
+- **Faithfulness**: the share of the answer's atomic claims that the passages or tool results back.
+- **Answer relevancy**: the mean embedding similarity between the question and three questions
+  the judge writes from the answer.
+
+| Judge metric | Baseline | Fix 1 | Fix 2 |
+|---|---|---|---|
+| **Judged answer correctness** | 0.853 | **0.971** | 0.941 |
+| Faithfulness | **0.796** | 0.771 | 0.784 |
+| Answer relevancy | **0.786** | 0.782 | 0.777 |
+| Claims per answer | 6.9 | 7.4 | 7.1 |
+
+**Judged correctness by category:**
+
+| Category | Baseline | Fix 1 | Fix 2 |
+|---|---|---|---|
+| Machine models | 0.600 | **1.000** | **1.000** |
+| Power-tool safety | **1.000** | **1.000** | **1.000** |
+| Machine maintenance | **1.000** | **1.000** | **1.000** |
+| Machine operations | **0.929** | **0.929** | **0.929** |
+| Home DIY | **0.900** | **0.900** | **0.900** |
+| Business rules | 0.778 | **1.000** | 0.889 |
+
+The judge confirms the deterministic picture: both fixes lift correctness by roughly 9 to 12
+points, and three categories are answered perfectly. Faithfulness holds steady near 0.78 to 0.80
+across all three rounds while Piper answers far more questions correctly and in more detail, so
+the gains come from better grounding, not from guessing. The claims it does not trace to a source
+are mostly the helpful advice Piper adds around the facts ("check the product page", "ask our staff
+to confirm"). The judge costs about USD 0.05 per run and its replies are cached in `eval/cache/judge/`.
 
 ## Retrieval
 
@@ -187,15 +226,17 @@ fewer tokens per question than at baseline.
   weighted ranker (for example 0.7 dense / 0.3 BM25) in place of plain RRF.
 - In the hybrid run the `embedding.*` scores are fusion scores, not cosines; compare ranks across
   runs, not those values.
-- The LLM-judge metrics (faithfulness, answer relevancy, judged correctness) run once
-  `ANTHROPIC_API_KEY` is set: `./mvnw test -Dtest=JudgeRescoreTest -Dpiper.eval=true
-  -Dpiper.eval.label=fix2` re-scores the saved transcripts without calling Piper again.
+- With 34 RAG cases, one question is worth about 0.03 on any mean, which is the whole gap between
+  Fix 1 and Fix 2 on judged correctness.
 
 ## Reproduce
 
 ```bash
 ./mvnw test -Dtest=PiperEvalTest -Dpiper.eval=true -Dpiper.eval.label=baseline
 ./mvnw test -Dtest=PiperEvalTest -Dpiper.eval=true -Dpiper.eval.label=fix2 -Dapp.knowledge.hybrid=true
+
+# LLM judge over a saved run (needs ANTHROPIC_API_KEY in .env; Piper is not called again)
+./mvnw test -Dtest=JudgeRescoreTest -Dpiper.eval=true -Dpiper.eval.label=fix2
 ```
 
 Each run writes `raw.json` (full transcripts, tool calls and retrieved passages), `metrics.json`

@@ -5,9 +5,10 @@
     "git_commit" : "0b340bd-dirty",
     "chat_model" : "gpt-6-luna",
     "embedding_model" : "text-embedding-3-small",
+    "retrieval" : "dense",
     "temperature" : 0.0,
     "seed" : 42,
-    "judge_model" : null,
+    "judge_model" : "claude-haiku-5-5",
     "cases" : 50,
     "rag_cases" : 34
   },
@@ -214,6 +215,22 @@
     },
     "generation.unsupported_citations" : {
       "mean" : 0.0,
+      "n" : 34
+    },
+    "judge.faithfulness" : {
+      "mean" : 0.796,
+      "n" : 34
+    },
+    "judge.answer_correctness" : {
+      "mean" : 0.8529,
+      "n" : 34
+    },
+    "judge.answer_relevancy" : {
+      "mean" : 0.7863,
+      "n" : 34
+    },
+    "judge.claims" : {
+      "mean" : 6.9412,
       "n" : 34
     },
     "tools.arg_accuracy" : {
@@ -462,6 +479,22 @@
       "generation.unsupported_citations" : {
         "mean" : 0.0,
         "n" : 9
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.8571,
+        "n" : 9
+      },
+      "judge.answer_correctness" : {
+        "mean" : 0.7778,
+        "n" : 9
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.774,
+        "n" : 9
+      },
+      "judge.claims" : {
+        "mean" : 4.7778,
+        "n" : 9
       }
     },
     "home_diy" : {
@@ -687,6 +720,22 @@
       },
       "generation.unsupported_citations" : {
         "mean" : 0.0,
+        "n" : 5
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.6285,
+        "n" : 5
+      },
+      "judge.answer_correctness" : {
+        "mean" : 0.9,
+        "n" : 5
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.8056,
+        "n" : 5
+      },
+      "judge.claims" : {
+        "mean" : 9.2,
         "n" : 5
       }
     },
@@ -914,6 +963,22 @@
       "generation.unsupported_citations" : {
         "mean" : 0.0,
         "n" : 1
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.875,
+        "n" : 1
+      },
+      "judge.answer_correctness" : {
+        "mean" : 1.0,
+        "n" : 1
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.8795,
+        "n" : 1
+      },
+      "judge.claims" : {
+        "mean" : 8.0,
+        "n" : 1
       }
     },
     "machine_models" : {
@@ -1119,6 +1184,22 @@
       },
       "generation.unsupported_citations" : {
         "mean" : 0.0,
+        "n" : 5
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.7667,
+        "n" : 5
+      },
+      "judge.answer_correctness" : {
+        "mean" : 0.6,
+        "n" : 5
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.8154,
+        "n" : 5
+      },
+      "judge.claims" : {
+        "mean" : 3.2,
         "n" : 5
       },
       "tools.arg_accuracy" : {
@@ -1366,6 +1447,22 @@
       "generation.unsupported_citations" : {
         "mean" : 0.0,
         "n" : 7
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.853,
+        "n" : 7
+      },
+      "judge.answer_correctness" : {
+        "mean" : 0.9286,
+        "n" : 7
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.7964,
+        "n" : 7
+      },
+      "judge.claims" : {
+        "mean" : 9.5714,
+        "n" : 7
       }
     },
     "power_tool_safety" : {
@@ -1592,6 +1689,22 @@
       "generation.unsupported_citations" : {
         "mean" : 0.0,
         "n" : 7
+      },
+      "judge.faithfulness" : {
+        "mean" : 0.7898,
+        "n" : 7
+      },
+      "judge.answer_correctness" : {
+        "mean" : 1.0,
+        "n" : 7
+      },
+      "judge.answer_relevancy" : {
+        "mean" : 0.744,
+        "n" : 7
+      },
+      "judge.claims" : {
+        "mean" : 8.0,
+        "n" : 7
       }
     },
     "tool_routing" : {
@@ -1745,7 +1858,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 0.0,
+      "answer_relevancy" : 0.8203434889316883,
+      "claims" : 2.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : null
@@ -1831,7 +1948,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8109882882656021,
+      "claims" : 3.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 1.0
@@ -1915,7 +2036,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.0,
+      "answer_correctness" : 0.0,
+      "answer_relevancy" : 0.8339997339464752,
+      "claims" : 3.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : null
@@ -2001,7 +2126,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8664680875112672,
+      "claims" : 2.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 2.0
@@ -2087,7 +2216,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8333333333333334,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7451508690231061,
+      "claims" : 6.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : null
@@ -2173,7 +2306,11 @@
       "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7711985513991597,
+      "claims" : 5.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -2259,7 +2396,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 0.0,
+      "answer_relevancy" : 0.8605102511812047,
+      "claims" : 3.0
     },
     "gold_rank_retriever" : 3.0,
     "gold_rank_agent" : 3.0
@@ -2345,7 +2486,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.6711706642376919,
+      "claims" : 5.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -2431,7 +2576,11 @@
       "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7068204775538521,
+      "claims" : 4.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -2515,7 +2664,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.0,
+      "answer_correctness" : 0.0,
+      "answer_relevancy" : 0.6985152872151991,
+      "claims" : 2.0
     },
     "gold_rank_retriever" : 6.0,
     "gold_rank_agent" : null
@@ -2601,7 +2754,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8248357700802614,
+      "claims" : 4.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : null
@@ -2687,7 +2844,11 @@
       "cited_docs" : [ "IRON_OAK_INNER_BOOK.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.7142857142857143,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7365193310105526,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 2.0
@@ -2773,7 +2934,11 @@
       "cited_docs" : [ "IRON_OAK_INNER_BOOK.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8610853517868006,
+      "claims" : 4.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -2859,7 +3024,11 @@
       "cited_docs" : [ "Iron_Oak_Business_Rules.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.835427756318896,
+      "claims" : 9.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -2945,7 +3114,11 @@
       "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.5,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.782270154284897,
+      "claims" : 4.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3031,7 +3204,11 @@
       "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8333333333333334,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.6948319433650747,
+      "claims" : 6.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3117,7 +3294,11 @@
       "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7387874448574232,
+      "claims" : 10.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3203,7 +3384,11 @@
       "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.5714285714285714,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7701161430250765,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3289,7 +3474,11 @@
       "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.5294117647058824,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8355659900737017,
+      "claims" : 17.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3375,7 +3564,11 @@
       "cited_docs" : [ "Metal-Cutting-Notes.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7978628014910777,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 2.0
@@ -3461,7 +3654,11 @@
       "cited_docs" : [ "CNC_Fundamentals.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 1.0,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7618715771541821,
+      "claims" : 9.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3547,7 +3744,11 @@
       "cited_docs" : [ "EMC2_User_Manual.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8020148036064069,
+      "claims" : 5.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3633,7 +3834,11 @@
       "cited_docs" : [ "Maintenance-Fundamentals-2nd-Ed.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.875,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8794862430814611,
+      "claims" : 8.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3719,7 +3924,11 @@
       "cited_docs" : [ "CNC_Fundamentals.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8333333333333334,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8022716297272222,
+      "claims" : 6.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -3805,7 +4014,11 @@
       "cited_docs" : [ ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8571428571428571,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.6611294243247728,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 2.0
@@ -3891,7 +4104,11 @@
       "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.625,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.759603433700982,
+      "claims" : 8.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 2.0
@@ -3977,7 +4194,11 @@
       "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.75,
+      "answer_correctness" : 0.5,
+      "answer_relevancy" : 0.773671603101009,
+      "claims" : 8.0
     },
     "gold_rank_retriever" : 3.0,
     "gold_rank_agent" : 4.0
@@ -4063,7 +4284,11 @@
       "cited_docs" : [ "Home_Maintenance_For_Dummies.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.6666666666666666,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8890397828833662,
+      "claims" : 6.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -4149,7 +4374,11 @@
       "cited_docs" : [ "Hand-Power-tool-Safety.md", "Hand-and-power-tools.md", "Ontario-hand-and-power-tools.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.8461538461538461,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7743913934304247,
+      "claims" : 13.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -4235,7 +4464,11 @@
       "cited_docs" : [ "Hand-and-portable-power-tools.md", "SPP-1910.241.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.7142857142857143,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7421265232531914,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -4321,7 +4554,11 @@
       "cited_docs" : [ "Hand-and-portable-power-tools.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.7777777777777778,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8147459241120877,
+      "claims" : 9.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 2.0
@@ -4407,7 +4644,11 @@
       "cited_docs" : [ "CNC_Fundamentals.md", "Metal-Cutting-Notes.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.7,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.7350137728366,
+      "claims" : 20.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -4493,7 +4734,11 @@
       "cited_docs" : [ "Metal_Cutting_4th_Edition.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.9230769230769231,
+      "answer_correctness" : 0.5,
+      "answer_relevancy" : 0.8552261958566171,
+      "claims" : 13.0
     },
     "gold_rank_retriever" : 1.0,
     "gold_rank_agent" : 1.0
@@ -4579,7 +4824,11 @@
       "cited_docs" : [ "EMC2_User_Manual.md" ]
     },
     "judge" : {
-      "status" : "pending judge"
+      "status" : "judged",
+      "faithfulness" : 0.7142857142857143,
+      "answer_correctness" : 1.0,
+      "answer_relevancy" : 0.8203366201007166,
+      "claims" : 7.0
     },
     "gold_rank_retriever" : 2.0,
     "gold_rank_agent" : 1.0

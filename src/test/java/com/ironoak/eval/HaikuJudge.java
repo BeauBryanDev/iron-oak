@@ -135,8 +135,10 @@ final class HaikuJudge {
 
         ObjectNode body = json.createObjectNode();
         body.put("model", model);
-        body.put("max_tokens", 2000);
-        body.put("temperature", 0);
+        // Haiku 5.5 rejects a non-default temperature and thinks by default; low effort keeps the
+        // thinking short, and max_tokens leaves room for it plus the JSON verdict.
+        body.put("max_tokens", 8000);
+        body.putObject("output_config").put("effort", "low");
         body.put("system", "You are a strict, consistent evaluator of a retrieval-augmented shop assistant. "
                 + "Reply with JSON only.");
         body.putArray("messages").addObject().put("role", "user").put("content", prompt);
@@ -154,7 +156,18 @@ final class HaikuJudge {
                 .POST(HttpRequest.BodyPublishers.ofString(request))
                 .build();
         JsonNode response = send(call);
-        String text = response.path("content").path(0).path("text").asText();
+        // The first block can be a thinking block, so read the text block; never cache an empty verdict.
+        String text = "";
+        for (JsonNode block : response.path("content")) {
+            if ("text".equals(block.path("type").asText())) {
+                text = block.path("text").asText();
+            }
+        }
+        if (text.isBlank()) {
+            throw new IOException("No text from the judge (stop_reason "
+                    + response.path("stop_reason").asText()
+                    + ")");
+        }
         write(cached, json.createObjectNode().put("model", model).put("text", text));
         return text;
     }

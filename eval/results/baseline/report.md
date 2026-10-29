@@ -1,6 +1,6 @@
 # Piper eval: baseline
 
-Commit `0b340bd-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embeddings `text-embedding-3-small`, judge `pending`. 50 cases (34 RAG), started 2026-10-28T11:58:16.641409918-05:00.
+Commit `0b340bd-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embeddings `text-embedding-3-small`, retrieval dense, judge `claude-haiku-5-5`. 50 cases (34 RAG), started 2026-10-28T11:58:16.641409918-05:00.
 
 ## Summary
 
@@ -26,9 +26,9 @@ Commit `0b340bd-dirty`, chat model `gpt-6-luna` (temperature 0.0, seed 42), embe
 | Cites a retrieved document | 0.828 | 29 |
 | Cites the gold document | 0.706 | 34 |
 | Unsupported citations per case | 0.000 | 34 |
-| Faithfulness (judge) | – | 0 |
-| Answer relevancy (judge + embeddings) | – | 0 |
-| Answer correctness (judge) | – | 0 |
+| Faithfulness (judge) | 0.796 | 34 |
+| Answer relevancy (judge + embeddings) | 0.786 | 34 |
+| Answer correctness (judge) | 0.853 | 34 |
 | Mean latency (ms) | 4935.900 | 50 |
 | Mean prompt tokens | 15925.440 | 50 |
 | Mean completion tokens | 136.540 | 50 |
@@ -68,12 +68,12 @@ mean top_k: 4.862, mean searches per RAG case: 0.853
 
 | Category | Tool pass | Retriever Hit@5 | Retriever MRR | Agent Hit@5 | Context recall | Answer correctness | Faithfulness |
 |---|---|---|---|---|---|---|---|
-| business_rules | 1 | 0.889 | 0.833 | 0.778 | 0.667 | 0.778 | – |
-| home_diy | 1 | 1 | 0.767 | 1 | 0.900 | 0.900 | – |
-| machine_maintenance | 1 | 1 | 1 | 1 | 1 | 1 | – |
-| machine_models | 0.600 | 1 | 0.800 | 0.400 | 0.400 | 0.600 | – |
-| machine_operations | 1 | 1 | 0.929 | 1 | 0.857 | 0.857 | – |
-| power_tool_safety | 1 | 1 | 0.857 | 1 | 0.929 | 0.857 | – |
+| business_rules | 1 | 0.889 | 0.833 | 0.778 | 0.667 | 0.778 | 0.857 |
+| home_diy | 1 | 1 | 0.767 | 1 | 0.900 | 0.900 | 0.629 |
+| machine_maintenance | 1 | 1 | 1 | 1 | 1 | 1 | 0.875 |
+| machine_models | 0.600 | 1 | 0.800 | 0.400 | 0.400 | 0.600 | 0.767 |
+| machine_operations | 1 | 1 | 0.929 | 1 | 0.857 | 0.857 | 0.853 |
+| power_tool_safety | 1 | 1 | 0.857 | 1 | 0.929 | 0.857 | 0.790 |
 | tool_routing | 1 | – | – | – | – | – | – |
 
 ## Cases
