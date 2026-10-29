@@ -23,7 +23,8 @@ final class EvalReport {
         md.append("# Piper eval: ").append(run.get("label")).append("\n\n");
         md.append("Commit `").append(run.get("git_commit")).append("`, chat model `").append(run.get("chat_model"))
                 .append("` (temperature ").append(run.get("temperature")).append(", seed ").append(run.get("seed"))
-                .append("), embeddings `").append(run.get("embedding_model")).append("`, judge `")
+                .append("), embeddings `").append(run.get("embedding_model"))
+                .append("`, retrieval ").append(run.get("retrieval")).append(", judge `")
                 .append(run.get("judge_model") == null ? "pending" : run.get("judge_model")).append("`. ")
                 .append(run.get("cases")).append(" cases (").append(run.get("rag_cases")).append(" RAG), started ")
                 .append(run.get("started_at")).append(".\n\n");
@@ -71,7 +72,11 @@ final class EvalReport {
         md.append("\nMRR: retriever ").append(mean(overall, "retriever.mrr"))
                 .append(", agent ").append(mean(overall, "agent_retrieval.mrr")).append(".\n");
 
-        md.append("\n## Embeddings (retriever path)\n\n| Metric | Value |\n|---|---|\n");
+        md.append("\n## Embeddings (retriever path)\n\n");
+        if (String.valueOf(run.get("retrieval")).startsWith("hybrid")) {
+            md.append("Hybrid run: these scores are RRF fusion scores, not cosines, so compare ranks, not values.\n\n");
+        }
+        md.append("| Metric | Value |\n|---|---|\n");
         md.append("| Relevant passage in top 10 | ").append(mean(overall, "embedding.gold_in_top10")).append(" |\n");
         md.append("| Rank of first relevant passage (when found) | ").append(mean(overall, "embedding.gold_rank")).append(" |\n");
         md.append("| Cosine of first relevant passage | ").append(mean(overall, "embedding.gold_score")).append(" |\n");

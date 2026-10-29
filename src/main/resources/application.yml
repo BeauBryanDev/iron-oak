@@ -105,6 +105,12 @@ management:
 
 # CORS - Next.js frontend on Vercel
 app:
+  knowledge:
+    # hybrid search: dense vectors + BM25 over piper_hybrid_store, fused with RRF
+    # (scripts/build_hybrid_collection.py builds it); false = vectors only (piper_vector_store)
+    hybrid: ${KNOWLEDGE_HYBRID:false}
+    hybrid-collection: piper_hybrid_store
+    rrf-k: 60
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
 

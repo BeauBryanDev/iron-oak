@@ -11,6 +11,16 @@ import io.milvus.param.MetricType;
 import io.milvus.param.R;
 import io.milvus.param.dml.SearchParam;
 import io.milvus.response.SearchResultsWrapper;
+import io.milvus.v2.client.ConnectConfig;
+import io.milvus.v2.client.MilvusClientV2;
+import io.milvus.v2.common.IndexParam;
+import io.milvus.v2.service.vector.request.AnnSearchReq;
+import io.milvus.v2.service.vector.request.HybridSearchReq;
+import io.milvus.v2.service.vector.request.data.EmbeddedText;
+import io.milvus.v2.service.vector.request.data.FloatVec;
+import io.milvus.v2.service.vector.request.ranker.RRFRanker;
+import io.milvus.v2.service.vector.response.SearchResp;
+import jakarta.annotation.PreDestroy;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.filter.FilterExpressionBuilder;
@@ -59,21 +69,49 @@ public class KnowledgeSearchService {
     private static final String CONTENT_FIELD = "content";
     private static final String METADATA_FIELD = "metadata";
     private static final String VECTOR_FIELD = "embedding";
+    /** BM25 sparse field of piper_hybrid_store, filled by Milvus from content */
+    private static final String SPARSE_FIELD = "sparse";
 
     private final ObjectProvider<MilvusServiceClient> milvus;
     private final EmbeddingModel embeddings;
     private final String databaseName;
     private final String collectionName;
+    private final HybridSettings hybrid;
+    private volatile MilvusClientV2 hybridClient;
+
+    /**
+     * Hybrid search (app.knowledge.*): dense vectors plus BM25 over the same
+     * chunks in piper_hybrid_store (built by scripts/build_hybrid_collection.py),
+     * fused by Milvus with reciprocal rank fusion. Off = vectors only.
+     */
+    public record HybridSettings(boolean enabled, String collection, int rrfK, String uri, String token) {
+    }
 
     public KnowledgeSearchService(ObjectProvider<MilvusServiceClient> milvus,
             EmbeddingModel embeddings,
             @Value("${spring.ai.vectorstore.milvus.database-name:default}") String databaseName,
-            @Value("${spring.ai.vectorstore.milvus.collection-name}") String collectionName) {
+            @Value("${spring.ai.vectorstore.milvus.collection-name}") String collectionName,
+            @Value("${app.knowledge.hybrid:false}") boolean hybridEnabled,
+            @Value("${app.knowledge.hybrid-collection:piper_hybrid_store}") String hybridCollection,
+            @Value("${app.knowledge.rrf-k:60}") int rrfK,
+            @Value("${spring.ai.vectorstore.milvus.client.host:localhost}") String host,
+            @Value("${spring.ai.vectorstore.milvus.client.port:19530}") int port,
+            @Value("${spring.ai.vectorstore.milvus.client.secure:false}") boolean secure,
+            @Value("${spring.ai.vectorstore.milvus.client.token:}") String token) {
 
         this.milvus = milvus;
         this.embeddings = embeddings;
         this.databaseName = databaseName;
         this.collectionName = collectionName;
+        this.hybrid = new HybridSettings(hybridEnabled,
+                hybridCollection,
+                rrfK,
+                (secure ? "https://" : "http://") + host + ":" + port,
+                token);
+    }
+
+    public boolean hybridEnabled() {
+        return hybrid.enabled();
     }
 
     public List<KnowledgeHitResponse> search(String query,
@@ -93,6 +131,11 @@ public class KnowledgeSearchService {
             List<KnowledgeNamespace> namespaces,
             int topK) {
 
+        if (hybrid.enabled()) {
+            return withoutDuplicates(hybridSearch(query,
+                    namespaces,
+                    topK * 2 + DUPLICATE_HEADROOM), topK);
+        }
         MilvusServiceClient client = milvus.getIfAvailable();
 
         if (client == null) {
@@ -129,6 +172,81 @@ public class KnowledgeSearchService {
                     .build());
         }
         return withoutDuplicates(hits, topK);
+    }
+
+    /**
+     * One Milvus hybrid query: the question's embedding against the dense field
+     * and its raw text against the BM25 field, both with the namespace filter,
+     * fused with RRF. The score is the RRF score, not a cosine.
+     */
+    private List<Document> hybridSearch(String query,
+            List<KnowledgeNamespace> namespaces,
+            int candidates) {
+
+        String filter = namespaceFilter(namespaces);
+        AnnSearchReq dense = AnnSearchReq.builder()
+                .vectorFieldName(VECTOR_FIELD)
+                .vectors(List.of(new FloatVec(embeddings.embed(query))))
+                .metricType(IndexParam.MetricType.COSINE)
+                .expr(filter)
+                .topK(candidates)
+                .build();
+        AnnSearchReq lexical = AnnSearchReq.builder()
+                .vectorFieldName(SPARSE_FIELD)
+                .vectors(List.of(new EmbeddedText(query)))
+                .metricType(IndexParam.MetricType.BM25)
+                .expr(filter)
+                .topK(candidates)
+                .build();
+        SearchResp response = hybridClient().hybridSearch(HybridSearchReq.builder()
+                .databaseName(databaseName)
+                .collectionName(hybrid.collection())
+                .searchRequests(List.of(dense, lexical))
+                .ranker(new RRFRanker(hybrid.rrfK()))
+                .topK(candidates)
+                .outFields(List.of(CONTENT_FIELD, METADATA_FIELD))
+                .build());
+
+        List<Document> hits = new ArrayList<>();
+        for (SearchResp.SearchResult row : response.getSearchResults().get(0)) {
+            hits.add(Document.builder()
+                    .id(String.valueOf(row.getId()))
+                    .text(String.valueOf(row.getEntity().get(CONTENT_FIELD)))
+                    .metadata(withoutNulls(row.getEntity().get(METADATA_FIELD)))
+                    .score((double) row.getScore())
+                    .build());
+        }
+        return hits;
+    }
+
+    /**
+     * The v2 client, needed because only it can send raw text to a BM25 field;
+     * created on first hybrid search with the same Zilliz settings.
+     */
+    private MilvusClientV2 hybridClient() {
+
+        MilvusClientV2 client = hybridClient;
+        if (client == null) {
+            synchronized (this) {
+                client = hybridClient;
+                if (client == null) {
+                    client = new MilvusClientV2(ConnectConfig.builder()
+                            .uri(hybrid.uri())
+                            .token(hybrid.token())
+                            .dbName(databaseName)
+                            .build());
+                    hybridClient = client;
+                }
+            }
+        }
+        return client;
+    }
+
+    @PreDestroy
+    void closeHybridClient() {
+        if (hybridClient != null) {
+            hybridClient.close();
+        }
     }
 
     /**
@@ -173,6 +291,14 @@ public class KnowledgeSearchService {
 
         Map<String, Object> values = new HashMap<>();
 
+        if (metadata instanceof Map<?, ?> map) {
+            map.forEach((k, v) -> {
+                if (v != null) {
+                    values.put(String.valueOf(k), v);
+                }
+            });
+            return values;
+        }
         if (!(metadata instanceof JsonObject json)) {
             return values;
         }
